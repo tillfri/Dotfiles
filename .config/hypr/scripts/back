@@ -1,0 +1,7 @@
+#!/bin/bash
+
+if [ $(hyprctl monitors all -j | jq ".[]|select(.name==\"eDP-1\").disabled") = "true" ]; then 
+  hyprctl reload
+else 
+  hyprctl keyword monitor "eDP-1, disable"
+fi

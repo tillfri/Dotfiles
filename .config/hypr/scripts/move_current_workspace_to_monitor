@@ -1,0 +1,7 @@
+#!/bin/bash
+
+current_id=$(hyprctl activeworkspace -j | jq '.id')
+
+monitor=$1
+
+hyprctl dispatch moveworkspacetomonitor $current_id $monitor

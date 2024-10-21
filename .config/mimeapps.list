@@ -1,0 +1,20 @@
+[Default Applications]
+x-scheme-handler/jetbrains=jetbrains-toolbox.desktop
+x-scheme-handler/jetbrains-gateway=jetbrains-gateway.desktop
+image/png=firefox.desktop
+application/pdf=firefox.desktop
+video/mp4=vlc.desktop
+application/octet-stream=org.kde.kate.desktop
+text/html=firefox.desktop
+x-scheme-handler/http=firefox.desktop
+x-scheme-handler/https=firefox.desktop
+x-scheme-handler/about=firefox.desktop
+x-scheme-handler/unknown=firefox.desktop
+
+[Added Associations]
+application/x-shellscript=org.kde.kate.desktop;
+video/x-matroska=vlc.desktop;
+image/png=swappy.desktop;chromium.desktop;firefox.desktop;
+application/pdf=firefox.desktop;
+video/mp4=vlc.desktop;
+application/octet-stream=org.kde.kate.desktop;
