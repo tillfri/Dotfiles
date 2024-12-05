@@ -4,7 +4,8 @@ iDIR="$HOME/.config/HyprV/mako/icons"
 
 # Get Volume
 get_volume() {
-	volume=$(pamixer --get-volume)
+	currentSink=$(get_active_sink)
+	volume=$(pamixer --sink "$currentSink" --get-volume)
 	echo "$volume"
 }
 
@@ -27,14 +28,35 @@ notify_user() {
 	notify-send -h string:x-canonical-private-synchronous:sys-notify -u low -i "$(get_icon)" "Volume : $(get_volume) %"
 }
 
+# change default sink (default output)
+change_default_sink() {
+	current=$(pactl get-default-sink)
+	if [[ "$current" == "alsa_output.pci-0000_28_00.4.analog-stereo" ]]; then
+        	pactl set-default-sink "alsa_output.usb-Kingston_HyperX_7.1_Audio_00000000-00.analog-stereo"
+                notify-send -u low -i "$iDIR/volume-high.png" "Switched to Sink : HyperX"
+    	else
+        	pactl set-default-sink "alsa_output.pci-0000_28_00.4.analog-stereo"
+        	notify-send -u low -i "$iDIR/volume-high.png" "Switched to Sink : Speakers"
+    	fi
+}
+
+# Get active audio output (sink)
+get_active_sink() {
+	pactl get-default-sink
+}
+
 # Increase Volume
 inc_volume() {
-	pamixer -i 5 && notify_user
+	currentSink=$(get_active_sink)
+	# pamixer --sink "$currentSink" -i 2 && notify_user
+	pamixer -i 2 && notify_user
 }
 
 # Decrease Volume
 dec_volume() {
-	pamixer -d 5 && notify_user
+	currentSink=$(get_active_sink)
+	# pamixer --sink "$currentSink" -d 2 && notify_user
+	pamixer -d 2 && notify_user
 }
 
 # Toggle Mute
@@ -54,6 +76,9 @@ toggle_mic() {
 		pamixer -u --default-source u && notify-send -h string:x-canonical-private-synchronous:sys-notify -u low -i "$iDIR/microphone.png" "Microphone Switched ON"
 	fi
 }
+
+
+
 # Get icons
 get_mic_icon() {
 	current=$(pamixer --default-source --get-volume)
@@ -99,6 +124,8 @@ elif [[ "$1" == "--get-mic-icon" ]]; then
 	get_mic_icon
 elif [[ "$1" == "--mic-inc" ]]; then
 	inc_mic_volume
+elif [[ "$1" == "--toggle-sink" ]]; then
+	change_default_sink
 elif [[ "$1" == "--mic-dec" ]]; then
 	dec_mic_volume
 else

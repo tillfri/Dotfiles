@@ -1,0 +1,49 @@
+#!/bin/bash
+
+cat <<EOF
+TLDR
+    Ctrl-r: Search backward through command history.
+    CTRL-D: Move forward one word.
+    CTRL-A: Move backward one word.
+    Alt-d: Delete the word after the cursor.
+    Ctrl-w: Cut (delete) the text before the cursor until the last whitespace.
+    CTRL-DEL: Delete the word before the cursor.
+    Ctrl-k: Cut (kill) the text from the cursor to the end of the line.
+    CTRL-T: FZF Search through directories
+Cursor Movement
+
+    Ctrl-a: Move to the beginning of the line.
+    Ctrl-e: Move to the end of the line.
+    Alt-f: Move forward one word.
+    Alt-b: Move backward one word.
+    Ctrl-f: Move forward one character.
+    Ctrl-b: Move backward one character.
+
+Editing
+
+    Ctrl-d: Delete the character under the cursor.
+    Alt-d: Delete the word after the cursor.
+    Ctrl-w: Cut (delete) the text before the cursor until the last whitespace.
+    Alt-DEL: Delete the word before the cursor.
+    Ctrl-k: Cut (kill) the text from the cursor to the end of the line.
+    Ctrl-u: Delete the entire line.
+
+Undo and Redo
+
+    Ctrl-_ or Ctrl-x Ctrl-u: Undo the last action.
+
+History Navigation
+
+    Ctrl-p: Previous command in history.
+    Ctrl-n: Next command in history.
+
+Search
+
+    Ctrl-r: Search backward through command history.
+    Ctrl-s: Search forward through command history.
+
+Other Useful Commands
+
+    Ctrl-l: Clear the screen (redraw prompt).
+    Alt-.: Insert the last argument from the previous command.
+EOF

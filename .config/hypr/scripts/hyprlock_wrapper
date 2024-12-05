@@ -1,0 +1,12 @@
+#!/bin/bash
+
+OUTPUT_NAME="HDMI-A-1"
+
+if [ $(hyprctl monitors -j | jq ".[]|select(.name==\"$OUTPUT_NAME\").dpmsStatus") = "true" ]; then 
+  hyprlock
+else
+  hyprctl dispatch dpms on $OUTPUT_NAME
+  hyprlock
+  sleep 5
+  hyprctl dispatch dpms off $OUTPUT_NAME
+fi

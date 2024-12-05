@@ -1,3 +1,4 @@
+
 # Set the directory we want to store zinit and plugins
 ZINIT_HOME="${XDG_DATA_HOME:-${HOME}/.local/share}/zinit/zinit.git"
 
@@ -35,6 +36,9 @@ bindkey -e
 bindkey '^p' history-search-backward
 bindkey '^n' history-search-forward
 bindkey '^[w' kill-region
+bindkey '^a' backward-word
+bindkey '^d' forward-word
+bindkey '^H' backward-kill-word
 
 # History
 HISTSIZE=5000
@@ -57,7 +61,7 @@ zstyle ':fzf-tab:complete:cd:*' fzf-preview 'ls --color $realpath'
 zstyle ':fzf-tab:complete:__zoxide_z:*' fzf-preview 'ls --color $realpath'
 
 # Aliases
-alias ls='ls --color'
+alias ls='eza --long --color=always --icons=always --no-user'
 alias vim='nvim'
 alias c='clear'
 alias edithypr='nano ~/.config/hypr/hyprland.conf'
@@ -65,6 +69,11 @@ alias la='ls -la --color'
 alias pacman='sudo pacman -Ss'
 alias ssh='kitty +kitten ssh'
 alias reload='hyprctl reload'
+alias cheatsheet='~/.config/hypr/scripts/emacs_cheatsheet'
+alias lg='lazygit'
+alias csyazi='~/.config/hypr/scripts/cheatsheet_yazi'
+alias dup='docker compose up -d'
+alias down='docker compose down'
 
 # Shell integrations
 eval "$(fzf --zsh)"

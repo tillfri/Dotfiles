@@ -1,0 +1,18 @@
+#!/bin/bash
+
+cat <<EOF
+TLDR
+x : Cut copy
+a : Create new file, add / to create dir
+JK: move up down in preview
+y : yank(copy)
+p : paste
+. : toggle hidden files
+cc: copy file path
+cd: copy directory path
+cf: copy filename
+,m: sort by modified time
+,c: sort by created time
+,s: sort by size
+s : search for file or directory
+S : search contents of files
