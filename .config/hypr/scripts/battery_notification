@@ -1,0 +1,22 @@
+#!/bin/bash
+
+get_perc (){
+  capacity="$(cat /sys/class/power_supply/BAT0/capacity)"
+  BATSTATUS="$(cat /sys/class/power_supply/BAT0/status)"
+}
+
+main (){
+  get_perc
+  echo "Started Battery Notification script"
+  if [ "$BATSTATUS" == "Discharging" ]; then
+    if [ "$capacity" -le 20 ]; then
+      notify-send -t 9000 "Battery Warning!" "Battery is at ${capacity}% discharging at a rate of $(cat /sys/class/power_supply/BAT0/power_now | awk '{ printf "%.1f\n", $1 / 1000000 }')W."
+    fi
+  fi
+  if [ "$BATSTATUS" == "Charging" ]; then
+    if [ "$capacity" -le 90 ]; then
+      notify-send -t 7000 "Battery Charged" "Battery is at ${capacity}%"
+    fi
+  fi
+}
+main
