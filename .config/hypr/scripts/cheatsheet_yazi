@@ -16,3 +16,4 @@ cf: copy filename
 ,s: sort by size
 s : search for file or directory
 S : search contents of files
+z : change directory using zoxide

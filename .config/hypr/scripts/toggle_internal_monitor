@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Internal monitor name that you want to toggle on/off
-OUTPUT_NAME="eDP-1"
+OUTPUT_NAME="HDMI-A-1"
 
 if [ $(hyprctl monitors -j | jq ".[]|select(.name==\"$OUTPUT_NAME\").dpmsStatus") = "true" ]; then 
   hyprctl dispatch dpms off $OUTPUT_NAME

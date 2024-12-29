@@ -1,0 +1,7 @@
+#!/bin/bash
+
+
+hyprctl dispatch dpms off HDMI-A-2
+sleep 0.5
+hyprctl dispatch dpms on HDMI-A-2
+
