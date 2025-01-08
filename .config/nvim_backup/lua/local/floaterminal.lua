@@ -1,8 +1,10 @@
+local M = {}
+
 local state = {
   floating = {
     buf = -1,
     win = -1,
-  }
+  },
 }
 
 local function create_floating_window(opts)
@@ -29,7 +31,7 @@ local function create_floating_window(opts)
     height = height,
     col = col,
     row = row,
-    style = "minimal", -- No borders or extra UI elements
+    style = "minimal",
     border = "rounded",
   }
 
@@ -39,17 +41,22 @@ local function create_floating_window(opts)
   return { buf = buf, win = win }
 end
 
-local toggle_terminal = function()
+function M.toggle_terminal()
   if not vim.api.nvim_win_is_valid(state.floating.win) then
     state.floating = create_floating_window { buf = state.floating.buf }
     if vim.bo[state.floating.buf].buftype ~= "terminal" then
       vim.cmd.terminal()
     end
+    vim.api.nvim_win_set_option(state.floating.win, 'cursorline', true)
+    vim.cmd('startinsert')
   else
     vim.api.nvim_win_hide(state.floating.win)
   end
 end
 
--- Example usage:
--- Create a floating window with default dimensions
-vim.api.nvim_create_user_command("Floaterminal", toggle_terminal, {})
+function M.setup()
+  vim.keymap.set("t", "<esc><esc>", "<c-\\><c-n>", { noremap = true, silent = true })
+  vim.api.nvim_create_user_command("Floaterminal", M.toggle_terminal, {})
+end
+
+return M
