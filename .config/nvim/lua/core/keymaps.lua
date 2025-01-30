@@ -9,6 +9,7 @@ vim.api.nvim_set_keymap('n', '<C-u>', '<C-u>zz', opts)
 
 -- Jump up half a page when pressing CTRL+a
 vim.api.nvim_set_keymap('n', '<C-a>', '<C-u>zz', opts)
+vim.api.nvim_set_keymap('v', '<C-a>', '<C-u>zz', opts)
 
 -- Center screen when jumping to next occurence
 vim.api.nvim_set_keymap('n', 'n', 'nzzzv', opts)
@@ -30,8 +31,47 @@ vim.api.nvim_set_keymap('i', '<C-0>', '}', opts)
 vim.keymap.set('n', '(', '{', opts)
 vim.keymap.set('n', ')', '}', opts)
 
--- Space +xp executes current python script
-vim.keymap.set('n', '<leader>xp', ':term python %<CR>:startinsert<CR>', opts)
+-- Change working directory to the directory of the currently open file
+vim.keymap.set('n', '<leader>cd', function()
+  vim.cmd('cd ' .. vim.fn.expand '%:p:h')
+  print('Changed directory to ' .. vim.fn.expand '%:p:h')
+end, { desc = "Change working directory to the current file's directory" })
+
+-- Space +rp executes current python script with activated .venv if there is one in the same directory as the file
+vim.keymap.set('n', '<leader>rp', function()
+  -- Get the directory of the currently opened file
+  local file_dir = vim.fn.expand '%:p:h'
+  local venv_activate = file_dir .. '/.venv/bin/activate'
+  local cmd
+  if vim.fn.filereadable(venv_activate) == 1 then
+    cmd = string.format(':term source %s && python %s', venv_activate, vim.fn.expand '%:p')
+    vim.cmd 'startinsert'
+  else
+    cmd = string.format(':term python %s', vim.fn.expand '%:p')
+    vim.cmd 'startinsert'
+  end
+  vim.cmd(cmd)
+end, opts)
+
+-- Space +rc compile and execute current C++ file
+vim.keymap.set('n', '<leader>rc', function()
+  local filepath = vim.fn.expand '%:p' -- Full path of the current file
+  local output = vim.fn.expand '%:r' -- Filename without extension
+
+  -- Compile the file
+  local compile_cmd = string.format('g++ -std=c++17 -Wall -o %s %s', output, filepath)
+  local compile_result = vim.fn.system(compile_cmd) -- Use vim.fn.system for better control
+
+  -- Check if compilation was successful
+  if vim.v.shell_error == 0 then
+    -- Run the file in a terminal and enter insert mode
+    vim.cmd(string.format('term ./%s', output))
+    vim.cmd 'startinsert'
+  else
+    print 'Compilation failed!'
+    print(compile_result) -- Print the compilation errors
+  end
+end, { desc = 'Compile and run current C++ file' })
 
 -- Space +d Delete without yanking deleted content
 vim.keymap.set('n', '<leader>d', '"_d', { noremap = true, silent = true, desc = 'Delete to void register' })

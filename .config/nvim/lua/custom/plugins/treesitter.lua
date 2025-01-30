@@ -32,6 +32,7 @@ return {
       'css',
       'html',
       'hyprlang',
+      'cpp',
     }, -- Autoinstall languages that are not installed
     auto_install = true,
     highlight = {
