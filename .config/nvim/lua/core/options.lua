@@ -1,5 +1,7 @@
 vim.g.have_nerd_font = true
 
+-- Set highlight on search
+vim.o.hlsearch = true
 -- [[ Setting options ]]
 -- See `:help vim.opt`
 -- NOTE: You can change these options as you wish!
