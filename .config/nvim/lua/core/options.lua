@@ -1,5 +1,5 @@
 vim.g.have_nerd_font = true
-
+vim.api.nvim_set_hl(0, 'NotifyBackground', { bg = '#000000' })
 -- Set highlight on search
 vim.o.hlsearch = true
 -- [[ Setting options ]]

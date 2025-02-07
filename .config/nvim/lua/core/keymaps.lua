@@ -16,7 +16,9 @@ vim.api.nvim_set_keymap('n', 'n', 'nzzzv', opts)
 vim.api.nvim_set_keymap('n', 'N', 'Nzzzv', opts)
 
 -- Search word under cursor using Shift+3
-vim.api.nvim_set_keymap('n', '§', '*', opts)
+vim.api.nvim_set_keymap('n', '"', '*', opts)
+vim.api.nvim_set_keymap('n', '<80><fc>^B§', '*', opts)
+vim.api.nvim_set_keymap('v', '/', 'y/<C-R>"', opts)
 
 -- Jump first letter in line using Shift+1
 vim.api.nvim_set_keymap('n', '!', '^', opts)

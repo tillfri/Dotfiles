@@ -94,6 +94,9 @@ require('lazy').setup({
             opts = { skip = true },
           },
         },
+        notify = {
+          background_colour = '#000000',
+        },
       }
     end,
     dependencies = {
