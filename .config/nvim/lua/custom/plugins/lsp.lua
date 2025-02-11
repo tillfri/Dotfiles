@@ -188,7 +188,7 @@ return {
       terraformls = {},
       jsonls = {},
       yamlls = {},
-
+      debugpy = {},
       lua_ls = {
         -- cmd = {...},
         -- filetypes = { ...},
