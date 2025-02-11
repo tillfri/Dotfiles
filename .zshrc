@@ -1,4 +1,3 @@
-
 # Set the directory we want to store zinit and plugins
 ZINIT_HOME="${XDG_DATA_HOME:-${HOME}/.local/share}/zinit/zinit.git"
 
@@ -64,16 +63,30 @@ zstyle ':fzf-tab:complete:__zoxide_z:*' fzf-preview 'ls --color $realpath'
 alias ls='eza --long --color=always --icons=always --no-user'
 alias vim='nvim'
 alias c='clear'
-alias edithypr='nano ~/.config/hypr/hyprland.conf'
+alias edithypr='nvim ~/.config/hypr/hyprland.conf'
 alias la='ls -la --color'
 alias pacman='sudo pacman -Ss'
-alias ssh='kitty +kitten ssh'
+# alias ssh='kitty +kitten ssh'
 alias reload='hyprctl reload'
 alias cheatsheet='~/.config/hypr/scripts/emacs_cheatsheet'
 alias lg='lazygit'
 alias csyazi='~/.config/hypr/scripts/cheatsheet_yazi'
 alias dup='docker compose up -d'
 alias down='docker compose down'
+alias n='nvim'
+
+# yazi shell wrapper which changes directory on exit
+function y() {
+	local tmp="$(mktemp -t "yazi-cwd.XXXXXX")" cwd
+	yazi "$@" --cwd-file="$tmp"
+	if cwd="$(command cat -- "$tmp")" && [ -n "$cwd" ] && [ "$cwd" != "$PWD" ]; then
+		builtin cd -- "$cwd"
+	fi
+	rm -f -- "$tmp"
+}
+
+# Env variables
+export EDITOR=nvim
 
 # Shell integrations
 eval "$(fzf --zsh)"
