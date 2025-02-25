@@ -133,6 +133,11 @@ require('lazy').setup({
       --  - yinq - [Y]ank [I]nside [N]ext [Q]uote
       --  - ci'  - [C]hange [I]nside [']quote
       require('mini.ai').setup { n_lines = 500 }
+      require('mini.jump').setup {
+        delay = {
+          highlight = 100000,
+        },
+      }
       -- Add/delete/replace surroundings (brackets, quotes, etc.)
       --
       -- - saiw) - [S]urround [A]dd [I]nner [W]ord [)]Paren
@@ -189,11 +194,22 @@ require('lazy').setup({
   --
   --  Uncomment the following line and add your plugins to `lua/custom/plugins/*.lua` to get going.
   { import = 'custom.plugins' },
+
   --
   -- For additional information with loading, sourcing and examples see `:help lazy.nvim-🔌-plugin-spec`
   -- Or use telescope!
   -- In normal mode type `<space>sh` then write `lazy.nvim-plugin`
   -- you can continue same window with `<space>sr` which resumes last telescope search
+  -- {
+  --   'custom/todo_float', -- Custom module name
+  --   lazy = false, -- Load immediately, or set to true for lazy loading
+  --   config = function()
+  --     require('selfmade.todo_float').setup {
+  --       target_file = '~/notes/todo.md',
+  --       global_file = '~/notes/global_todo.md',
+  --     }
+  --   end,
+  -- },
 }, {
   ui = {
     -- If you are using a Nerd Font: set icons to an empty table which will use the
@@ -215,6 +231,7 @@ require('lazy').setup({
     },
   },
 })
+-- require 'selfmade'
 
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et

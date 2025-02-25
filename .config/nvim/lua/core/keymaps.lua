@@ -29,9 +29,11 @@ vim.api.nvim_set_keymap('i', '<C-8>', '{', opts)
 vim.api.nvim_set_keymap('i', '<C-9>', '}', opts)
 vim.api.nvim_set_keymap('i', '<C-0>', '}', opts)
 
--- Remap ( and ) to function as { and } in normal mode
-vim.keymap.set('n', '(', '{', opts)
-vim.keymap.set('n', ')', '}', opts)
+-- Remap ( and ) to function as [ and ] in normal mode
+vim.keymap.set('n', '(', '[m', opts)
+vim.keymap.set('n', ')', ']m', opts)
+
+vim.keymap.set('n', 'ä', "'", opts)
 
 -- Change working directory to the directory of the currently open file
 vim.keymap.set('n', '<leader>cd', function()
