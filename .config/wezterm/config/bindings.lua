@@ -16,17 +16,17 @@ end
 -- stylua: ignore
 local keys = {
    -- misc/useful --
-   { key = 'F1', mods = 'NONE', action = 'ActivateCopyMode' },
-   { key = 'F2', mods = 'NONE', action = act.ActivateCommandPalette },
-   { key = 'F3', mods = 'NONE', action = act.ShowLauncher },
-   { key = 'F4', mods = 'NONE', action = act.ShowLauncherArgs({ flags = 'FUZZY|TABS' }) },
-   {
-      key = 'F5',
-      mods = 'NONE',
-      action = act.ShowLauncherArgs({ flags = 'FUZZY|WORKSPACES' }),
-   },
-   { key = 'F11', mods = 'NONE',    action = act.ToggleFullScreen },
-   { key = 'F12', mods = 'NONE',    action = act.ShowDebugOverlay },
+   -- { key = 'F1', mods = 'NONE', action = 'ActivateCopyMode' },
+   -- { key = 'F2', mods = 'NONE', action = act.ActivateCommandPalette },
+   -- { key = 'F3', mods = 'NONE', action = act.ShowLauncher },
+   -- { key = 'F4', mods = 'NONE', action = act.ShowLauncherArgs({ flags = 'FUZZY|TABS' }) },
+   -- {
+   --    key = 'F5',
+   --    mods = 'NONE',
+   --    action = act.ShowLauncherArgs({ flags = 'FUZZY|WORKSPACES' }),
+   -- },
+   -- { key = 'F11', mods = 'NONE',    action = act.ToggleFullScreen },
+   -- { key = 'F12', mods = 'NONE',    action = act.ShowDebugOverlay },
    { key = 'f',   mods = mod.SUPER, action = act.Search { CaseInSensitiveString = '' } },
    {
       key = 'u',
@@ -48,7 +48,7 @@ local keys = {
       }),
    },
 
-   { key = 'v',   mods = 'CTRL', action = act.ActivateCopyMode },
+   { key = 'v',   mods = mod.SUPER, action = act.ActivateCopyMode },
 
    -- cursor movement --
    { key = 'LeftArrow',  mods = mod.SUPER,     action = act.SendString '\u{1b}OH' },

@@ -29,9 +29,9 @@ vim.api.nvim_set_keymap('i', '<C-8>', '{', opts)
 vim.api.nvim_set_keymap('i', '<C-9>', '}', opts)
 vim.api.nvim_set_keymap('i', '<C-0>', '}', opts)
 
--- Remap ( and ) to function as [ and ] in normal mode
-vim.keymap.set('n', '(', '[m', opts)
-vim.keymap.set('n', ')', ']m', opts)
+-- Remap ( ) to { } in normal mode
+vim.api.nvim_set_keymap('n', '(', '{', opts)
+vim.api.nvim_set_keymap('n', ')', '}', opts)
 
 vim.keymap.set('n', 'ä', "'", opts)
 

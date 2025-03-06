@@ -69,6 +69,7 @@ vim.opt.scrolloff = 10
 vim.o.swapfile = false -- Creates a swapfile (default: true)
 vim.o.smartindent = true -- Make indenting smarter again (default: false)
 
+vim.o.conceallevel = 2
 vim.filetype.add {
   pattern = { ['.*/hypr/.*%.conf'] = 'hyprlang' },
 }

@@ -56,6 +56,7 @@ return { -- Fuzzy Finder (files, lsp, etc)
             ['<C-l>'] = require('telescope.actions').select_default, -- open file
           },
         },
+        layout_strategy = 'vertical',
       },
       pickers = {
         find_files = {
@@ -113,6 +114,20 @@ return { -- Fuzzy Finder (files, lsp, etc)
         previewer = false,
       })
     end, { desc = '[/] Fuzzily search in current buffer' })
+
+    -- search for files in full vault
+    vim.keymap.set('n', '<leader>fo', function()
+      require('telescope.builtin').find_files {
+        cwd = '/mnt/stuff/obsidian_vault', -- Start in the .config directory
+        hidden = false, -- Show hidden files
+      }
+    end, { desc = 'Find files in .config' })
+    vim.keymap.set('n', '<leader>go', function()
+      require('telescope.builtin').live_grep {
+        cwd = '/mnt/stuff/obsidian_vault', -- Start in the .config directory
+        hidden = false, -- Show hidden files
+      }
+    end, { desc = 'Find files using ripgrep in .config' })
 
     -- It's also possible to pass additional configuration options.
     --  See `:help telescope.builtin.live_grep()` for information about particular keys

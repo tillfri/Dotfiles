@@ -36,7 +36,7 @@ return {
          width = '120%',
          vertical_offset = '-10%',
          horizontal_offset = '-10%',
-         opacity = 0.9, -- Adjust transparency as needed
+         opacity = 0.8, -- Adjust transparency as needed
       },
    },
 
