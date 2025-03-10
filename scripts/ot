@@ -1,0 +1,3 @@
+#!/bin/bash
+
+nvim /mnt/stuff/obsidian_vault/TODO.md

@@ -1,0 +1,19 @@
+#!/bin/bash
+
+if [ -z "$1" ]; then
+    echo "Error: A file name must be set, e.g., \"MyAwesomeNote\"."
+    exit 1
+fi
+
+file_name=$(echo "$1" | tr ' ' '-' | tr -cd '[:alnum:]-_')
+formatted_file_name="${file_name}.md"
+
+cd "/mnt/stuff/obsidian_vault" || {
+    echo "Error: Could not change directory."
+    exit 1
+}
+mkdir -p inbox
+
+touch "inbox/${formatted_file_name}"
+
+nvim "inbox/${formatted_file_name}"
