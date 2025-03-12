@@ -1,0 +1,25 @@
+#!/bin/bash
+
+echo "Clearing pacman cache..."
+before_pacman_cache=$(du -sh /var/cache/pacman/pkg/ | awk '{print $1}')
+paccache -r
+after_pacman_cache=$(du -sh /var/cache/pacman/pkg/ | awk '{print $1}')
+echo "Pacman cache before: $before_pacman_cache, after: $after_pacman_cache"
+
+echo "Removing orphan packages..."
+orphans=$(yay -Qdtq)
+if [[ -n "$orphans" ]]; then
+	yay -Rns $orphans
+else
+	echo "No orphan packages found."
+fi
+
+echo "Clearing ~/.cache..."
+before_home_cache=$(du -sh ~/.cache | awk '{print $1}')
+rm -rf ~/.cache/*
+after_home_cache=$(du -sh ~/.cache | awk '{print $1}')
+echo "Home cache before: $before_home_cache, after: $after_home_cache"
+
+echo "Clearing system logs..."
+journalctl --vacuum-time=7d
+echo "System logs cleared."
