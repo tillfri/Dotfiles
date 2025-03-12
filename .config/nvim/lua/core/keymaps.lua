@@ -7,6 +7,10 @@ local opts = { noremap = true, silent = true }
 vim.api.nvim_set_keymap('n', '<C-d>', '<C-d>zz', opts)
 vim.api.nvim_set_keymap('n', '<C-u>', '<C-u>zz', opts)
 
+-- Exit on jj and jk
+vim.keymap.set('i', 'jj', '<ESC>', opts)
+vim.keymap.set('i', 'jk', '<ESC>', opts)
+
 -- Jump up half a page when pressing CTRL+a
 vim.api.nvim_set_keymap('n', '<C-a>', '<C-u>zz', opts)
 vim.api.nvim_set_keymap('v', '<C-a>', '<C-u>zz', opts)
