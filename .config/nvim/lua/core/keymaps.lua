@@ -11,6 +11,10 @@ vim.api.nvim_set_keymap('n', '<C-u>', '<C-u>zz', opts)
 vim.keymap.set('i', 'jj', '<ESC>', opts)
 vim.keymap.set('i', 'jk', '<ESC>', opts)
 
+-- Jump to next/previous occurence in quickfix list
+vim.keymap.set('n', '<leader>j', '<cmd>cnext<CR>', opts)
+vim.keymap.set('n', '<leader>k', '<cmd>cprev<CR>', opts)
+
 -- Jump up half a page when pressing CTRL+a
 vim.api.nvim_set_keymap('n', '<C-a>', '<C-u>zz', opts)
 vim.api.nvim_set_keymap('v', '<C-a>', '<C-u>zz', opts)
