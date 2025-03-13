@@ -1,5 +1,6 @@
 #!/bin/bash
 
+yay -Syu
 echo "Clearing pacman cache..."
 before_pacman_cache=$(du -sh /var/cache/pacman/pkg/ | awk '{print $1}')
 paccache -r
