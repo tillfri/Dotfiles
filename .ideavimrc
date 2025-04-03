@@ -1,0 +1,67 @@
+set hlsearch
+set number
+set relativenumber
+set mouse=a
+set showmode
+set clipboard=unnamedplus
+set breakindent
+set undofile
+set ignorecase
+set smartcase
+set signcolumn=yes
+set updatetime=250
+set timeoutlen=300
+set splitright
+set splitbelow
+set list
+set listchars=tab:»\ ,trail:·,nbsp:␣
+set inccommand=split
+set cursorline
+set scrolloff=10
+set noswapfile
+set smartindent
+
+" Center screen when jumping half a page up/down
+nnoremap <C-d> <C-d>zz
+nnoremap <C-u> <C-u>zz
+
+" Exit insert mode on jj and jk
+inoremap jj <Esc>
+inoremap jk <Esc>
+
+" Jump up half a page when pressing CTRL+a
+nnoremap <C-a> <C-u>zz
+vnoremap <C-a> <C-u>zz
+
+" Center screen when jumping to next occurrence
+nnoremap n nzzzv
+nnoremap N Nzzzv
+
+" Search word under cursor using Shift+3
+nnoremap " *
+nnoremap § *
+vnoremap / y/<C-R>"
+
+" Jump to first letter in line using Shift+1
+nnoremap ! ^
+
+" Map ä to '
+nnoremap ä '
+
+" Save file using CTRL+s
+nnoremap <C-s> :w<CR>
+
+" Stay in indent mode
+vnoremap < <gv
+vnoremap > >gv
+
+" Clear highlights on search when pressing <Esc> in normal mode
+nnoremap <Esc> :nohlsearch<CR>
+
+" Keep last yanked when pasting
+vnoremap p "_dP
+
+
+set mini-ai
+set functiontextobj
+Plug 'tpope/vim-commentary'
