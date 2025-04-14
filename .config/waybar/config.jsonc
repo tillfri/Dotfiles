@@ -1,6 +1,6 @@
 {
     "layer": "top",
-    "output":["HDMI-A-2"],
+    "output":["DP-1"],
     "position": "top",
     "mod": "dock",
     "exclusive": true,
@@ -35,7 +35,7 @@
 
     "clock": {
         "format": " {:%H:%M}",
-	"timezone": "Europe/Berlin"
+        "timezone": "Europe/Berlin"
     },
 
     "network": {
@@ -63,7 +63,18 @@
     },
 
     "hyprland/window": {
-        "format": "{}"
+        "format": "{}",
+        "rewrite": {
+            "^n( .*)?$": " $1",
+            "^y( .*)?$": " $1",
+            "^lg( .*)?$": "󰊢 lazygit $1",
+            "^Yazi:( .*)?$": " $1",
+            "^yazi( .*)?$": " $1",
+            "^(.*) — Mozilla Firefox$": "  $1",
+            "^(.*) - Mozilla Firefox$": "  $1",
+            "^(.*) - Obsidian v[0-9.]+$": "🗒 $1",
+            "^(.*) - Discord$": "  $1",
+        },
     },
 
     "idle_inhibitor": {
