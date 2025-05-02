@@ -12,7 +12,7 @@ return {
   cmd = 'Neotree',
   keys = {
     { '<C-n>', ':Neotree reveal<CR>', desc = 'NeoTree reveal', silent = true },
-    { '<leader>e', ':Neotree toggle position=left<CR>', desc = 'NeoTree reveal', noremap = true, silent = true },
+    -- { '<leader>e', ':Neotree toggle position=left<CR>', desc = 'NeoTree reveal', noremap = true, silent = true },
   },
   opts = {
     filesystem = {
