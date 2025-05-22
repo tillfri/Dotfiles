@@ -1,3 +1,0 @@
-smb://192.168.178.38/stuff/ rpi4/stuff
-smb://100.110.195.82/stuff/ tailscale/stuff
-file:///home/till/PycharmProjects/benthos
