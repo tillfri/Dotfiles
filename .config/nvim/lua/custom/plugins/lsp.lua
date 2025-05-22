@@ -152,6 +152,7 @@ return {
       terraformls = {},
       jsonls = {},
       yamlls = {},
+      omnisharp = {},
       debugpy = {},
       lua_ls = {
         -- cmd = {...},
