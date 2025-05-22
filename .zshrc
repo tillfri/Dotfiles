@@ -27,17 +27,12 @@ autoload -Uz compinit && compinit
 
 zinit cdreplay -q
 
-# To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
-[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
-
-# Keybindings
-bindkey -e
-bindkey '^p' history-search-backward
-bindkey '^n' history-search-forward
-bindkey '^[w' kill-region
-bindkey '^a' backward-word
-bindkey '^d' forward-word
-bindkey '^H' backward-kill-word
+bindkey '^k' history-search-backward
+bindkey '^j' history-search-forward
+bindkey '^h' backward-kill-word
+bindkey '^l' forward-word
+bindkey '^b' backward-word
+bindkey '^@' autosuggest-accept
 
 # History
 HISTSIZE=5000
@@ -60,13 +55,13 @@ zstyle ':fzf-tab:complete:cd:*' fzf-preview 'ls --color $realpath'
 zstyle ':fzf-tab:complete:__zoxide_z:*' fzf-preview 'ls --color $realpath'
 
 # Aliases
-alias ls='eza --long --color=always --icons=always --no-user'
+alias ls='eza --long --color=always --icons=always --no-user --sort=modified'
 alias vim='nvim'
 alias c='clear'
 alias edithypr='nvim ~/.config/hypr/hyprland.conf'
 alias la='ls -la --color'
 alias pacman='sudo pacman -Ss'
-# alias ssh='kitty +kitten ssh'
+alias ssh='kitty +kitten ssh'
 alias reload='hyprctl reload'
 alias cheatsheet='~/.config/hypr/scripts/emacs_cheatsheet'
 alias lg='lazygit'
