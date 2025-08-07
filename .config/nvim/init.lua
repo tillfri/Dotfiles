@@ -1,5 +1,6 @@
 require 'core.options'
 require 'core.keymaps'
+require 'core.snippets'
 
 -- Lazy setup
 local lazypath = vim.fn.stdpath 'data' .. '/lazy/lazy.nvim'
@@ -27,7 +28,6 @@ require('lazy').setup({
     'folke/noice.nvim',
     config = function()
       require('noice').setup {
-        -- add any options here
         routes = {
           {
             filter = {
@@ -43,17 +43,21 @@ require('lazy').setup({
             opts = { skip = true },
           },
         },
-        notify = {
-          background_colour = '#000000',
-        },
       }
     end,
     dependencies = {
-      -- if you lazy-load any plugin below, make sure to add proper `module="..."` entries
       'MunifTanjim/nui.nvim',
-      'rcarriga/nvim-notify',
+      {
+        'rcarriga/nvim-notify',
+        config = function()
+          require('notify').setup {
+            background_colour = '#000000', -- or "Normal"
+          }
+        end,
+      },
     },
   },
+
   -- { -- You can easily change to a different colorscheme.
   --   -- Change the name of the colorscheme plugin below, and then
   --   -- change the command in the config to whatever the name of that colorscheme is.

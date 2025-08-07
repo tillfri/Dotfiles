@@ -1,6 +1,7 @@
 return { -- Fuzzy Finder (files, lsp, etc)
   'nvim-telescope/telescope.nvim',
-  tag = '0.1.8',
+  event = 'VimEnter',
+  branch = 'master',
   dependencies = {
     'nvim-lua/plenary.nvim',
     { -- If encountering errors, see telescope-fzf-native README for installation instructions
@@ -19,7 +20,7 @@ return { -- Fuzzy Finder (files, lsp, etc)
     { 'nvim-telescope/telescope-ui-select.nvim' },
 
     -- Useful for getting pretty icons, but requires a Nerd Font.
-    { 'nvim-tree/nvim-web-devicons',            enabled = vim.g.have_nerd_font },
+    { 'nvim-tree/nvim-web-devicons', enabled = vim.g.have_nerd_font },
   },
   config = function()
     -- Telescope is a fuzzy finder that comes with a lot of different things that
@@ -51,8 +52,8 @@ return { -- Fuzzy Finder (files, lsp, etc)
         mappings = {
           i = {
             ['<C-k>'] = require('telescope.actions').move_selection_previous, -- move to prev result
-            ['<C-j>'] = require('telescope.actions').move_selection_next,     -- move to next result
-            ['<C-l>'] = require('telescope.actions').select_default,          -- open file
+            ['<C-j>'] = require('telescope.actions').move_selection_next, -- move to next result
+            ['<C-l>'] = require('telescope.actions').select_default, -- open file
           },
         },
         layout_strategy = 'vertical',
@@ -95,13 +96,13 @@ return { -- Fuzzy Finder (files, lsp, etc)
     vim.keymap.set('n', '<leader>fc', function()
       require('telescope.builtin').find_files {
         cwd = '~/.config', -- Start in the .config directory
-        hidden = true,     -- Show hidden files
+        hidden = true, -- Show hidden files
       }
     end, { desc = 'Find files in .config' })
     vim.keymap.set('n', '<leader>gc', function()
       require('telescope.builtin').live_grep {
         cwd = '~/.config', -- Start in the .config directory
-        hidden = true,     -- Show hidden files
+        hidden = true, -- Show hidden files
       }
     end, { desc = 'Find files using ripgrep in .config' })
     vim.api.nvim_set_keymap('n', '<leader>ft', ':TodoTelescope<CR>', { noremap = true })
@@ -118,13 +119,13 @@ return { -- Fuzzy Finder (files, lsp, etc)
     vim.keymap.set('n', '<leader>fo', function()
       require('telescope.builtin').find_files {
         cwd = '/mnt/stuff/obsidian_vault', -- Start in the .config directory
-        hidden = false,                    -- Show hidden files
+        hidden = false, -- Show hidden files
       }
     end, { desc = 'Find files in .config' })
     vim.keymap.set('n', '<leader>go', function()
       require('telescope.builtin').live_grep {
         cwd = '/mnt/stuff/obsidian_vault', -- Start in the .config directory
-        hidden = false,                    -- Show hidden files
+        hidden = false, -- Show hidden files
       }
     end, { desc = 'Find files using ripgrep in .config' })
 
