@@ -42,6 +42,7 @@ vim.api.nvim_set_keymap('n', '(', '{', opts)
 vim.api.nvim_set_keymap('n', ')', '}', opts)
 
 vim.keymap.set('n', 'ä', "'", opts)
+vim.keymap.set('n', 'ää', "''", opts)
 
 -- Change working directory to the directory of the currently open file
 vim.keymap.set('n', '<leader>cd', function()
