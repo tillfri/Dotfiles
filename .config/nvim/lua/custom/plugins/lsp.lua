@@ -64,6 +64,10 @@ return {
         -- or a suggestion from your LSP for this to activate.
         map('<leader>ca', vim.lsp.buf.code_action, '[C]ode [A]ction', { 'n', 'x' })
 
+        -- Opens a popup that displays documentation about the word under your cursor
+        --  See `:help K` for why this keymap
+        map('K', vim.lsp.buf.hover, 'Hover Documentation')
+
         -- WARN: This is not Goto Definition, this is Goto Declaration.
         --  For example, in C this would take you to the header.
         map('gD', vim.lsp.buf.declaration, '[G]oto [D]eclaration')
@@ -94,6 +98,15 @@ return {
     --  - capabilities (table): Override fields in capabilities. Can be used to disable certain LSP features.
     --  - settings (table): Override the default settings passed when initializing the server.
     --        For example, to see the options for `lua_ls`, you could go to: https://luals.github.io/wiki/settings/
+    local function get_python_path()
+      local venv_python = vim.fn.getcwd() .. '/.venv/bin/python3'
+      if vim.fn.executable(venv_python) == 1 then
+        return venv_python
+      else
+        return vim.NIL
+      end
+    end
+
     local servers = {
       clangd = {
         capabilities = {
@@ -123,6 +136,7 @@ return {
               pylsp_mypy = { enabled = false },
               pylsp_black = { enabled = false },
               pylsp_isort = { enabled = false },
+              jedi = { environment = get_python_path() },
             },
           },
         },
