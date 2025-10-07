@@ -6,6 +6,8 @@ local opts = { noremap = true, silent = true }
 -- Center screen when jumping half a page up/down
 vim.api.nvim_set_keymap('n', '<C-d>', '<C-d>zz', opts)
 vim.api.nvim_set_keymap('n', '<C-u>', '<C-u>zz', opts)
+vim.api.nvim_set_keymap('v', '<C-d>', '<C-d>zz', opts)
+vim.api.nvim_set_keymap('v', '<C-u>', '<C-u>zz', opts)
 
 -- Exit on jj and jk
 vim.keymap.set('i', 'jj', '<ESC>', opts)
@@ -16,8 +18,8 @@ vim.keymap.set('n', '<leader>j', '<cmd>cnext<CR>', opts)
 vim.keymap.set('n', '<leader>k', '<cmd>cprev<CR>', opts)
 
 -- Jump up half a page when pressing CTRL+a
-vim.api.nvim_set_keymap('n', '<C-a>', '<C-u>zz', opts)
-vim.api.nvim_set_keymap('v', '<C-a>', '<C-u>zz', opts)
+-- vim.api.nvim_set_keymap('n', '<C-a>', '<C-u>zz', opts)
+-- vim.api.nvim_set_keymap('v', '<C-a>', '<C-u>zz', opts)
 
 -- Center screen when jumping to next occurence
 vim.api.nvim_set_keymap('n', 'n', 'nzzzv', opts)
