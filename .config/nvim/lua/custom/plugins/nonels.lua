@@ -46,6 +46,11 @@ return {
             group = augroup,
             buffer = bufnr,
             callback = function()
+              local ft = vim.bo[bufnr].filetype
+              local excluded = { c = true, cpp = true }
+              if excluded[ft] then
+                return
+              end
               vim.lsp.buf.format { async = false }
             end,
           })

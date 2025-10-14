@@ -9,42 +9,25 @@ vim.api.nvim_set_keymap('n', '<C-u>', '<C-u>zz', opts)
 vim.api.nvim_set_keymap('v', '<C-d>', '<C-d>zz', opts)
 vim.api.nvim_set_keymap('v', '<C-u>', '<C-u>zz', opts)
 
--- Exit on jj and jk
+vim.keymap.set('n', '<C-q>', ':qa<CR>', opts)
+
+-- Exit insert mode on jj and jk
 vim.keymap.set('i', 'jj', '<ESC>', opts)
-vim.keymap.set('i', 'jk', '<ESC>', opts)
 
 -- Jump to next/previous occurence in quickfix list
 vim.keymap.set('n', '<leader>j', '<cmd>cnext<CR>', opts)
 vim.keymap.set('n', '<leader>k', '<cmd>cprev<CR>', opts)
 
 -- Jump up half a page when pressing CTRL+a
--- vim.api.nvim_set_keymap('n', '<C-a>', '<C-u>zz', opts)
--- vim.api.nvim_set_keymap('v', '<C-a>', '<C-u>zz', opts)
+vim.api.nvim_set_keymap('n', '<C-a>', '<C-u>zz', opts)
+vim.api.nvim_set_keymap('v', '<C-a>', '<C-u>zz', opts)
 
 -- Center screen when jumping to next occurence
 vim.api.nvim_set_keymap('n', 'n', 'nzzzv', opts)
 vim.api.nvim_set_keymap('n', 'N', 'Nzzzv', opts)
 
 -- Search word under cursor using Shift+3
-vim.api.nvim_set_keymap('n', '"', '*', opts)
-vim.api.nvim_set_keymap('n', '<80><fc>^B§', '*', opts)
 vim.api.nvim_set_keymap('v', '/', 'y/<C-R>"', opts)
-
--- Jump first letter in line using Shift+1
-vim.api.nvim_set_keymap('n', '!', '^', opts)
-
--- CTRL rebinds for easier brackets in insert mode
-vim.api.nvim_set_keymap('i', '<C-7>', '{', opts)
-vim.api.nvim_set_keymap('i', '<C-8>', '{', opts)
-vim.api.nvim_set_keymap('i', '<C-9>', '}', opts)
-vim.api.nvim_set_keymap('i', '<C-0>', '}', opts)
-
--- Remap ( ) to { } in normal mode
-vim.api.nvim_set_keymap('n', '(', '{', opts)
-vim.api.nvim_set_keymap('n', ')', '}', opts)
-
-vim.keymap.set('n', 'ä', "'", opts)
-vim.keymap.set('n', 'ää', "''", opts)
 
 -- Change working directory to the directory of the currently open file
 vim.keymap.set('n', '<leader>cd', function()
@@ -101,27 +84,19 @@ vim.keymap.set('n', '<C-s>', '<cmd> w <CR>', opts)
 -- Stay in indent mode
 vim.keymap.set('v', '<', '<gv', opts)
 vim.keymap.set('v', '>', '>gv', opts)
+
 -- Clear highlights on search when pressing <Esc> in normal mode
---  See `:help hlsearch`
---  Till
 vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
 
 -- Diagnostic keymaps
 vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagnostic [Q]uickfix list' })
 
--- Exit terminal mode in the builtin terminal with a shortcut that is a bit easier
--- for people to discover. Otherwise, you normally need to press <C-\><C-n>, which
--- is not what someone will guess without a bit more experience.
---
 -- NOTE: This won't work in all terminal emulators/tmux/etc. Try your own mapping
 -- or just use <C-\><C-n> to exit terminal mode
 vim.keymap.set('t', '<Esc><Esc>', '<C-\\><C-n>', { desc = 'Exit terminal mode' })
 
 -- Keybinds to make split navigation easier.
 --  Use CTRL+<hjkl> to switch between windows
---
---  See `:help wincmd` for a list of all window commands
---  Till Interesting
 vim.keymap.set('n', '<C-h>', '<C-w><C-h>', { desc = 'Move focus to the left window' })
 vim.keymap.set('n', '<C-l>', '<C-w><C-l>', { desc = 'Move focus to the right window' })
 vim.keymap.set('n', '<C-j>', '<C-w><C-j>', { desc = 'Move focus to the lower window' })
