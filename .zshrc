@@ -29,9 +29,9 @@ zinit cdreplay -q
 
 bindkey '^k' history-search-backward
 bindkey '^j' history-search-forward
-bindkey '^h' backward-kill-word
+bindkey '^h' backward-word
 bindkey '^l' forward-word
-bindkey '^b' backward-word
+bindkey '^w' backward-kill-word
 bindkey '^@' autosuggest-accept
 
 # History
@@ -56,19 +56,16 @@ zstyle ':fzf-tab:complete:__zoxide_z:*' fzf-preview 'ls --color $realpath'
 
 # Aliases
 alias ls='eza --long --color=always --icons=always --no-user --sort=modified'
-alias vim='nvim'
 alias c='clear'
 alias edithypr='nvim ~/.config/hypr/hyprland.conf'
-alias la='ls -la --color'
-alias pacman='sudo pacman -Ss'
 alias ssh='kitty +kitten ssh'
-alias reload='hyprctl reload'
-alias cheatsheet='~/.config/hypr/scripts/emacs_cheatsheet'
+alias reload='hyprctl reload && source ~/.zshrc'
 alias lg='lazygit'
-alias csyazi='~/.config/hypr/scripts/cheatsheet_yazi'
-alias dup='docker compose up -d'
-alias down='docker compose down'
 alias n='nvim'
+alias cat='bat'
+alias man='batman'
+alias du='du -h -d 1'
+alias df='df -h'
 
 # yazi shell wrapper which changes directory on exit
 function y() {
@@ -82,7 +79,7 @@ function y() {
 
 # Env variables
 export EDITOR=nvim
-export PATH="$HOME/scripts:$PATH"
+export PATH="$HOME/scripts:$HOME/.local/bin:$PATH"
 
 # Shell integrations
 eval "$(fzf --zsh)"
@@ -90,3 +87,5 @@ eval "$(zoxide init --cmd cd zsh)"
 
 export STARSHIP_CONFIG=~/.config/starship/starship.toml
 eval "$(starship init zsh)"
+
+. "$HOME/.local/bin/env"
