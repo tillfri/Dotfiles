@@ -11,8 +11,18 @@ vim.api.nvim_set_keymap('v', '<C-u>', '<C-u>zz', opts)
 
 vim.keymap.set('n', '<C-q>', ':qa<CR>', opts)
 
--- Exit insert mode on jj and jk
+-- Exit insert mode on jj
 vim.keymap.set('i', 'jj', '<ESC>', opts)
+
+-- automatically indent after pasting
+vim.keymap.set('n', 'p', ']p', opts)
+vim.keymap.set('n', 'P', '[p', opts)
+
+-- Switch ^ and & because it makes sense
+vim.keymap.set('n', '^', '&', opts)
+vim.keymap.set('n', '&', '^', opts)
+vim.keymap.set('n', 'H', '^', opts)
+vim.keymap.set('n', 'L', 'g_', opts)
 
 -- Jump to next/previous occurence in quickfix list
 vim.keymap.set('n', '<leader>j', '<cmd>cnext<CR>', opts)
@@ -25,6 +35,8 @@ vim.api.nvim_set_keymap('v', '<C-a>', '<C-u>zz', opts)
 -- Center screen when jumping to next occurence
 vim.api.nvim_set_keymap('n', 'n', 'nzzzv', opts)
 vim.api.nvim_set_keymap('n', 'N', 'Nzzzv', opts)
+vim.api.nvim_set_keymap('n', '<C-o>', '<C-o>zz', opts)
+vim.api.nvim_set_keymap('n', '<C-i>', '<C-i>zz', opts)
 
 -- Search word under cursor using Shift+3
 vim.api.nvim_set_keymap('v', '/', 'y/<C-R>"', opts)
