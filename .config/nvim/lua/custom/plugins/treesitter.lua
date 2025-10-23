@@ -36,6 +36,7 @@ return {
       'html',
       'hyprlang',
       'cpp',
+      'latex',
     }, -- Autoinstall languages that are not installed
     auto_install = true,
     highlight = {

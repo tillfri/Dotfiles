@@ -6,9 +6,12 @@
     "exclusive": true,
     "passthrough": false,
     "gtk-layer-shell": true,
-    "height": 20,
+    "height": 34,
+    "margin-right": 10,
+    "margin-left": 10,
+    "margin-top": 3,
+    "margin-bottom": 2,
     "modules-left": [
-        "custom/power_btn",
 	"cpu",
 	"temperature",
 	"memory",
@@ -24,7 +27,6 @@
         "pulseaudio#microphone",
         "battery",
         "clock",
-	"idle_inhibitor",
     ],
     
     "clock": {
