@@ -53,6 +53,8 @@ return { -- Fuzzy Finder (files, lsp, etc)
           i = {
             ['<C-k>'] = require('telescope.actions').move_selection_previous, -- move to prev result
             ['<C-j>'] = require('telescope.actions').move_selection_next, -- move to next result
+            ['<Up>'] = require('telescope.actions').move_selection_previous, -- move to prev result
+            ['<Down>'] = require('telescope.actions').move_selection_next, -- move to next result
             ['<C-l>'] = require('telescope.actions').select_default, -- open file
           },
         },
