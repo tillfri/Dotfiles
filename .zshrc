@@ -27,12 +27,31 @@ autoload -Uz compinit && compinit
 
 zinit cdreplay -q
 
+# yazi shell wrapper which changes directory on exit
+function y() {
+	local tmp="$(mktemp -t "yazi-cwd.XXXXXX")" cwd
+	yazi "$@" --cwd-file="$tmp"
+	if cwd="$(command cat -- "$tmp")" && [ -n "$cwd" ] && [ "$cwd" != "$PWD" ]; then
+		builtin cd -- "$cwd"
+	fi
+	rm -f -- "$tmp"
+}
+
+# copy last command and its output to clipboard
+function copy_last_cmd_output() {
+  { echo "❯ $(fc -ln -1)"; kitten @ get-text --extent last_non_empty_output --self; } \
+  | kitty +kitten clipboard
+}
+
+zle -N copy_last_cmd_output
+
 bindkey '^k' history-search-backward
 bindkey '^j' history-search-forward
 bindkey '^h' backward-word
 bindkey '^l' forward-word
 bindkey '^w' backward-kill-word
 bindkey '^@' autosuggest-accept
+bindkey '^f' copy_last_cmd_output
 
 # History
 HISTSIZE=5000
@@ -67,15 +86,6 @@ alias man='batman'
 alias du='du -h -d 1'
 alias df='df -h'
 
-# yazi shell wrapper which changes directory on exit
-function y() {
-	local tmp="$(mktemp -t "yazi-cwd.XXXXXX")" cwd
-	yazi "$@" --cwd-file="$tmp"
-	if cwd="$(command cat -- "$tmp")" && [ -n "$cwd" ] && [ "$cwd" != "$PWD" ]; then
-		builtin cd -- "$cwd"
-	fi
-	rm -f -- "$tmp"
-}
 
 # Env variables
 export EDITOR=nvim
