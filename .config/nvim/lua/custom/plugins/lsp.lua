@@ -123,7 +123,12 @@ return {
       --
       -- But for many setups, the LSP (`tsserver`) will work just fine
       ts_ls = {}, -- tsserver is deprecated
-      ruff = {},
+      ruff = {
+        settings = {
+          configuration = '~/.config/ruff/ruff.toml',
+          configurationPreference = 'filesystemFirst',
+        },
+      },
       pylsp = {
         settings = {
           pylsp = {
@@ -137,6 +142,7 @@ return {
               pylsp_black = { enabled = false },
               pylsp_isort = { enabled = false },
               jedi = { environment = get_python_path() },
+              jedi_completion = { enabled = true, include_params = true },
             },
           },
         },
