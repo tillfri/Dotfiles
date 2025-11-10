@@ -100,8 +100,20 @@ vim.keymap.set('v', '>', '>gv', opts)
 -- Clear highlights on search when pressing <Esc> in normal mode
 vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
 
+local function toggle_diagnostic_qf()
+  -- Check if quickfix window is open
+  local qf_winid = vim.fn.getqflist({ winid = 0 }).winid
+
+  if qf_winid ~= 0 then
+    vim.cmd 'cclose'
+  else
+    vim.diagnostic.setqflist()
+    vim.cmd 'copen'
+  end
+end
+
 -- Diagnostic keymaps
-vim.keymap.set('n', '<leader>q', vim.diagnostic.setqflist, { desc = 'Open diagnostic [Q]uickfix list' })
+vim.keymap.set('n', '<leader>q', toggle_diagnostic_qf, { desc = 'Open diagnostic [Q]uickfix list' })
 
 -- NOTE: This won't work in all terminal emulators/tmux/etc. Try your own mapping
 -- or just use <C-\><C-n> to exit terminal mode
