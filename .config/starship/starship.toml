@@ -19,11 +19,11 @@ $php\
 $java\
 $kotlin\
 $haskell\
+$docker_context\
+$container\
 [](fg:sapphire)\
 $conda\
 $azure\
-$docker_context\
-$container\
 $fill\
 $time\
 $line_break\
@@ -138,6 +138,7 @@ format = '[[ $symbol( $version) ](fg:crust bg:green)]($style)'
 symbol = ""
 style = "bg:sapphire"
 format = '[[ $symbol( $context) ](fg:crust bg:sapphire)]($style)'
+only_with_files = false
 
 [conda]
 symbol = "  "
