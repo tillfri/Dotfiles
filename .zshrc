@@ -90,6 +90,7 @@ alias df='df -h'
 # Env variables
 export EDITOR=nvim
 export PATH="$HOME/scripts:$HOME/.local/bin:$PATH"
+export _ZO_EXCLUDE_DIRS="/mnt/stuff/*"
 
 # Shell integrations
 eval "$(fzf --zsh)"
