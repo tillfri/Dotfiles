@@ -23,39 +23,39 @@ vim.api.nvim_create_autocmd('FileType', {
   end,
 })
 
--- ide like highlight when stopping cursor
-vim.api.nvim_create_autocmd('CursorMoved', {
-  group = vim.api.nvim_create_augroup('LspReferenceHighlight', { clear = true }),
-  desc = 'Highlight references under cursor',
-  callback = function()
-    -- Only run if the cursor is not in insert mode
-    if vim.fn.mode() ~= 'i' then
-      local clients = vim.lsp.get_clients { bufnr = 0 }
-      local supports_highlight = false
-      for _, client in ipairs(clients) do
-        if client.server_capabilities.documentHighlightProvider then
-          supports_highlight = true
-          break -- Found a supporting client, no need to check others
-        end
-      end
-
-      -- 3. Proceed only if an LSP is active AND supports the feature
-      if supports_highlight then
-        vim.lsp.buf.clear_references()
-        vim.lsp.buf.document_highlight()
-      end
-    end
-  end,
-})
-
--- ide like highlight when stopping cursor
-vim.api.nvim_create_autocmd('CursorMovedI', {
-  group = 'LspReferenceHighlight',
-  desc = 'Clear highlights when entering insert mode',
-  callback = function()
-    vim.lsp.buf.clear_references()
-  end,
-})
+-- -- ide like highlight when stopping cursor
+-- vim.api.nvim_create_autocmd('CursorMoved', {
+--   group = vim.api.nvim_create_augroup('LspReferenceHighlight', { clear = true }),
+--   desc = 'Highlight references under cursor',
+--   callback = function()
+--     -- Only run if the cursor is not in insert mode
+--     if vim.fn.mode() ~= 'i' then
+--       local clients = vim.lsp.get_clients { bufnr = 0 }
+--       local supports_highlight = false
+--       for _, client in ipairs(clients) do
+--         if client.server_capabilities.documentHighlightProvider then
+--           supports_highlight = true
+--           break -- Found a supporting client, no need to check others
+--         end
+--       end
+--
+--       -- 3. Proceed only if an LSP is active AND supports the feature
+--       if supports_highlight then
+--         vim.lsp.buf.clear_references()
+--         vim.lsp.buf.document_highlight()
+--       end
+--     end
+--   end,
+-- })
+--
+-- -- ide like highlight when stopping cursor
+-- vim.api.nvim_create_autocmd('CursorMovedI', {
+--   group = 'LspReferenceHighlight',
+--   desc = 'Clear highlights when entering insert mode',
+--   callback = function()
+--     vim.lsp.buf.clear_references()
+--   end,
+-- })
 
 local macro_group = vim.api.nvim_create_augroup('MacroRecording', { clear = true })
 -- Notify when macro recording stops.
@@ -76,20 +76,27 @@ vim.api.nvim_create_autocmd('LspAttach', {
       vim.keymap.set(mode, keys, func, { buffer = event.buf, desc = 'LSP: ' .. desc })
     end
 
-    local ok, telescope = pcall(require, 'telescope.builtin')
-    if ok then
-      map('gd', telescope.lsp_definitions, '[G]oto [D]efinition')
-      map('grr', telescope.lsp_references, '[G]oto [R]eferences')
-      map('gri', telescope.lsp_implementations, '[G]oto [I]mplementation')
-      map('<leader>ds', telescope.lsp_document_symbols, '[D]ocument [S]ymbols')
-      map('<leader>ws', telescope.lsp_dynamic_workspace_symbols, '[W]orkspace [S]ymbols')
-      map('<leader>D', telescope.lsp_type_definitions, 'Type [D]efinition')
+    local ok, snacks = pcall(require, 'snacks')
+    if ok and snacks.picker then
+      -- map('gd', function() snacks.picker.lsp_definitions() end, '[G]oto [D]efinition')
+      -- map('grr', function() snacks.picker.lsp_references() end, '[G]oto [R]eferences')
+      -- map('gri', function() snacks.picker.lsp_implementations() end, '[G]oto [I]mplementation')
+      -- TODO: this doesnt work yet
+      map('<leader>ds', function()
+        snacks.picker.lsp_symbols()
+      end, '[D]ocument [S]ymbols')
+      map('<leader>ws', function()
+        snacks.picker.lsp_workspace_symbols()
+      end, '[W]orkspace [S]ymbols')
+      map('<leader>D', function()
+        snacks.picker.lsp_type_definitions()
+      end, 'Type [D]efinition')
     end
 
-    map('<leader>rn', vim.lsp.buf.rename, '[R]e[n]ame')
-    map('<leader>ca', vim.lsp.buf.code_action, '[C]ode [A]ction', { 'n', 'x' })
-    map('K', vim.lsp.buf.hover, 'Hover Documentation')
-    map('gD', vim.lsp.buf.declaration, '[G]oto [D]eclaration')
+    -- map('<leader>rn', vim.lsp.buf.rename, '[R]e[n]ame')
+    -- map('<leader>ca', vim.lsp.buf.code_action, '[C]ode [A]ction', { 'n', 'x' })
+    -- map('K', vim.lsp.buf.hover, 'Hover Documentation')
+    -- map('gD', vim.lsp.buf.declaration, '[G]oto [D]eclaration')
 
     local client = vim.lsp.get_client_by_id(event.data.client_id)
     if client and client:supports_method(vim.lsp.protocol.Methods.textDocument_inlayHint) then

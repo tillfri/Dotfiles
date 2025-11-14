@@ -47,6 +47,8 @@ vim.keymap.set('n', '<leader>cd', function()
   print('Changed directory to ' .. vim.fn.expand '%:p:h')
 end, { desc = "Change working directory to the current file's directory" })
 
+vim.keymap.set('n', '<leader>ft', '<cmd>TodoQuickFix<CR>', { noremap = true, silent = true, desc = 'Find TODOs (QuickFix)' })
+
 -- Space +rp executes current python script with activated .venv if there is one in the same directory as the file
 vim.keymap.set('n', '<leader>rp', function()
   -- Get the directory of the currently opened file
