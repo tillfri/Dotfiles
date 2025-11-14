@@ -1,5 +1,6 @@
 require 'core.options'
 require 'core.keymaps'
+require 'core.autocommands'
 require 'core.snippets'
 
 local lazypath = vim.fn.stdpath 'data' .. '/lazy/lazy.nvim'

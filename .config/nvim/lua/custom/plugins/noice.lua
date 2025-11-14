@@ -1,16 +1,6 @@
 return {
   'folke/noice.nvim',
   config = function()
-    -- Create autocmd for macro recording
-    local macro_group = vim.api.nvim_create_augroup('MacroRecording', { clear = true })
-    vim.api.nvim_create_autocmd('RecordingLeave', {
-      group = macro_group,
-      callback = function()
-        -- Display a message when macro recording stops
-        print 'Macro recording stopped'
-      end,
-    })
-
     require('noice').setup {
       lsp = {
         -- override markdown rendering so that **cmp** and other plugins use **Treesitter**

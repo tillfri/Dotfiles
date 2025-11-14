@@ -1,0 +1,122 @@
+local M = {}
+
+-- highlight yank
+vim.api.nvim_create_autocmd('TextYankPost', {
+  group = vim.api.nvim_create_augroup('highlight_yank', { clear = true }),
+  pattern = '*',
+  desc = 'highlight selection on yank',
+  callback = function()
+    vim.highlight.on_yank { timeout = 150, visual = true }
+  end,
+})
+
+-- auto resize splits when the terminal's window is resized
+vim.api.nvim_create_autocmd('VimResized', {
+  command = 'wincmd =',
+})
+
+-- no auto continue comments on new line
+vim.api.nvim_create_autocmd('FileType', {
+  group = vim.api.nvim_create_augroup('no_auto_comment', {}),
+  callback = function()
+    vim.opt_local.formatoptions:remove { 'c', 'r', 'o' }
+  end,
+})
+
+-- ide like highlight when stopping cursor
+vim.api.nvim_create_autocmd('CursorMoved', {
+  group = vim.api.nvim_create_augroup('LspReferenceHighlight', { clear = true }),
+  desc = 'Highlight references under cursor',
+  callback = function()
+    -- Only run if the cursor is not in insert mode
+    if vim.fn.mode() ~= 'i' then
+      local clients = vim.lsp.get_clients { bufnr = 0 }
+      local supports_highlight = false
+      for _, client in ipairs(clients) do
+        if client.server_capabilities.documentHighlightProvider then
+          supports_highlight = true
+          break -- Found a supporting client, no need to check others
+        end
+      end
+
+      -- 3. Proceed only if an LSP is active AND supports the feature
+      if supports_highlight then
+        vim.lsp.buf.clear_references()
+        vim.lsp.buf.document_highlight()
+      end
+    end
+  end,
+})
+
+-- ide like highlight when stopping cursor
+vim.api.nvim_create_autocmd('CursorMovedI', {
+  group = 'LspReferenceHighlight',
+  desc = 'Clear highlights when entering insert mode',
+  callback = function()
+    vim.lsp.buf.clear_references()
+  end,
+})
+
+local macro_group = vim.api.nvim_create_augroup('MacroRecording', { clear = true })
+-- Notify when macro recording stops.
+vim.api.nvim_create_autocmd('RecordingLeave', {
+  group = macro_group,
+  callback = function()
+    print 'Macro recording stopped'
+  end,
+})
+
+local lsp_attach_group = vim.api.nvim_create_augroup('kickstart-lsp-attach', { clear = true })
+-- Apply buffer-local LSP keymaps whenever a language server attaches.
+vim.api.nvim_create_autocmd('LspAttach', {
+  group = lsp_attach_group,
+  callback = function(event)
+    local function map(keys, func, desc, mode)
+      mode = mode or 'n'
+      vim.keymap.set(mode, keys, func, { buffer = event.buf, desc = 'LSP: ' .. desc })
+    end
+
+    local ok, telescope = pcall(require, 'telescope.builtin')
+    if ok then
+      map('gd', telescope.lsp_definitions, '[G]oto [D]efinition')
+      map('grr', telescope.lsp_references, '[G]oto [R]eferences')
+      map('gri', telescope.lsp_implementations, '[G]oto [I]mplementation')
+      map('<leader>ds', telescope.lsp_document_symbols, '[D]ocument [S]ymbols')
+      map('<leader>ws', telescope.lsp_dynamic_workspace_symbols, '[W]orkspace [S]ymbols')
+      map('<leader>D', telescope.lsp_type_definitions, 'Type [D]efinition')
+    end
+
+    map('<leader>rn', vim.lsp.buf.rename, '[R]e[n]ame')
+    map('<leader>ca', vim.lsp.buf.code_action, '[C]ode [A]ction', { 'n', 'x' })
+    map('K', vim.lsp.buf.hover, 'Hover Documentation')
+    map('gD', vim.lsp.buf.declaration, '[G]oto [D]eclaration')
+
+    local client = vim.lsp.get_client_by_id(event.data.client_id)
+    if client and client:supports_method(vim.lsp.protocol.Methods.textDocument_inlayHint) then
+      map('<leader>th', function()
+        vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled { bufnr = event.buf })
+      end, '[T]oggle Inlay [H]ints')
+    end
+  end,
+})
+
+local format_group = vim.api.nvim_create_augroup('LspFormatting', {})
+
+function M.setup_format_on_save(bufnr)
+  vim.api.nvim_clear_autocmds { group = format_group, buffer = bufnr }
+  -- Format supported buffers before writing to disk.
+  vim.api.nvim_create_autocmd('BufWritePre', {
+    group = format_group,
+    buffer = bufnr,
+    callback = function()
+      local ft = vim.bo[bufnr].filetype
+      local excluded = { c = true, cpp = true }
+      if excluded[ft] then
+        return
+      end
+      vim.lsp.buf.format { async = false }
+    end,
+  })
+end
+
+return M
