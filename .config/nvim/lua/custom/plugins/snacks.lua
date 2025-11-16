@@ -194,6 +194,7 @@ return {
       layout = 'custom',
       layouts = {
         custom = {
+          reverse = true,
           layout = {
             backdrop = false,
             width = 0.5,
