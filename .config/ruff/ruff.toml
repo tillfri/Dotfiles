@@ -25,6 +25,8 @@ ignore = [
 
   # Private member access warnings
   "SLF001",
+
+  "UP035",
 ]
 [lint.pydocstyle]
 convention = "google"
