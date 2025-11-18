@@ -44,6 +44,7 @@ alias du='du -h'
 alias df='df -h'
 alias gs='git status'
 alias n='edit-in-kitty'
+alias ls='ls -lh --color=auto'
 
 # Environment defaults
 export EDITOR=${EDITOR:-vi}
