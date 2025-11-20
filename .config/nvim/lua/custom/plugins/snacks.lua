@@ -41,6 +41,13 @@ return {
       desc = '[S]earch [F]iles',
     },
     {
+      '<leader>fr',
+      function()
+        Snacks.picker.smart()
+      end,
+      desc = '[S]earch [F]iles smart',
+    },
+    {
       '<leader>ss',
       function()
         Snacks.picker()
@@ -188,7 +195,7 @@ return {
     explorer = { enabled = false },
     image = { enabled = true },
     indent = { enabled = true },
-    input = { enabled = false },
+    input = { enabled = true },
     picker = {
       enabled = true,
       layout = 'custom',
@@ -227,6 +234,7 @@ return {
     words = { enabled = false },
     zen = { enabled = true, toggles = { indent = false, diagnostics = false } },
     scroll = { enabled = false },
+    terminal = { enabled = true },
     styles = {
       zen = {
         enter = true,
