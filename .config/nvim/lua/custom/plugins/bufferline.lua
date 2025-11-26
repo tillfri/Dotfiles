@@ -84,6 +84,22 @@ return {
           bold = true,
           italic = false,
         },
+        error_selected = {
+          bold = true,
+          italic = false,
+        },
+        numbers_selected = {
+          bold = true,
+          italic = false,
+        },
+        diagnostic_selected = {
+          bold = true,
+          italic = false,
+        },
+        error_diagnostic_selected = {
+          bold = true,
+          italic = false,
+        },
       },
     }
   end,
