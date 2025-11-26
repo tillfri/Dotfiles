@@ -9,7 +9,7 @@ indent-width = 4
 # - W: warnings
 # - UP: modernization for newer Python versions
 # - PT: pytest improvements
-select = ["E", "F", "W", "I", "UP", "B", "PT", "N"]
+select = ["E", "F", "W", "UP", "B", "PT", "N"]
 # select = ["ALL"]
 
 # Ignore rules that are correct but too noisy:
