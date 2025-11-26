@@ -6,7 +6,6 @@ return {
     'catppuccin/nvim', -- Ensure catppuccin is loaded first
   },
   config = function()
-    local mocha = require('catppuccin.palettes').get_palette 'mocha'
     require('bufferline').setup {
       options = {
         mode = 'buffers', -- set to "tabs" to only show tabpages instead
@@ -50,16 +49,40 @@ return {
         maximum_length = 60,
         sort_by = 'insert_at_end',
       },
-      -- Use Catppuccin's bufferline integration for proper theming
-      highlights = require('catppuccin.special.bufferline').get_theme {
-        styles = { 'bold' },
-        custom = {
-          all = {
-            fill = { bg = 'none' }, -- Transparent background for fill area
+      highlights = {
+        buffer_selected = {
+          bold = true,
+          italic = false,
+        },
+        error = {
+          fg = {
+            attribute = 'fg',
+            highlight = 'DiagnosticError',
           },
-          mocha = {
-            background = { fg = mocha.text },
+        },
+        error_visible = {
+          fg = {
+            attribute = 'fg',
+            highlight = 'DiagnosticError',
           },
+        },
+        close_button_selected = {
+          fg = {
+            attribute = 'fg',
+            highlight = 'DiagnosticError',
+          },
+        },
+        warning_selected = {
+          bold = true,
+          italic = false,
+        },
+        info_selected = {
+          bold = true,
+          italic = false,
+        },
+        hint_selected = {
+          bold = true,
+          italic = false,
         },
       },
     }
