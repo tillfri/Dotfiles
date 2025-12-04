@@ -11,6 +11,7 @@ return {
           'dapui_watches',
           'dapui_console',
           'dap-repl',
+          'trouble',
         },
       },
     }
