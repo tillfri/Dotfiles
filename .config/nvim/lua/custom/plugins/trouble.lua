@@ -11,6 +11,9 @@ return {
       -- position = 'bottom',
       -- size = 0.3,
     },
+    keys = {
+      s = false, -- disable severity filter to allow flash.nvim
+    },
     modes = {
       lsp_references = {
         params = {
