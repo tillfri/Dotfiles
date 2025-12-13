@@ -31,11 +31,11 @@ notify_user() {
 # change default sink (default output)
 change_default_sink() {
     current=$(pactl get-default-sink)
-    if [[ "$current" == "alsa_output.pci-0000_28_00.4.analog-stereo" ]]; then
+    if [[ "$current" == "alsa_output.pci-0000_2a_00.4.analog-stereo" ]]; then
         pactl set-default-sink "alsa_output.usb-Kingston_HyperX_7.1_Audio_00000000-00.analog-stereo"
         notify-send -u low -i "$iDIR/volume-high.png" "Switched to Sink : HyperX"
     else
-        pactl set-default-sink "alsa_output.pci-0000_28_00.4.analog-stereo"
+        pactl set-default-sink "alsa_output.pci-0000_2a_00.4.analog-stereo"
         notify-send -u low -i "$iDIR/volume-high.png" "Switched to Sink : Speakers"
     fi
 }
