@@ -96,6 +96,33 @@ export _ZO_EXCLUDE_DIRS="/mnt/stuff/*"
 eval "$(fzf --zsh)"
 eval "$(zoxide init --cmd cd zsh)"
 
+# unbind alt+c
+bindkey -M emacs '\ec' undefined-key
+
+# Open the current command in your $EDITOR (e.g., neovim)
+# Press Ctrl+X followed by Ctrl+E to trigger
+autoload -Uz edit-command-line
+zle -N edit-command-line
+bindkey '^X^E' edit-command-line
+
+
+chpwd() {
+  # If a venv is active, check whether we've left its tree
+  if [[ -n "$VIRTUAL_ENV" ]]; then
+    local venv_root="${VIRTUAL_ENV:h}"
+
+    if [[ "$PWD" != "$venv_root" && "$PWD" != "$venv_root"/* ]]; then
+      deactivate 2>/dev/null
+    fi
+  fi
+
+  # Activate venv in current directory if none is active
+  if [[ -z "$VIRTUAL_ENV" && -d .venv ]]; then
+    source .venv/bin/activate
+  fi
+}
+
+
 export STARSHIP_CONFIG=~/.config/starship/starship.toml
 eval "$(starship init zsh)"
 

@@ -18,6 +18,7 @@ $nodejs\
 $php\
 $java\
 $kotlin\
+$python\
 $haskell\
 $docker_context\
 $container\
@@ -128,6 +129,13 @@ format = '[[ $symbol( $version) ](fg:crust bg:green)]($style)'
 symbol = ""
 style = "bg:green"
 format = '[[ $symbol( $version) ](fg:crust bg:green)]($style)'
+
+[python]
+detect_extensions = []
+detect_files = []
+style = "bg:sapphire fg:crust"
+format = '[${symbol}($virtualenv )(\(${version}\) )]($style)'
+version_format = '${major}.${minor}'
 
 [haskell]
 symbol = ""
