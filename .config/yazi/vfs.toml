@@ -1,0 +1,22 @@
+[services.rpi5]
+type     = "sftp"
+host     = "192.168.178.45"
+user     = "till"
+port     = 22
+key_file = "~/.ssh/id_rsa"
+
+
+[services.rpi4]
+type     = "sftp"
+host     = "192.168.178.38"
+user     = "till"
+port     = 22
+key_file = "~/.ssh/id_rsa"
+
+
+[services.delta]
+type     = "sftp"
+host     = "10.136.5.8"
+user     = "tfricke"
+port     = 22
+key_file = "~/.ssh/id_rsa"
