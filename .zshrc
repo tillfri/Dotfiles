@@ -84,6 +84,16 @@ alias cat='bat'
 alias man='batman'
 alias du='du -h -d 1'
 alias df='df -h'
+alias ports='ss -ltnpH \
+| awk "{print \$4}" \
+| sed "s/.*://" \
+| sort -n \
+| while read -r port; do \
+    c=$(docker ps --format "{{.Names}} {{.Ports}}" \
+      | grep -E "0\\.0\\.0\\.0:${port}->|\\[::\\]:${port}->" \
+      | awk "{print \$1}"); \
+    printf "%-6s %s\n" "$port" "${c:-host}"; \
+  done'
 
 
 # Env variables
