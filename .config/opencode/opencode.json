@@ -42,9 +42,7 @@
     "history_next": "down"
   },
   "plugin": [
-    "opencode-antigravity-auth@1.2.8",
-    "opencode-openai-codex-auth",
-    "oh-my-opencode"
+    "oh-my-opencode@latest"
   ],
   "provider": {
     "google": {
