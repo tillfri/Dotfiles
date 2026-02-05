@@ -7,6 +7,13 @@ vim.o.hlsearch = true
 -- NOTE: You can change these options as you wish!
 --  For more options, you can see `:help option-list`
 
+-- Folds
+vim.o.foldmethod = 'expr'
+vim.o.foldexpr = 'nvim_treesitter#foldexpr()'
+vim.o.foldlevel = 99
+vim.o.foldlevelstart = 99
+vim.o.foldenable = true
+
 -- Make line numbers default
 vim.opt.number = true
 vim.opt.relativenumber = true
