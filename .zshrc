@@ -51,6 +51,7 @@ bindkey '^l' forward-word
 bindkey '^w' backward-kill-word
 bindkey '^@' autosuggest-accept
 bindkey '^f' copy_last_cmd_output
+bindkey '^R' history-incremental-search-backward
 
 # History
 HISTSIZE=5000
