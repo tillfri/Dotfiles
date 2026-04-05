@@ -1,0 +1,13 @@
+/* Neutral colorscheme for swaync */
+/* Base colors */
+@define-color foreground       #f6f7fc;  /* White text */
+@define-color background       #414141;  /* Dark neutral background */
+@define-color background-sec   #454545;  /* Secondary background */
+
+/* Color palette */
+@define-color color1           #2a2a3a;  /* Neutral gray - for backgrounds */
+@define-color color2           #ffffff;  /* Red accent - urgent/critical */
+@define-color color3           #f65f48;  /* Red accent - selected */
+@define-color color4           #3a3a4a;  /* Medium gray */
+@define-color color5           #4a4a5a;  /* Lighter gray - hover */
+@define-color color6           #ffffff;  /* Red accent - alternative */

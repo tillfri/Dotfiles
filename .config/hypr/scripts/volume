@@ -1,6 +1,6 @@
 #!/bin/bash
 
-iDIR="$HOME/.config/mako/icons"
+iDIR="$HOME/.config/swaync/icons"
 
 # Get Volume
 get_volume() {
@@ -25,7 +25,7 @@ get_icon() {
 
 # Notify
 notify_user() {
-    notify-send -h string:x-canonical-private-synchronous:sys-notify -u low -i "$(get_icon)" "Volume : $(get_volume) %"
+    notify-send -h string:x-canonical-private-synchronous:volume -u low -i "$(get_icon)" "Volume : $(get_volume) %"
 }
 
 # change default sink (default output)
@@ -33,10 +33,10 @@ change_default_sink() {
     current=$(pactl get-default-sink)
     if [[ "$current" == "alsa_output.pci-0000_2a_00.4.analog-stereo" ]]; then
         pactl set-default-sink "alsa_output.usb-HP__Inc_HyperX_Cloud_III_S_Wireless_C1V53204W4-00.analog-stereo"
-        notify-send -u low -i "$iDIR/volume-high.png" "Switched to Sink : HyperX"
+        notify-send -h string:x-canonical-private-synchronous:volume -u low -i "$iDIR/volume-high.png" "Switched to Sink : HyperX"
     else
         pactl set-default-sink "alsa_output.pci-0000_2a_00.4.analog-stereo"
-        notify-send -u low -i "$iDIR/volume-high.png" "Switched to Sink : Speakers"
+        notify-send -h string:x-canonical-private-synchronous:volume -u low -i "$iDIR/volume-high.png" "Switched to Sink : Speakers"
     fi
 }
 
@@ -62,9 +62,9 @@ dec_volume() {
 # Toggle Mute
 toggle_mute() {
     if [ "$(pamixer --get-mute)" == "false" ]; then
-        pamixer -m && notify-send -h string:x-canonical-private-synchronous:sys-notify -u low -i "$iDIR/volume-mute.png" "Volume Switched OFF"
+        pamixer -m && notify-send -h string:x-canonical-private-synchronous:volume -u low -i "$iDIR/volume-mute.png" "Volume Switched OFF"
     elif [ "$(pamixer --get-mute)" == "true" ]; then
-        pamixer -u && notify-send -h string:x-canonical-private-synchronous:sys-notify -u low -i "$(get_icon)" "Volume Switched ON"
+        pamixer -u && notify-send -h string:x-canonical-private-synchronous:volume -u low -i "$(get_icon)" "Volume Switched ON"
     fi
 }
 
