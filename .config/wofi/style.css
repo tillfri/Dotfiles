@@ -62,20 +62,21 @@ window {
   padding: 10px;
   border: 0.16em solid @lavender;
   border-radius: 0.5em;
+  opacity: 0.8;
   background-color: @base;
-  animation: slideIn 0.5s ease-in-out both;
+  /* animation: slideIn 0.5s ease-in-out both; */
 }
 
 /* Slide In */
-@keyframes slideIn {
-  0% {
-     opacity: 0;
-  }
-
-  100% {
-     opacity: 1;
-  }
-}
+/* @keyframes slideIn { */
+/*   0% { */
+/*      opacity: 0; */
+/*   } */
+/**/
+/*   100% { */
+/*      opacity: 1; */
+/*   } */
+/* } */
 
 /* Inner Box */
 #inner-box {
@@ -83,20 +84,20 @@ window {
   padding: 10px;
   border: none;
   background-color: @base;
-  animation: fadeIn 0.5s ease-in-out both;
+  /* animation: fadeIn 0.5s ease-in-out both; */
 }
 
 /* Fade In */
-@keyframes fadeIn {
-  0% {
-     opacity: 0;
-  }
-
-  100% {
-     opacity: 1;
-  }
-}
-
+/* @keyframes fadeIn { */
+/*   0% { */
+/*      opacity: 0; */
+/*   } */
+/**/
+/*   100% { */
+/*      opacity: 1; */
+/*   } */
+/* } */
+/**/
 /* Outer Box */
 #outer-box {
   margin: 5px;
@@ -121,7 +122,7 @@ window {
   border-radius: 0.1em;
   color: @text;
   background-color: @base;
-  animation: fadeIn 0.5s ease-in-out both;
+  /* animation: fadeIn 0.5s ease-in-out both; */
 }
 
 #input image {
@@ -138,7 +139,7 @@ window {
   margin: 5px;
   border: none;
   color: @text;
-  animation: fadeIn 0.5s ease-in-out both;
+  /* animation: fadeIn 0.5s ease-in-out both; */
 }
 
 #entry {

@@ -1,6 +1,6 @@
 {
     "layer": "top",
-    "output":["DP-1"],
+    "output":["DP-2"],
     "position": "top",
     "mod": "dock",
     "exclusive": true,
