@@ -79,9 +79,9 @@ dec_volume() {
 # Toggle Mute
 toggle_mute() {
     if [ "$(pamixer --get-mute)" == "false" ]; then
-        pamixer -m && notify-send -h string:x-canonical-private-synchronous:volume -u low -i "$iDIR/volume-mute.png" "Volume Switched OFF"
+        pamixer -m && swayosd-client --monitor "$(hyprctl monitors -j | jq -r '.[] | select(.focused == true).name')" --custom-message "Muted audio" --custom-icon "audio-volume-muted"
     elif [ "$(pamixer --get-mute)" == "true" ]; then
-        pamixer -u && notify-send -h string:x-canonical-private-synchronous:volume -u low -i "$(get_icon)" "Volume Switched ON"
+        pamixer -u && swayosd-client --monitor "$(hyprctl monitors -j | jq -r '.[] | select(.focused == true).name')" --custom-message "Resume audio" --custom-icon "$(get_icon_naming)"
     fi
 }
 
