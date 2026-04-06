@@ -23,9 +23,26 @@ get_icon() {
     fi
 }
 
+get_icon_naming() {
+    current=$(get_volume)
+    if [[ "$current" -eq "0" ]]; then
+        echo "audio-volume-muted"
+    elif [[ ("$current" -ge "0") && ("$current" -le "30") ]]; then
+        echo "audio-volume-low"
+    elif [[ ("$current" -ge "30") && ("$current" -le "60") ]]; then
+        echo "audio-volume-medium"
+    elif [[ ("$current" -ge "60") && ("$current" -le "100") ]]; then
+        echo "audio-volume-high"
+    fi
+}
+
 # Notify
 notify_user() {
     notify-send -h string:x-canonical-private-synchronous:volume -u low -i "$(get_icon)" "Volume : $(get_volume) %"
+}
+
+notify_user_swayosd() {
+    swayosd-client --monitor "$(hyprctl monitors -j | jq -r '.[] | select(.focused == true).name')" --custom-message "Volume : $(get_volume) %" --custom-icon "$(get_icon_naming)"
 }
 
 # change default sink (default output)
@@ -33,10 +50,10 @@ change_default_sink() {
     current=$(pactl get-default-sink)
     if [[ "$current" == "alsa_output.pci-0000_2a_00.4.analog-stereo" ]]; then
         pactl set-default-sink "alsa_output.usb-HP__Inc_HyperX_Cloud_III_S_Wireless_C1V53204W4-00.analog-stereo"
-        notify-send -h string:x-canonical-private-synchronous:volume -u low -i "$iDIR/volume-high.png" "Switched to Sink : HyperX"
+        swayosd-client --monitor "$(hyprctl monitors -j | jq -r '.[] | select(.focused == true).name')" --custom-message "Switched to HyperX" --custom-icon "multimedia-volume-control"
     else
         pactl set-default-sink "alsa_output.pci-0000_2a_00.4.analog-stereo"
-        notify-send -h string:x-canonical-private-synchronous:volume -u low -i "$iDIR/volume-high.png" "Switched to Sink : Speakers"
+        swayosd-client --monitor "$(hyprctl monitors -j | jq -r '.[] | select(.focused == true).name')" --custom-message "Switched to Speakers" --custom-icon "multimedia-volume-control"
     fi
 }
 
@@ -49,14 +66,14 @@ get_active_sink() {
 inc_volume() {
     currentSink=$(get_active_sink)
     # pamixer --sink "$currentSink" -i 2 && notify_user
-    pamixer -i 2 && notify_user
+    pamixer -i 2 && notify_user_swayosd
 }
 
 # Decrease Volume
 dec_volume() {
     currentSink=$(get_active_sink)
     # pamixer --sink "$currentSink" -d 2 && notify_user
-    pamixer -d 2 && notify_user
+    pamixer -d 2 && notify_user_swayosd
 }
 
 # Toggle Mute
