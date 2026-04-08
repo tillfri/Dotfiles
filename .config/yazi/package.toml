@@ -1,5 +1,7 @@
-[plugin]
-deps = []
+[[plugin.deps]]
+use = "yazi-rs/plugins:vcs-files"
+rev = "43c6978"
+hash = "f6e6a829c6dc6c900a75bebe422a5c33"
 
 [[flavor.deps]]
 use = "yazi-rs/flavors:catppuccin-mocha"

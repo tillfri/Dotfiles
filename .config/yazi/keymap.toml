@@ -8,6 +8,7 @@ prepend_keymap = [
 	{ on   = [ "g", "1" ], run  = "cd sftp://rpi5", desc = "Go to rpi5" },
 	{ on   = [ "g", "2" ], run  = "cd sftp://rpi4", desc = "Go to rpi4" },
 	{ on   = [ "g", "3" ], run  = "cd sftp://delta", desc = "Go to delta" },
+	{ on   = [ "g", "s" ], run  = "plugin vcs-files", desc = "Show Git file changes" },
 ]
 
 keymap = [
