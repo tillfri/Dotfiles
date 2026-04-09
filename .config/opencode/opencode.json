@@ -1,6 +1,5 @@
 {
   "$schema": "https://opencode.ai/config.json",
-  "model": "ollama/gemma4",
   "plugin": [
     "oh-my-openagent@latest"
   ],
@@ -108,6 +107,12 @@
         "gemma4": {
           "_launch": true,
           "name": "gemma4"
+        },
+        "gemma4:26b-64k": {
+          "_launch": true,
+          "name": "gemma4:26b-64k",
+          "tool_call": true,
+          "maxTokens": 32768
         }
       },
       "name": "Ollama",
