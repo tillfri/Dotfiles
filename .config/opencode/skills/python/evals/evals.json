@@ -1,0 +1,77 @@
+{
+  "skill_name": "python",
+  "evals": [
+    {
+      "id": 0,
+      "prompt": "I have a CSV file at ~/data/sales.csv with columns: date, product, revenue. Write me a script that reads it, groups by product, sums revenue, and prints the top 5 products. Run it for me.",
+      "expected_output": "A Python script is written and executed using 'uv run python'. The skill first checks for an existing .venv before creating one. pandas is installed with 'uv add' if not already present. The script runs successfully and outputs the top 5 products by revenue.",
+      "files": [],
+      "assertions": [
+        {
+          "id": "uses-uv-run",
+          "text": "Script is executed with 'uv run python' (not bare 'python' or 'python3')"
+        },
+        {
+          "id": "no-bare-pip",
+          "text": "No bare 'pip install' command is used — packages installed via 'uv add' or 'uv pip install'"
+        },
+        {
+          "id": "venv-discovered-or-created",
+          "text": "Agent checks for existing .venv before creating one (either discovers or creates via 'uv venv')"
+        },
+        {
+          "id": "script-produces-output",
+          "text": "output.txt contains actual top-5 product results (not an error)"
+        }
+      ]
+    },
+    {
+      "id": 1,
+      "prompt": "I want to add the 'httpx' and 'python-dotenv' packages to my project. Also, can you show me what's currently installed?",
+      "expected_output": "The skill runs 'uv add httpx python-dotenv' (not pip install). Then runs 'uv pip list' to show installed packages. No bare pip or python commands are used.",
+      "files": [],
+      "assertions": [
+        {
+          "id": "uses-uv-add",
+          "text": "Packages are installed with 'uv add httpx python-dotenv' (not pip install)"
+        },
+        {
+          "id": "uses-uv-pip-list",
+          "text": "Installed packages are listed with 'uv pip list'"
+        },
+        {
+          "id": "no-bare-pip",
+          "text": "No bare 'pip install' is used"
+        },
+        {
+          "id": "output-contains-packages",
+          "text": "output.txt shows httpx and python-dotenv in the installed package list"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Set up a new Python project called 'scraper' that uses requests and beautifulsoup4. Create a basic script that fetches the title of https://example.com and prints it.",
+      "expected_output": "The skill runs 'uv init scraper', then 'uv add requests beautifulsoup4' inside the project dir. A script is written and run with 'uv run python'. No bare pip/python commands used. The script fetches and prints the page title.",
+      "files": [],
+      "assertions": [
+        {
+          "id": "uses-uv-init",
+          "text": "Project is initialized with 'uv init' (not mkdir + manual venv)"
+        },
+        {
+          "id": "deps-via-uv-add",
+          "text": "Dependencies added with 'uv add requests beautifulsoup4' (not pip install)"
+        },
+        {
+          "id": "script-run-with-uv",
+          "text": "The scraper script is run with 'uv run python'"
+        },
+        {
+          "id": "script-prints-title",
+          "text": "output.txt contains the page title from example.com (e.g. 'Example Domain')"
+        }
+      ]
+    }
+  ]
+}
