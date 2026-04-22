@@ -44,14 +44,23 @@ function copy_last_cmd_output() {
 
 zle -N copy_last_cmd_output
 
+function zoxide_fzf() {
+  local dir
+  dir=$(zoxide query -i) || return
+  cd "$dir"
+  zle reset-prompt
+}
+zle -N zoxide_fzf
+
 bindkey '^k' history-search-backward
 bindkey '^j' history-search-forward
 bindkey '^h' backward-word
 bindkey '^l' forward-word
 bindkey '^w' backward-kill-word
 bindkey '^@' autosuggest-accept
-bindkey '^f' copy_last_cmd_output
-bindkey '^R' history-incremental-search-backward
+bindkey '^y' copy_last_cmd_output
+bindkey '^r' history-incremental-search-backward
+bindkey '^f' zoxide_fzf
 
 # History
 HISTSIZE=5000
@@ -85,6 +94,7 @@ alias cat='bat'
 alias man='batman'
 alias du='du -h -d 1'
 alias df='df -h'
+alias yda='yt-dlp --continue -P "/mnt/stuff/Music" -o "%(title)s.%(ext)s" --no-playlist --no-check-certificate --format=bestaudio -x --audio-format wav'
 alias ports='ss -ltnpH \
 | awk "{print \$4}" \
 | sed "s/.*://" \
@@ -95,6 +105,7 @@ alias ports='ss -ltnpH \
       | awk "{print \$1}"); \
     printf "%-6s %s\n" "$port" "${c:-host}"; \
   done'
+alias oc='opencode'
 
 
 # Env variables
