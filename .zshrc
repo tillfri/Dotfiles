@@ -46,6 +46,7 @@ zle -N copy_last_cmd_output
 
 function zoxide_fzf() {
   local dir
+  zle -I
   dir=$(zoxide query -i) || return
   cd "$dir"
   zle reset-prompt
