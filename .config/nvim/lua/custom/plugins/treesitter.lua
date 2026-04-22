@@ -127,12 +127,12 @@ return {
       vim.keymap.set({ 'n', 'x', 'o' }, '[f', function()
         mov.goto_previous_start('@function.outer', 'textobjects')
       end, { desc = 'Previous function start' })
-      vim.keymap.set({ 'n', 'x', 'o' }, ']c', function()
-        mov.goto_next_start('@class.outer', 'textobjects')
-      end, { desc = 'Next class start' })
-      vim.keymap.set({ 'n', 'x', 'o' }, '[c', function()
-        mov.goto_previous_start('@class.outer', 'textobjects')
-      end, { desc = 'Previous class start' })
+      -- vim.keymap.set({ 'n', 'x', 'o' }, ']c', function()
+      --   mov.goto_next_start('@class.outer', 'textobjects')
+      -- end, { desc = 'Next class start' })
+      -- vim.keymap.set({ 'n', 'x', 'o' }, '[c', function()
+      --   mov.goto_previous_start('@class.outer', 'textobjects')
+      -- end, { desc = 'Previous class start' })
     end,
   },
 }
