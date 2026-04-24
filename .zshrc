@@ -53,6 +53,26 @@ function zoxide_fzf() {
 }
 zle -N zoxide_fzf
 
+
+function omo() {
+  local config_file="$HOME/.config/opencode/opencode.json"
+  local updated_json
+
+  updated_json=$(jq '
+    .plugin = (
+      (.plugin // [])
+      | if any(.[]; test("^oh-my-opencode(@.*)?$")) then
+	  .
+	else
+	  . + ["oh-my-opencode@latest"]
+	end
+    )
+  ' "$config_file")
+
+  OPENCODE_CONFIG_CONTENT="$updated_json" opencode "$@"
+}
+
+
 bindkey '^k' history-search-backward
 bindkey '^j' history-search-forward
 bindkey '^h' backward-word
