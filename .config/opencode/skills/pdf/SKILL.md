@@ -13,16 +13,14 @@ This guide covers essential PDF processing operations using Python libraries and
 ## Quick Start
 
 ```python
-from pypdf import PdfReader, PdfWriter
+import pdfplumber
 
-# Read a PDF
-reader = PdfReader("document.pdf")
-print(f"Pages: {len(reader.pages)}")
-
-# Extract text
-text = ""
-for page in reader.pages:
-    text += page.extract_text()
+# Extract text (preferred method)
+with pdfplumber.open("document.pdf") as pdf:
+    print(f"Pages: {len(pdf.pages)}")
+    text = ""
+    for page in pdf.pages:
+        text += page.extract_text() or ""
 ```
 
 ## Python Libraries
@@ -189,6 +187,9 @@ For canvas-drawn text (not Paragraph objects), manually adjust font the size and
 ## Command-Line Tools
 
 ### pdftotext (poppler-utils)
+
+> **Prefer `pdfplumber` in Python for text extraction.** Use `pdftotext` only when a CLI one-liner is required.
+
 ```bash
 # Extract text
 pdftotext input.pdf output.txt
