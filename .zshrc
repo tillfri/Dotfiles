@@ -27,6 +27,9 @@ autoload -Uz compinit && compinit
 
 zinit cdreplay -q
 
+# alias function to quickfire a question to a free model
+function q() { opencode run -m github-copilot/gpt-5-mini "$*" }
+
 # yazi shell wrapper which changes directory on exit
 function y() {
 	local tmp="$(mktemp -t "yazi-cwd.XXXXXX")" cwd
@@ -44,6 +47,7 @@ function copy_last_cmd_output() {
 
 zle -N copy_last_cmd_output
 
+# interactive jump picker
 function zoxide_fzf() {
   local dir
   zle -I
@@ -53,7 +57,7 @@ function zoxide_fzf() {
 }
 zle -N zoxide_fzf
 
-
+# start opencode with oh-my-opencode
 function omo() {
   local config_file="$HOME/.config/opencode/opencode.json"
   local updated_json
