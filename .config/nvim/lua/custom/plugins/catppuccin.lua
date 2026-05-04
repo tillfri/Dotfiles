@@ -41,6 +41,7 @@ return {
         flavour = 'mocha',
       }
       vim.cmd.colorscheme 'catppuccin'
+      vim.api.nvim_set_hl(0, 'DiffText', { bg = '#413d1b', fg = '#f9e2af', bold = true })
       vim.cmd [[
           highlight CursorLineNr guifg=#e79c75 gui=bold
         ]]
