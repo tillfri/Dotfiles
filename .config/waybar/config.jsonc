@@ -54,7 +54,7 @@
         "format-window-separator": " ",
         "window-rewrite-default": "",
         "window-rewrite": {
-            "class<kitty>": "\uf120",
+            "class<kitty>": "\uebca",
             "class<firefox>": "\uf269",
             "class<Spotify>": "\uf1bc",
             "class<discord>": "\uf1ff",
