@@ -23,3 +23,14 @@ image_filter    = "triangle"
 image_quality   = 75
 ueberzug_scale  = 1
 ueberzug_offset = [ 0, 0, 0, 0 ]
+
+[[plugin.prepend_fetchers]]
+url   = "*"
+run   = "git"
+group = "git"
+
+[[plugin.prepend_fetchers]]
+url   = "*/"
+run   = "git"
+group = "git"
+
