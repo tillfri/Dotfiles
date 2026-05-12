@@ -57,6 +57,28 @@ function zoxide_fzf() {
 }
 zle -N zoxide_fzf
 
+# open file(s) selected via fzf directly in nvim
+my-fzf-file-widget() {
+    local selected
+
+    selected=$(
+        fd -t f |
+        fzf -m \
+            --layout=reverse \
+            --preview 'bat --style=numbers --color=always {} 2>/dev/null || xxd {} | head -50' \
+            --preview-window=down,60%
+    )
+
+    if [[ -n "$selected" ]]; then
+        zle push-input
+        BUFFER="nvim ${(j: :)${(q)${(f)selected}}}"
+        zle accept-line
+    else
+        zle reset-prompt
+    fi
+}
+zle -N my-fzf-file-widget
+
 # start opencode with oh-my-opencode
 function omo() {
   local config_file="$HOME/.config/opencode/opencode.json"
@@ -85,7 +107,8 @@ bindkey '^w' backward-kill-word
 bindkey '^@' autosuggest-accept
 bindkey '^y' copy_last_cmd_output
 bindkey '^r' history-incremental-search-backward
-bindkey '^f' zoxide_fzf
+bindkey '^z' zoxide_fzf
+bindkey '^f' my-fzf-file-widget
 
 # History
 HISTSIZE=5000
@@ -172,4 +195,3 @@ chpwd() {
 export STARSHIP_CONFIG=~/.config/starship/starship.toml
 eval "$(starship init zsh)"
 
-. "$HOME/.local/bin/env"
