@@ -27,6 +27,8 @@ autoload -Uz compinit && compinit
 
 zinit cdreplay -q
 
+### FUNCTIONS ###
+
 # alias function to quickfire a question to a free model
 function q() { opencode run -m github-copilot/gpt-5-mini "$*" }
 
@@ -98,7 +100,53 @@ function omo() {
   OPENCODE_CONFIG_CONTENT="$updated_json" opencode "$@"
 }
 
+# wrapper for tar + ssh to copy local directory as compressed stream to remote machine
+function transfer_dir() {
+  if [ "$#" -ne 3 ]; then
+    echo "Usage: transfer_dir <source_dir> <remote_host> <remote_target_dir>"
+    return 1
+  fi
 
+  local source_dir="$1"
+  local remote_host="$2"
+  local remote_target_dir="$3"
+
+  source_dir="${source_dir%/}"
+
+  local parent_dir
+  parent_dir="$(dirname "$source_dir")"
+  local base_dir
+  base_dir="$(basename "$source_dir")"
+
+  # Save and restore pipefail to avoid affecting the caller's shell options
+  local pipefail_state
+  [[ -o pipefail ]] && pipefail_state=1 || pipefail_state=0
+  set -o pipefail
+
+  if command -v pv &>/dev/null; then
+    tar -C "$parent_dir" -czf - "$base_dir" | \
+      pv -s "$(\du -sb "$source_dir" | cut -f1)" | \
+      \ssh "$remote_host" "mkdir -p '$remote_target_dir' && cd '$remote_target_dir' && tar -xzf -"
+  else
+    echo "Warning: pv not found, running without progress indicator" >&2
+    tar -C "$parent_dir" -czf - "$base_dir" | \
+      \ssh "$remote_host" "mkdir -p '$remote_target_dir' && cd '$remote_target_dir' && tar -xzf -"
+  fi
+
+  local exit_code=$?
+
+  # Restore original pipefail state
+  [ "$pipefail_state" -eq 0 ] && set +o pipefail
+
+  return $exit_code
+}
+
+# download youtube/soundcloud as .wav
+function yda() {
+  yt-dlp --continue -P "/mnt/stuff/Music" -o "%(title)s.%(ext)s" --no-playlist --no-check-certificate --format=bestaudio -x --audio-format wav "$1"
+}
+
+### BINDS ###
 bindkey '^k' history-search-backward
 bindkey '^j' history-search-forward
 bindkey '^a' backward-word
@@ -143,13 +191,6 @@ alias cat='bat'
 alias man='batman'
 alias du='du -h -d 1'
 alias df='df -h'
-function yda() {
-  # if [[ "$1" == *"soundcloud.com"* ]]; then
-  #   yt-dlp --continue -P "/mnt/stuff/Music" -o "%(title)s.%(ext)s" --no-playlist --no-check-certificate --format=bestaudio -x --audio-format wav --extractor-args "soundcloud:formats=*_opus" "$1"
-  # else
-    yt-dlp --continue -P "/mnt/stuff/Music" -o "%(title)s.%(ext)s" --no-playlist --no-check-certificate --format=bestaudio -x --audio-format wav "$1"
-  # fi
-}
 alias ports='ss -ltnpH \
 | awk "{print \$4}" \
 | sed "s/.*://" \
