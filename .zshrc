@@ -62,19 +62,19 @@ my-fzf-file-widget() {
     local selected
 
     selected=$(
-        fd -t f |
-        fzf -m \
-            --layout=reverse \
-            --preview 'bat --style=numbers --color=always {} 2>/dev/null || xxd {} | head -50' \
-            --preview-window=down,60%
+	fd -t f |
+	fzf -m \
+	    --layout=reverse \
+	    --preview 'bat --style=numbers --color=always {} 2>/dev/null || xxd {} | head -50' \
+	    --preview-window=down,60%
     )
 
     if [[ -n "$selected" ]]; then
-        zle push-input
-        BUFFER="nvim ${(j: :)${(q)${(f)selected}}}"
-        zle accept-line
+	zle push-input
+	BUFFER="nvim ${(j: :)${(q)${(f)selected}}}"
+	zle accept-line
     else
-        zle reset-prompt
+	zle reset-prompt
     fi
 }
 zle -N my-fzf-file-widget
@@ -101,14 +101,15 @@ function omo() {
 
 bindkey '^k' history-search-backward
 bindkey '^j' history-search-forward
-bindkey '^h' backward-word
-bindkey '^l' forward-word
+bindkey '^a' backward-word
+bindkey '^d' forward-word
 bindkey '^w' backward-kill-word
 bindkey '^@' autosuggest-accept
 bindkey '^y' copy_last_cmd_output
 bindkey '^r' history-incremental-search-backward
 bindkey '^z' zoxide_fzf
 bindkey '^f' my-fzf-file-widget
+bindkey '^h' beginning-of-line
 
 # History
 HISTSIZE=5000
@@ -142,7 +143,13 @@ alias cat='bat'
 alias man='batman'
 alias du='du -h -d 1'
 alias df='df -h'
-alias yda='yt-dlp --continue -P "/mnt/stuff/Music" -o "%(title)s.%(ext)s" --no-playlist --no-check-certificate --format=bestaudio -x --audio-format wav'
+function yda() {
+  # if [[ "$1" == *"soundcloud.com"* ]]; then
+  #   yt-dlp --continue -P "/mnt/stuff/Music" -o "%(title)s.%(ext)s" --no-playlist --no-check-certificate --format=bestaudio -x --audio-format wav --extractor-args "soundcloud:formats=*_opus" "$1"
+  # else
+    yt-dlp --continue -P "/mnt/stuff/Music" -o "%(title)s.%(ext)s" --no-playlist --no-check-certificate --format=bestaudio -x --audio-format wav "$1"
+  # fi
+}
 alias ports='ss -ltnpH \
 | awk "{print \$4}" \
 | sed "s/.*://" \
@@ -155,6 +162,9 @@ alias ports='ss -ltnpH \
   done'
 alias oc='opencode'
 
+# Compression
+compress() { tar -czf "${1%/}.tar.gz" "${1%/}"; }
+alias decompress="tar -xzf"
 
 # Env variables
 export EDITOR=nvim
@@ -195,3 +205,4 @@ chpwd() {
 export STARSHIP_CONFIG=~/.config/starship/starship.toml
 eval "$(starship init zsh)"
 
+. "$HOME/.local/bin/env"
