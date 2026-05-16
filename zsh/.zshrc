@@ -64,7 +64,21 @@ my-fzf-file-widget() {
     local selected
 
     selected=$(
-	fd -t f |
+	fd --hidden -t f \
+	    --exclude '.git' \
+	    --exclude '.cache' \
+	    --exclude '.npm' \
+	    --exclude '.cargo' \
+	    --exclude '.rustup' \
+	    --exclude '.mozilla' \
+	    --exclude '.thunderbird' \
+	    --exclude '.wine' \
+	    --exclude '.steam' \
+	    --exclude '.var' \
+	    --exclude '.gradle' \
+	    --exclude '.gnupg' \
+	    --exclude '.local' \
+	    --exclude '.pki' |
 	fzf -m \
 	    --layout=reverse \
 	    --preview 'bat --style=numbers --color=always {} 2>/dev/null || xxd {} | head -50' \
@@ -151,7 +165,7 @@ bindkey '^k' history-search-backward
 bindkey '^j' history-search-forward
 bindkey '^a' backward-word
 bindkey '^d' forward-word
-bindkey '^w' backward-kill-word
+bindkey '^w' kill-word
 bindkey '^@' autosuggest-accept
 bindkey '^y' copy_last_cmd_output
 bindkey '^r' history-incremental-search-backward
