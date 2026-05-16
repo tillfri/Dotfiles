@@ -50,10 +50,11 @@
 @define-color	mantle-rgb  rgb(24, 24, 37);
 @define-color	crust  #11111b;
 @define-color	crust-rgb  rgb(17, 17, 27);
+@define-color	base-alpha    rgba(30, 30, 46, 0.8);
 
 * {
   font-family: 'JetBrains Mono Nerd Font ', monospace;
-  font-size: 14px;
+  font-size: 18px;
 }
 
 /* Window */
@@ -62,8 +63,8 @@ window {
   padding: 10px;
   border: 0.16em solid @lavender;
   border-radius: 0.5em;
-  opacity: 0.8;
-  background-color: @base;
+  opacity: 1.0;
+  background-color: @base-alpha;
   /* animation: slideIn 0.5s ease-in-out both; */
 }
 
@@ -83,7 +84,7 @@ window {
   margin: 5px;
   padding: 10px;
   border: none;
-  background-color: @base;
+  background-color: @base-alpha;
   /* animation: fadeIn 0.5s ease-in-out both; */
 }
 
@@ -103,7 +104,7 @@ window {
   margin: 5px;
   padding: 10px;
   border: none;
-  background-color: @base;
+  background-color: @base-alpha;
 }
 
 /* Scroll */
@@ -143,7 +144,7 @@ window {
 }
 
 #entry {
-  background-color: @base;
+  background-color: @base-alpha;
 }
 
 #entry arrow {

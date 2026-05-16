@@ -1,0 +1,132 @@
+#!/bin/bash
+
+RECORDING_FILE="/tmp/capture-menu-recording"
+
+stop_screenrecord() {
+  pkill -SIGINT wf-recorder
+  local count=0
+  while pgrep -x wf-recorder &>/dev/null && (( count < 30 )); do
+    sleep 0.1
+    (( count++ ))
+  done
+  local filename
+  filename=$(cat "$RECORDING_FILE" 2>/dev/null)
+  rm -f "$RECORDING_FILE"
+  [[ -n $filename ]] && notify-send -u low "Recording saved" "$filename" -t 5000
+}
+
+# Stop active recording immediately — before showing any menu
+if pgrep -x wf-recorder &>/dev/null; then
+  stop_screenrecord
+  exit 0
+fi
+
+# Toggle wofi off if already open
+if pgrep -f "wofi.*--dmenu" >/dev/null; then
+  pkill -f "wofi.*--dmenu"
+  exit 0
+fi
+
+menu() {
+  local prompt="$1"
+  local options="$2"
+  echo -e "$options" | wofi --dmenu --prompt "$prompt" --width 750 --height 400 --hide-scroll --no-actions 2>/dev/null
+}
+
+start_screenrecord() {
+  local outdir="${XDG_VIDEOS_DIR:-$HOME/Videos}"
+  mkdir -p "$outdir"
+  local outfile="$outdir/recording-$(date +%Y-%m-%d_%H-%M-%S).mp4"
+
+  local region
+  region=$(slurp 2>/dev/null) || exit 0
+
+  echo "$outfile" > "$RECORDING_FILE"
+  notify-send -u low "Recording started" "SUPER+SHIFT+RETURN to stop" -t 3000
+  wf-recorder -g "$region" "$@" -f "$outfile"
+}
+
+get_device_id() {
+  local devices
+  devices=$(kdeconnect-cli --list-available --id-name-only 2>/dev/null)
+
+  if [[ -z $devices ]]; then
+    notify-send "KDE Connect" "No devices available" -u critical -t 3000
+    return 1
+  fi
+
+  local count
+  count=$(echo "$devices" | wc -l)
+
+  if ((count == 1)); then
+    echo "$devices" | awk '{print $1}'
+    return 0
+  fi
+
+  # Multiple devices: show names only, map selection back to ID
+  local names line_num selected
+  names=$(echo "$devices" | awk '{$1=""; sub(/^ /, ""); print "󰦄  " $0}')
+  selected=$(echo -e "$names" | wofi --dmenu --prompt "Device…" --width 750 --height 400 --hide-scroll --no-actions 2>/dev/null)
+  [[ -z $selected ]] && return 1
+
+  line_num=$(echo -e "$names" | grep -nxF "$selected" | cut -d: -f1)
+  echo "$devices" | sed -n "${line_num}p" | awk '{print $1}'
+}
+
+show_share_menu() {
+  local device_id
+  device_id=$(get_device_id) || return
+
+  local choice
+  choice=$(menu "Share…" "  Clipboard\n  File\n  Folder")
+
+  case "$choice" in
+    *Clipboard*)
+      kdeconnect-cli -d "$device_id" --share-text "$(wl-paste)"
+      notify-send "KDE Connect" "Clipboard shared" -t 2000
+      ;;
+    *File*)
+      local file
+      file=$(zenity --file-selection --title "Share via KDE Connect" 2>/dev/null)
+      [[ -z $file ]] && return
+      kdeconnect-cli -d "$device_id" --share "$file"
+      notify-send "KDE Connect" "Sharing $(basename "$file")" -t 2000
+      ;;
+    *Folder*)
+      local folder archive
+      folder=$(zenity --file-selection --directory --title "Share folder via KDE Connect" 2>/dev/null)
+      [[ -z $folder ]] && return
+      archive=$(mktemp --suffix=.tar.gz)
+      tar -czf "$archive" -C "$(dirname "$folder")" "$(basename "$folder")"
+      kdeconnect-cli -d "$device_id" --share "$archive"
+      notify-send "KDE Connect" "Sharing $(basename "$folder").tar.gz" -t 2000
+      ;;
+  esac
+}
+
+show_screenrecord_menu() {
+  local choice
+  choice=$(menu "Screenrecord…" "  No audio\n  Desktop audio\n  Microphone")
+  case "$choice" in
+    *"No audio"*)      start_screenrecord ;;
+    *"Desktop audio"*) start_screenrecord -a "$(pactl get-default-sink).monitor" ;;
+    *"Microphone"*)    start_screenrecord -a "$(pactl get-default-source)" ;;
+  esac
+}
+
+choice=$(menu "Capture…" "  Screenshot\n  Screenrecord\n󰃉  Color Picker\n  Share")
+
+case "$choice" in
+  *Screenshot*)
+    grim -g "$(slurp)" - | swappy -f -
+    ;;
+  *Screenrecord*)
+    show_screenrecord_menu
+    ;;
+  *Color*)
+    pkill hyprpicker || hyprpicker -a
+    ;;
+  *Share*)
+    show_share_menu
+    ;;
+esac

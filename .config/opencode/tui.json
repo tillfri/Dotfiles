@@ -1,0 +1,10 @@
+{
+  "$schema": "https://opencode.ai/tui.json",
+  "keybinds": {
+    "messages_copy": ["<leader>y", "ctrl+shift+c"],
+    "messages_half_page_up": "ctrl+a",
+    "messages_half_page_down": "ctrl+d",
+    "stash_delete": "none",
+    "model_provider_list": "none"
+  }
+}
