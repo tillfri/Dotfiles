@@ -1,3 +1,4 @@
+config/.config/hypr/machine.conf
 config/.config/autostart
 config/.config/btop
 config/.config/byobu
