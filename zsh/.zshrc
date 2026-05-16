@@ -78,6 +78,7 @@ my-fzf-file-widget() {
 	    --exclude '.gradle' \
 	    --exclude '.gnupg' \
 	    --exclude '.local' \
+	    --exclude '.bun' \
 	    --exclude '.pki' |
 	fzf -m \
 	    --layout=reverse \
