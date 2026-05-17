@@ -176,7 +176,7 @@ function transfer_dir() {
 
 # download youtube/soundcloud as .wav
 function yda() {
-  yt-dlp --continue -P "/mnt/stuff/Music" -o "%(title)s.%(ext)s" --no-playlist --no-check-certificate --format=bestaudio -x --audio-format wav "$1"
+  yt-dlp --continue -P "/mnt/stuff/Music" -o "%(title)s.%(ext)s" --no-playlist --format=bestaudio -x --audio-format wav "$1"
 }
 
 ### BINDS ###
@@ -197,13 +197,11 @@ bindkey '^d' end-of-line
 HISTSIZE=5000
 HISTFILE=~/.zsh_history
 SAVEHIST=$HISTSIZE
-HISTDUP=erase
 setopt appendhistory
 setopt sharehistory
 setopt hist_ignore_space
 setopt hist_ignore_all_dups
 setopt hist_save_no_dups
-setopt hist_ignore_dups
 setopt hist_find_no_dups
 
 # Completion styling
@@ -217,7 +215,13 @@ zstyle ':fzf-tab:complete:__zoxide_z:*' fzf-preview 'ls --color $realpath'
 alias ls='eza --long --color=always --icons=always --no-user --sort=modified'
 alias c='clear'
 alias edithypr='nvim ~/.config/hypr/hyprland.conf'
-alias ssh='kitty +kitten ssh'
+function ssh() {
+  if [[ "$TERM" == xterm-kitty ]]; then
+    kitty +kitten ssh "$@"
+  else
+    command ssh "$@"
+  fi
+}
 alias reload='hyprctl reload && source ~/.zshrc'
 alias lg='lazygit'
 alias n='nvim'
