@@ -60,10 +60,11 @@ function zoxide_fzf() {
 zle -N zoxide_fzf
 
 # open file(s) selected via fzf directly in nvim
+# ctrl-space: cd to the directory of the selected file instead
 my-fzf-file-widget() {
-    local selected
+    local result action selected
 
-    selected=$(
+    result=$(
 	fd --hidden -t f \
 	    --exclude '.git' \
 	    --exclude '.cache' \
@@ -81,17 +82,34 @@ my-fzf-file-widget() {
 	    --exclude '.bun' \
 	    --exclude '.pki' |
 	fzf -m \
+	    --height=40% \
 	    --layout=reverse \
-	    --preview 'bat --style=numbers --color=always {} 2>/dev/null || xxd {} | head -50' \
-	    --preview-window=down,60%
+	    --preview 'mime=$(file --mime-type -b {}); if [[ "$mime" == image/* ]]; then kitty +kitten icat --clear --transfer-mode=memory --unicode-placeholder --stdin=no --place "${FZF_PREVIEW_COLUMNS}x${FZF_PREVIEW_LINES}@0x0" {} 2>/dev/null; else bat --style=numbers --color=always {} 2>/dev/null || echo "Binary file"; fi' \
+	    --preview-window=right,50% \
+	    --bind 'enter:become(printf "open\n"; printf "%s\n" {+})' \
+	    --bind 'ctrl-space:become(printf "cd\n"; printf "%s\n" {})'
     )
 
-    if [[ -n "$selected" ]]; then
+    local -a lines
+    lines=("${(@f)result}")
+    action="${lines[1]}"
+    selected="${(j:\n:)${lines[2,-1]}}"
+
+    if [[ -z "$selected" ]]; then
+	zle reset-prompt
+	return
+    fi
+
+    if [[ "$action" == "cd" ]]; then
+	local dir
+	dir=$(dirname "${lines[2]}")
+	zle push-input
+	BUFFER="cd ${(q)dir}"
+	zle accept-line
+    else
 	zle push-input
 	BUFFER="nvim ${(j: :)${(q)${(f)selected}}}"
 	zle accept-line
-    else
-	zle reset-prompt
     fi
 }
 zle -N my-fzf-file-widget
