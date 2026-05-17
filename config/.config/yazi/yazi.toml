@@ -34,3 +34,35 @@ url   = "*/"
 run   = "git"
 group = "git"
 
+[[plugin.prepend_previewers]]
+mime = "application/sqlite3"
+run = '''
+piper -- sh -c '
+echo "== Row counts ==" &&
+for t in $(sqlite3 "$1" ".tables"); do
+    printf "%-20s " "$t"
+    sqlite3 "$1" "SELECT COUNT(*) FROM \"$t\";"
+done
+' sh "$1"
+'''
+[[plugin.prepend_previewers]]
+url = "*.md"
+run = 'piper -- CLICOLOR_FORCE=1 glow -w=$w -s=dark "$1"'
+
+[[plugin.prepend_previewers]]
+url = "*.csv"
+run = """piper -- column -t -s, "$1" | awk 'NR==1{print "\\033[1;4m" $0 "\\033[0m"; next} {print}'"""
+
+[opener]
+sqlite = [
+    { run = 'sqlite3 %s', desc= "sqlite3", block = true }
+]
+csvlens = [
+    { run = 'csvlens %s', desc= "csvlens", block = true }
+]
+
+[open]
+prepend_rules = [
+	{url = "*.db", use = "sqlite"},
+	{url = "*.csv", use = ["csvlens", "edit"]},
+]
