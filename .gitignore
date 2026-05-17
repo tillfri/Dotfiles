@@ -8,3 +8,5 @@ config/.config/htop
 config/.config/nvim_backup
 config/.config/nwg-look
 config/.config/pulse
+/config/.config/waybar/bar-base.jsonc
+/config/.config/hypr/hyprpaper_machine.conf

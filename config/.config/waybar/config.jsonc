@@ -1,16 +1,14 @@
 {
+    "include": ["~/.config/waybar/bar-base.jsonc"],
     "layer": "top",
-    "output":["DP-2"],
     "position": "top",
     "mod": "dock",
     "exclusive": true,
     "passthrough": false,
     "gtk-layer-shell": true,
-    "height": 38,
     "margin-right": 10,
     "margin-left": 10,
     "margin-top": 2,
-    "margin-bottom": 0,
     "modules-left": [
 	"cpu",
 	"temperature",
