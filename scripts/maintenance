@@ -7,13 +7,13 @@ paccache -r
 after_pacman_cache=$(du -sh /var/cache/pacman/pkg/ | awk '{print $1}')
 echo "Pacman cache before: $before_pacman_cache, after: $after_pacman_cache"
 
-echo "Removing orphan packages..."
-orphans=$(yay -Qdtq)
-if [[ -n "$orphans" ]]; then
-	yay -Rns $orphans
-else
-	echo "No orphan packages found."
-fi
+# echo "Removing orphan packages..."
+# orphans=$(yay -Qdtq)
+# if [[ -n "$orphans" ]]; then
+# 	yay -Rns $orphans
+# else
+# 	echo "No orphan packages found."
+# fi
 
 echo "Clearing ~/.cache..."
 before_home_cache=$(du -sh ~/.cache | awk '{print $1}')
