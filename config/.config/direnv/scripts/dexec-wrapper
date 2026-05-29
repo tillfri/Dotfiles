@@ -1,0 +1,16 @@
+#!/bin/bash
+set -euo pipefail
+
+SCRIPT_NAME="$(basename "$0")"
+
+# Map current host path to its container equivalent
+REL_PATH="${PWD#$DEVCONTAINER_HOST_WORKSPACE}"
+CONTAINER_WD="${DEVCONTAINER_WORKSPACE}${REL_PATH}"
+
+# Use -t only if stdin and stdout are both TTYs (safe in pipes/scripts)
+TTY_FLAG=""
+if [ -t 0 ] && [ -t 1 ]; then
+  TTY_FLAG="-t"
+fi
+
+exec docker exec -i $TTY_FLAG --workdir "$CONTAINER_WD" "$DEVCONTAINER_NAME" "$SCRIPT_NAME" "$@"
