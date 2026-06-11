@@ -1,0 +1,15 @@
+[Unit]
+Description=Watch todo.txt and sync calendar
+After=default.target
+
+[Service]
+ExecStart=%h/scripts/todo-watch.sh
+Restart=always
+RestartSec=2
+
+# reduce noise + SD writes from logs
+StandardOutput=null
+StandardError=journal
+
+[Install]
+WantedBy=default.target
