@@ -189,6 +189,23 @@ def delete_event(service, event_id: str, description: str) -> None:
     print(f"  [DELETE] '{description}' (id: {event_id})")
 
 
+def patch_event_completed(
+    service, event_id: str, description: str, due_date: str, completion_date: str | None
+) -> str:
+    """Patch a calendar event to append a done marker, indicating the task is finished."""
+    done_summary = description + " ✓"
+    done_description = f"Done on {completion_date}" if completion_date else "Done"
+    body = {
+        "summary": done_summary,
+        "start": {"date": due_date},
+        "end": {"date": due_date},
+        "description": done_description,
+    }
+    result = service.events().patch(calendarId=CALENDAR_ID, eventId=event_id, body=body).execute()
+    print(f"  [DONE]   '{description}' marked as completed (id: {result['id']})")
+    return result["id"]
+
+
 # ---------------------------------------------------------------------------
 # Main sync logic
 # ---------------------------------------------------------------------------
@@ -220,6 +237,8 @@ def collect_current_todos() -> dict[str, dict]:
         current[h] = {
             "description": normalized,
             "due_date": todo["due_date"],
+            "completed": todo["completed"],
+            "completion_date": todo["completion_date"],
         }
 
     return current
@@ -241,12 +260,20 @@ def sync():
     stored_hashes = set(mapping)
 
     new_hashes = current_hashes - stored_hashes
-    updated_hashes = {h for h in current_hashes & stored_hashes if current[h]["due_date"] != mapping[h]["due_date"]}
+    completed_hashes = {
+        h for h in current_hashes & stored_hashes
+        if current[h]["completed"] and not mapping[h].get("completed", False)
+    }
+    updated_hashes = {
+        h for h in current_hashes & stored_hashes
+        if current[h]["due_date"] != mapping[h]["due_date"]
+        and h not in completed_hashes
+    }
     deleted_hashes = stored_hashes - current_hashes
 
-    print(f"\nDiff: {len(new_hashes)} new, {len(updated_hashes)} updated, {len(deleted_hashes)} deleted.")
+    print(f"\nDiff: {len(new_hashes)} new, {len(updated_hashes)} updated, {len(completed_hashes)} completed, {len(deleted_hashes)} deleted.")
 
-    if not any([new_hashes, updated_hashes, deleted_hashes]):
+    if not any([new_hashes, updated_hashes, completed_hashes, deleted_hashes]):
         print("Nothing to do.")
         return
 
@@ -267,9 +294,25 @@ def sync():
                 "description": desc,
                 "due_date": due,
                 "calendar_event_id": event_id,
+                "completed": current[h]["completed"],
             }
         except HttpError as exc:
             print(f"  [ERROR] Insert failed for '{desc}': {exc}")
+
+    # --- Mark completed ---
+    for h in completed_hashes:
+        desc = current[h]["description"]
+        due = current[h]["due_date"]
+        completion_date = current[h]["completion_date"]
+        event_id = mapping[h].get("calendar_event_id")
+        if not event_id:
+            print(f"  [WARN] No event_id stored for '{desc}', cannot mark as done.")
+            continue
+        try:
+            patch_event_completed(service, event_id, desc, due, completion_date)
+            mapping[h]["completed"] = True
+        except HttpError as exc:
+            print(f"  [ERROR] Completed-patch failed for '{desc}': {exc}")
 
     # --- Patches ---
     for h in updated_hashes:
@@ -293,6 +336,7 @@ def sync():
             "description": desc,
             "due_date": due,
             "calendar_event_id": event_id,
+            "completed": current[h].get("completed", False),
         }
 
     # --- Deletes ---
