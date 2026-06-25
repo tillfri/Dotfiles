@@ -2,5 +2,7 @@
   "access_token": "",
   "refresh_token": "",
   "client_id": "",
-  "client_secret": ""
+  "client_secret": "",
+  "calendar_id": "",
+  "todo_file": ""
 }
