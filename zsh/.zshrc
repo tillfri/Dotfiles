@@ -240,6 +240,7 @@ alias ports='ss -ltnpH \
     printf "%-6s %s\n" "$port" "${c:-host}"; \
   done'
 alias oc='opencode'
+alias sql='lazysql'
 
 # Compression
 compress() { tar -czf "${1%/}.tar.gz" "${1%/}"; }
@@ -282,5 +283,6 @@ chpwd() {
 
 
 export STARSHIP_CONFIG=~/.config/starship/starship.toml
+eval "$(direnv hook zsh)"
 eval "$(starship init zsh)"
 
