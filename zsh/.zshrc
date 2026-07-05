@@ -114,25 +114,6 @@ my-fzf-file-widget() {
 }
 zle -N my-fzf-file-widget
 
-# start opencode with oh-my-opencode
-function omo() {
-  local config_file="$HOME/.config/opencode/opencode.json"
-  local updated_json
-
-  updated_json=$(jq '
-    .plugin = (
-      (.plugin // [])
-      | if any(.[]; test("^oh-my-opencode(@.*)?$")) then
-	  .
-	else
-	  . + ["oh-my-opencode@latest"]
-	end
-    )
-  ' "$config_file")
-
-  OPENCODE_CONFIG_CONTENT="$updated_json" opencode "$@"
-}
-
 # wrapper for tar + ssh to copy local directory as compressed stream to remote machine
 function transfer_dir() {
   if [ "$#" -ne 3 ]; then
@@ -178,6 +159,29 @@ function transfer_dir() {
 function yda() {
   yt-dlp --continue -P "/mnt/stuff/Music" -o "%(title)s.%(ext)s" --no-playlist --format=bestaudio -x --audio-format wav "$1"
 }
+
+function project_up() {
+  nmcli c up 'sonia4-linux' || return 1
+  sshfs tfricke@beta:/home/tfricke /mnt/beta || return 1
+  docker context use beta
+  cd ~/beta
+}
+
+function project_down() {
+  cd ~
+  docker context use default
+  fusermount -u /mnt/beta 2>/dev/null || umount /mnt/beta
+  nmcli c down 'sonia4-linux'
+}
+
+function project() {
+  case "$1" in
+      up)   project_up ;;
+      down) project_down ;;
+      *)    echo "Usage: project {up|down}" ;;
+  esac
+}
+
 
 ### BINDS ###
 # bindkey '^k' history-search-backward

@@ -10,3 +10,4 @@ config/.config/nwg-look
 config/.config/pulse
 /config/.config/waybar/bar-base.jsonc
 /config/.config/hypr/hyprpaper_machine.conf
+/config/.config/QtProject.conf
