@@ -1,0 +1,240 @@
+
+# Container-friendly Zsh config.
+#
+# This is a trimmed copy of ../.zshrc containing only the parts guaranteed
+# to work once every tool under devcontainer/ is installed: zsh, fd, rg,
+# fzf, lazygit, nvim, starship, yazi -- plus git, which is assumed to
+# already be present since it's what you used to clone this repo.
+#
+# Left out on purpose because they depend on tools devcontainer/ does NOT
+# install (host-only tools, Arch Linux, Hyprland, kitty terminal, opencode,
+# yt-dlp, zoxide, bat, eza, direnv, ...):
+#   - q(), omo()                        -> opencode
+#   - copy_last_cmd_output()            -> kitty/kitten
+#   - zoxide_fzf(), zoxide init/_zo_*   -> zoxide
+#   - yda()                             -> yt-dlp
+#   - edithypr, hyprctl in reload       -> Hyprland
+#   - OMZP::archlinux, OMZP::command-not-found -> Arch/apt-specific snippets
+#   - ls=eza, cat=bat, man=batman       -> eza / bat
+#   - ports                             -> docker cli + ss inside the container
+#   - oc=opencode, sql=lazysql          -> opencode / lazysql
+#   - direnv hook                       -> direnv
+#
+# See ../.zshrc for the full host version and ../.zshrc.minimal for an even
+# more minimal, tool-free variant.
+
+# Set the directory we want to store zinit and plugins
+ZINIT_HOME="${XDG_DATA_HOME:-${HOME}/.local/share}/zinit/zinit.git"
+
+# Download Zinit, if it's not there yet
+if [ ! -d "$ZINIT_HOME" ]; then
+   mkdir -p "$(dirname $ZINIT_HOME)"
+   git clone https://github.com/zdharma-continuum/zinit.git "$ZINIT_HOME"
+fi
+
+# Source/Load zinit
+source "${ZINIT_HOME}/zinit.zsh"
+
+# Add in zsh plugins
+zinit light zsh-users/zsh-syntax-highlighting
+zinit light zsh-users/zsh-completions
+zinit light zsh-users/zsh-autosuggestions
+zinit light Aloxaf/fzf-tab
+
+# Add in snippets
+zinit snippet OMZP::git
+zinit snippet OMZP::sudo
+
+# Load completions
+autoload -Uz compinit && compinit
+
+zinit cdreplay -q
+
+### FUNCTIONS ###
+
+# yazi shell wrapper which changes directory on exit
+function y() {
+	local tmp="$(mktemp -t "yazi-cwd.XXXXXX")" cwd
+	command yazi "$@" --cwd-file="$tmp"
+	IFS= read -r -d '' cwd < "$tmp"
+	[ -n "$cwd" ] && [ "$cwd" != "$PWD" ] && [[ "$cwd" != *://* ]] && builtin cd -- "$cwd"
+	rm -f -- "$tmp"
+}
+
+# open file(s) selected via fzf directly in nvim
+# ctrl-space: cd to the directory of the selected file instead
+my-fzf-file-widget() {
+    local result action selected
+
+    result=$(
+	fd --hidden -t f \
+	    --exclude '.git' \
+	    --exclude '.cache' \
+	    --exclude '.npm' \
+	    --exclude '.cargo' \
+	    --exclude '.rustup' \
+	    --exclude '.mozilla' \
+	    --exclude '.thunderbird' \
+	    --exclude '.wine' \
+	    --exclude '.steam' \
+	    --exclude '.var' \
+	    --exclude '.gradle' \
+	    --exclude '.gnupg' \
+	    --exclude '.local' \
+	    --exclude '.bun' \
+	    --exclude '.pki' |
+	fzf -m \
+	    --height=40% \
+	    --layout=reverse \
+	    --preview 'cat {} 2>/dev/null || echo "Binary file"' \
+	    --preview-window=right,50% \
+	    --bind 'enter:become(printf "open\n"; printf "%s\n" {+})' \
+	    --bind 'ctrl-space:become(printf "cd\n"; printf "%s\n" {})'
+    )
+
+    local -a lines
+    lines=("${(@f)result}")
+    action="${lines[1]}"
+    selected="${(j:\n:)${lines[2,-1]}}"
+
+    if [[ -z "$selected" ]]; then
+	zle reset-prompt
+	return
+    fi
+
+    if [[ "$action" == "cd" ]]; then
+	local dir
+	dir=$(dirname "${lines[2]}")
+	zle push-input
+	BUFFER="cd ${(q)dir}"
+	zle accept-line
+    else
+	zle push-input
+	BUFFER="nvim ${(j: :)${(q)${(f)selected}}}"
+	zle accept-line
+    fi
+}
+zle -N my-fzf-file-widget
+
+# wrapper for tar + ssh to copy local directory as compressed stream to remote machine
+function transfer_dir() {
+  if [ "$#" -ne 3 ]; then
+    echo "Usage: transfer_dir <source_dir> <remote_host> <remote_target_dir>"
+    return 1
+  fi
+
+  local source_dir="$1"
+  local remote_host="$2"
+  local remote_target_dir="$3"
+
+  source_dir="${source_dir%/}"
+
+  local parent_dir
+  parent_dir="$(dirname "$source_dir")"
+  local base_dir
+  base_dir="$(basename "$source_dir")"
+
+  # Save and restore pipefail to avoid affecting the caller's shell options
+  local pipefail_state
+  [[ -o pipefail ]] && pipefail_state=1 || pipefail_state=0
+  set -o pipefail
+
+  if command -v pv &>/dev/null; then
+    tar -C "$parent_dir" -czf - "$base_dir" | \
+      pv -s "$(\du -sb "$source_dir" | cut -f1)" | \
+      \ssh "$remote_host" "mkdir -p '$remote_target_dir' && cd '$remote_target_dir' && tar -xzf -"
+  else
+    echo "Warning: pv not found, running without progress indicator" >&2
+    tar -C "$parent_dir" -czf - "$base_dir" | \
+      \ssh "$remote_host" "mkdir -p '$remote_target_dir' && cd '$remote_target_dir' && tar -xzf -"
+  fi
+
+  local exit_code=$?
+
+  # Restore original pipefail state
+  [ "$pipefail_state" -eq 0 ] && set +o pipefail
+
+  return $exit_code
+}
+
+### BINDS ###
+bindkey '^a' backward-word
+bindkey '^d' forward-word
+bindkey '^w' kill-word
+bindkey '^@' autosuggest-accept
+bindkey '^r' history-incremental-search-backward
+bindkey '^f' my-fzf-file-widget
+bindkey '^h' beginning-of-line
+bindkey '^l' end-of-line
+
+# History
+HISTSIZE=5000
+HISTFILE=~/.zsh_history
+SAVEHIST=$HISTSIZE
+setopt appendhistory
+setopt sharehistory
+setopt hist_ignore_space
+setopt hist_ignore_all_dups
+setopt hist_save_no_dups
+setopt hist_find_no_dups
+
+# Completion styling
+zstyle ':completion:*' matcher-list 'm:{a-z}={A-Za-z}'
+zstyle ':completion:*' list-colors "${(s.:.)LS_COLORS}"
+zstyle ':completion:*' menu no
+zstyle ':fzf-tab:complete:cd:*' fzf-preview 'ls --color $realpath'
+
+# Aliases
+alias ls='ls --color=auto'
+alias c='clear'
+function ssh() {
+  if [[ "$TERM" == xterm-kitty ]] && command -v kitty >/dev/null 2>&1; then
+    kitty +kitten ssh "$@"
+  else
+    command ssh "$@"
+  fi
+}
+alias reload='source ~/.zshrc'
+alias lg='lazygit'
+alias n='nvim'
+alias du='du -h -d 1'
+alias df='df -h'
+
+# Compression
+compress() { tar -czf "${1%/}.tar.gz" "${1%/}"; }
+alias decompress="tar -xzf"
+
+# Env variables
+export EDITOR=nvim
+export PATH="$HOME/.local/bin:$PATH"
+
+# Shell integrations
+command -v fzf >/dev/null 2>&1 && eval "$(fzf --zsh)"
+
+# unbind alt+c
+bindkey -M emacs '\ec' undefined-key
+
+# Open the current command in your $EDITOR (e.g., neovim)
+# Press Ctrl+X followed by Ctrl+E to trigger
+autoload -Uz edit-command-line
+zle -N edit-command-line
+bindkey '^X^E' edit-command-line
+
+chpwd() {
+  # If a venv is active, check whether we've left its tree
+  if [[ -n "$VIRTUAL_ENV" ]]; then
+    local venv_root="${VIRTUAL_ENV:h}"
+
+    if [[ "$PWD" != "$venv_root" && "$PWD" != "$venv_root"/* ]]; then
+      deactivate 2>/dev/null
+    fi
+  fi
+
+  # Activate venv in current directory if none is active
+  if [[ -z "$VIRTUAL_ENV" && -d .venv ]]; then
+    source .venv/bin/activate
+  fi
+}
+
+export STARSHIP_CONFIG=~/.config/starship/starship.toml
+command -v starship >/dev/null 2>&1 && eval "$(starship init zsh)"
