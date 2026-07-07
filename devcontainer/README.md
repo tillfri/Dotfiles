@@ -43,7 +43,7 @@ and why) to `$HOME/.zshrc`, then sets zsh as the default shell.
 Inside the container:
 
 ```sh
-git clone <your-dotfiles-repo-url> ~/dotfiles
+git clone https://github.com/tillfri/Dotfiles ~/dotfiles
 ~/dotfiles/devcontainer/install-all.sh
 ```
 
@@ -83,7 +83,7 @@ above) — no manual step needed there.
 FROM ubuntu:24.04
 
 RUN apt-get update && apt-get install -y --no-install-recommends git ca-certificates && \
-    git clone --depth 1 <your-dotfiles-repo-url> /opt/dotfiles && \
+    git clone --depth 1 https://github.com/tillfri/Dotfiles /opt/dotfiles && \
     /opt/dotfiles/devcontainer/install-all.sh && \
     ln -sfn /opt/dotfiles/config/.config/nvim /root/.config/nvim && \
     ln -sfn /opt/dotfiles/config/.config/starship /root/.config/starship && \
