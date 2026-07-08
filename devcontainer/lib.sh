@@ -17,57 +17,57 @@
 # which case Docker transparently emulates amd64 via QEMU. So always ask the
 # running container via `uname -m` instead of assuming.
 detect_arch() {
-	ARCH="$(uname -m)"
-	case "$ARCH" in
-	x86_64 | aarch64) ;;
-	arm64) ARCH="aarch64" ;; # normalize (seen on some non-Linux uname builds)
-	*)
-		echo "error: unsupported architecture '$ARCH'" >&2
-		exit 1
-		;;
-	esac
+    ARCH="$(uname -m)"
+    case "$ARCH" in
+    x86_64 | aarch64) ;;
+    arm64) ARCH="aarch64" ;; # normalize (seen on some non-Linux uname builds)
+    *)
+        echo "error: unsupported architecture '$ARCH'" >&2
+        exit 1
+        ;;
+    esac
 }
 
 # --- privilege helper ----------------------------------------------------
 
 as_root() {
-	if [ "$(id -u)" -eq 0 ]; then
-		"$@"
-	elif command -v sudo >/dev/null 2>&1; then
-		sudo "$@"
-	else
-		echo "error: need root privileges to run: $*" >&2
-		echo "       (not running as root and 'sudo' is not installed)" >&2
-		exit 1
-	fi
+    if [ "$(id -u)" -eq 0 ]; then
+        "$@"
+    elif command -v sudo >/dev/null 2>&1; then
+        sudo "$@"
+    else
+        echo "error: need root privileges to run: $*" >&2
+        echo "       (not running as root and 'sudo' is not installed)" >&2
+        exit 1
+    fi
 }
 
 # --- prerequisites --------------------------------------------------------
 
 ensure_prereqs() {
-	local missing=()
-	for cmd in curl tar unzip; do
-		command -v "$cmd" >/dev/null 2>&1 || missing+=("$cmd")
-	done
-	# curl doesn't pull in ca-certificates as a dependency on minimal/slim
-	# base images, which then fails TLS verification against api.github.com
-	# and *.githubusercontent.com. Make sure it's actually present, not just
-	# that the package might be installed.
-	[ -s /etc/ssl/certs/ca-certificates.crt ] || missing+=("ca-certificates")
+    local missing=()
+    for cmd in curl tar unzip nodejs npm; do
+        command -v "$cmd" >/dev/null 2>&1 || missing+=("$cmd")
+    done
+    # curl doesn't pull in ca-certificates as a dependency on minimal/slim
+    # base images, which then fails TLS verification against api.github.com
+    # and *.githubusercontent.com. Make sure it's actually present, not just
+    # that the package might be installed.
+    [ -s /etc/ssl/certs/ca-certificates.crt ] || missing+=("ca-certificates")
 
-	[ "${#missing[@]}" -eq 0 ] && return 0
+    [ "${#missing[@]}" -eq 0 ] && return 0
 
-	echo "installing missing prerequisites: ${missing[*]}"
-	if ! command -v apt-get >/dev/null 2>&1; then
-		echo "error: 'apt-get' not found, cannot auto-install: ${missing[*]}" >&2
-		echo "       please install these manually and re-run" >&2
-		exit 1
-	fi
-	as_root apt-get update -qq
-	as_root apt-get install -y -qq --no-install-recommends "${missing[@]}"
-	if [[ " ${missing[*]} " == *" ca-certificates "* ]]; then
-		as_root update-ca-certificates >/dev/null
-	fi
+    echo "installing missing prerequisites: ${missing[*]}"
+    if ! command -v apt-get >/dev/null 2>&1; then
+        echo "error: 'apt-get' not found, cannot auto-install: ${missing[*]}" >&2
+        echo "       please install these manually and re-run" >&2
+        exit 1
+    fi
+    as_root apt-get update -qq
+    as_root apt-get install -y -qq --no-install-recommends "${missing[@]}"
+    if [[ " ${missing[*]} " == *" ca-certificates "* ]]; then
+        as_root update-ca-certificates >/dev/null
+    fi
 }
 
 # --- GitHub releases -------------------------------------------------------
@@ -80,34 +80,34 @@ ensure_prereqs() {
 # e.g. musl build first, falling back to the gnu build if musl isn't
 # published for that architecture.
 gh_asset_url() {
-	local repo="$1"
-	shift
+    local repo="$1"
+    shift
 
-	local auth_header=()
-	[ -n "${GITHUB_TOKEN:-}" ] && auth_header=(-H "Authorization: Bearer ${GITHUB_TOKEN}")
+    local auth_header=()
+    [ -n "${GITHUB_TOKEN:-}" ] && auth_header=(-H "Authorization: Bearer ${GITHUB_TOKEN}")
 
-	local json
-	json="$(curl -fsSL "${auth_header[@]}" -H "Accept: application/vnd.github+json" \
-		"https://api.github.com/repos/${repo}/releases/latest")" || {
-		echo "error: failed to query GitHub API for ${repo}/releases/latest" >&2
-		echo "       (if this is a rate-limit, set GITHUB_TOKEN to raise the limit)" >&2
-		exit 1
-	}
+    local json
+    json="$(curl -fsSL "${auth_header[@]}" -H "Accept: application/vnd.github+json" \
+        "https://api.github.com/repos/${repo}/releases/latest")" || {
+        echo "error: failed to query GitHub API for ${repo}/releases/latest" >&2
+        echo "       (if this is a rate-limit, set GITHUB_TOKEN to raise the limit)" >&2
+        exit 1
+    }
 
-	local urls
-	urls="$(grep -oE '"browser_download_url": *"[^"]+"' <<<"$json" | grep -oE 'https://[^"]+')"
+    local urls
+    urls="$(grep -oE '"browser_download_url": *"[^"]+"' <<<"$json" | grep -oE 'https://[^"]+')"
 
-	local pattern url
-	for pattern in "$@"; do
-		url="$(grep -E "$pattern" <<<"$urls" | head -n1 || true)"
-		if [ -n "$url" ]; then
-			printf '%s\n' "$url"
-			return 0
-		fi
-	done
+    local pattern url
+    for pattern in "$@"; do
+        url="$(grep -E "$pattern" <<<"$urls" | head -n1 || true)"
+        if [ -n "$url" ]; then
+            printf '%s\n' "$url"
+            return 0
+        fi
+    done
 
-	echo "error: no release asset of ${repo} matched any pattern: $*" >&2
-	exit 1
+    echo "error: no release asset of ${repo} matched any pattern: $*" >&2
+    exit 1
 }
 
 # --- download / extract ---------------------------------------------------
@@ -117,27 +117,27 @@ gh_asset_url() {
 # Downloads url into a temp file and extracts it into destdir (created if
 # needed), handling .tar.gz/.tgz and .zip transparently.
 fetch_extract() {
-	local url="$1" destdir="$2"
-	mkdir -p "$destdir"
+    local url="$1" destdir="$2"
+    mkdir -p "$destdir"
 
-	local tmpfile
-	tmpfile="$(mktemp)"
-	curl -fsSL "$url" -o "$tmpfile"
+    local tmpfile
+    tmpfile="$(mktemp)"
+    curl -fsSL "$url" -o "$tmpfile"
 
-	case "$url" in
-	*.tar.gz | *.tgz)
-		tar -xzf "$tmpfile" -C "$destdir"
-		;;
-	*.zip)
-		unzip -q -o "$tmpfile" -d "$destdir"
-		;;
-	*)
-		rm -f "$tmpfile"
-		echo "error: don't know how to extract '$url'" >&2
-		exit 1
-		;;
-	esac
-	rm -f "$tmpfile"
+    case "$url" in
+    *.tar.gz | *.tgz)
+        tar -xzf "$tmpfile" -C "$destdir"
+        ;;
+    *.zip)
+        unzip -q -o "$tmpfile" -d "$destdir"
+        ;;
+    *)
+        rm -f "$tmpfile"
+        echo "error: don't know how to extract '$url'" >&2
+        exit 1
+        ;;
+    esac
+    rm -f "$tmpfile"
 }
 
 # --- install ---------------------------------------------------------------
@@ -146,9 +146,9 @@ fetch_extract() {
 #
 # Installs a single executable into /usr/local/bin under dest_name.
 install_bin() {
-	local src="$1" name="$2"
-	as_root install -m 755 "$src" "/usr/local/bin/${name}"
-	echo "installed $(command -v "$name" 2>/dev/null || echo "/usr/local/bin/${name}")"
+    local src="$1" name="$2"
+    as_root install -m 755 "$src" "/usr/local/bin/${name}"
+    echo "installed $(command -v "$name" 2>/dev/null || echo "/usr/local/bin/${name}")"
 }
 
 # already_installed <cmd>
@@ -156,10 +156,10 @@ install_bin() {
 # Returns success (skip re-install) if cmd is already on PATH and FORCE=1
 # was not set. Individual install.sh scripts opt into this check.
 already_installed() {
-	local cmd="$1"
-	if [ "${FORCE:-0}" != "1" ] && command -v "$cmd" >/dev/null 2>&1; then
-		echo "$cmd already installed at $(command -v "$cmd"), skipping (set FORCE=1 to reinstall)"
-		return 0
-	fi
-	return 1
+    local cmd="$1"
+    if [ "${FORCE:-0}" != "1" ] && command -v "$cmd" >/dev/null 2>&1; then
+        echo "$cmd already installed at $(command -v "$cmd"), skipping (set FORCE=1 to reinstall)"
+        return 0
+    fi
+    return 1
 }
