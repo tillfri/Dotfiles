@@ -157,7 +157,7 @@ ignore_base = false
 [container]
 symbol = ""
 style = "bg:sapphire"
-format = '[ $symbol Container]($style) '
+format = '[ $symbol Container]($style)'
 
 [azure]
 disabled = true
