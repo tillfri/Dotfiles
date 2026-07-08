@@ -84,15 +84,35 @@ above) — no manual step needed there.
 ```dockerfile
 FROM ubuntu:24.04
 
-RUN apt-get update && apt-get install -y --no-install-recommends git ca-certificates && \
-    git clone --depth 1 https://github.com/tillfri/Dotfiles /opt/dotfiles && \
-    /opt/dotfiles/devcontainer/install-all.sh && \
-    ln -sfn /opt/dotfiles/config/.config/nvim /root/.config/nvim && \
-    ln -sfn /opt/dotfiles/config/.config/starship /root/.config/starship && \
-    ln -sfn /opt/dotfiles/config/.config/lazygit /root/.config/lazygit && \
-    ln -sfn /opt/dotfiles/config/.config/yazi /root/.config/yazi
+RUN apt-get update && apt-get install -y --no-install-recommends git zsh curl ca-certificates
+RUN git clone --depth 1 https://github.com/tillfri/Dotfiles /opt/dotfiles && \
+/opt/dotfiles/devcontainer/install-all.sh
 
-SHELL ["/bin/zsh", "-c"]
+# ==========================================================
+# Non-root user matching the host UID/GID
+# ==========================================================
+ARG USER_UID=1001
+ARG USER_GID=1001
+ARG USERNAME=nautilus
+
+RUN groupadd --gid $USER_GID $USERNAME \
+    && useradd --uid $USER_UID --gid $USER_GID -m -s /bin/bash $USERNAME
+
+RUN chown -R $USERNAME:$USERNAME /opt/dotfiles 
+
+RUN ln -sf /opt/dotfiles/zsh/.zshrc_container /home/$USERNAME/.zshrc \
+    && chown $USERNAME:$USERNAME /home/$USERNAME/.zshrc \
+    && chsh -s "$(command -v zsh)" $USERNAME \
+    && mkdir -p /home/$USERNAME/.config \
+    && for d in nvim starship lazygit yazi; do \
+	 ln -sfn /opt/dotfiles/config/.config/$d /home/$USERNAME/.config/$d; \
+       done \
+    && chown -R $USERNAME:$USERNAME /home/$USERNAME/.config
+
+
+ENV TERM=xterm-256color
+
+CMD ["/bin/zsh"]
 ```
 
 ## Using it in `devcontainer.json`
