@@ -77,9 +77,11 @@ ensure_prereqs() {
 
 # --- GitHub releases -------------------------------------------------------
 
-# gh_asset_url <owner/repo> <regex> [<regex> ...]
+# gh_asset_url <owner/repo>[@<tag>] <regex> [<regex> ...]
 #
-# Fetches the JSON for the latest release once, then tries each regex in
+# Fetches the JSON for the latest release once (or a specific tag, if
+# <owner/repo>@<tag> is given — used when the current latest release isn't
+# usable, e.g. built against a too-new glibc), then tries each regex in
 # order against every asset's browser_download_url, returning the first
 # match found. Multiple regexes let callers express a preference order,
 # e.g. musl build first, falling back to the gnu build if musl isn't
@@ -88,13 +90,22 @@ gh_asset_url() {
     local repo="$1"
     shift
 
+    local tag=""
+    if [[ "$repo" == *@* ]]; then
+        tag="${repo#*@}"
+        repo="${repo%%@*}"
+    fi
+
     local auth_header=()
     [ -n "${GITHUB_TOKEN:-}" ] && auth_header=(-H "Authorization: Bearer ${GITHUB_TOKEN}")
 
+    local releases_path="releases/latest"
+    [ -n "$tag" ] && releases_path="releases/tags/${tag}"
+
     local json
     json="$(curl -fsSL "${auth_header[@]}" -H "Accept: application/vnd.github+json" \
-        "https://api.github.com/repos/${repo}/releases/latest")" || {
-        echo "error: failed to query GitHub API for ${repo}/releases/latest" >&2
+        "https://api.github.com/repos/${repo}/${releases_path}")" || {
+        echo "error: failed to query GitHub API for ${repo}/${releases_path}" >&2
         echo "       (if this is a rate-limit, set GITHUB_TOKEN to raise the limit)" >&2
         exit 1
     }
@@ -120,7 +131,9 @@ gh_asset_url() {
 # fetch_extract <url> <destdir>
 #
 # Downloads url into a temp file and extracts it into destdir (created if
-# needed), handling .tar.gz/.tgz and .zip transparently.
+# needed), handling .tar.gz/.tgz, .zip, and bare .gz (a single gzipped
+# executable, no tar wrapper — used by e.g. tree-sitter's releases)
+# transparently.
 fetch_extract() {
     local url="$1" destdir="$2"
     mkdir -p "$destdir"
@@ -135,6 +148,9 @@ fetch_extract() {
         ;;
     *.zip)
         unzip -q -o "$tmpfile" -d "$destdir"
+        ;;
+    *.gz)
+        gunzip -c "$tmpfile" >"${destdir}/$(basename "${url%.gz}")"
         ;;
     *)
         rm -f "$tmpfile"

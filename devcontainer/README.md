@@ -141,6 +141,13 @@ SHELL ["/bin/zsh", "-c"]
 - `nvim` isn't a standalone static binary; its release is a full tree
   (`bin/`, `lib/`, `share/`), so it's extracted to `/opt/nvim` with a symlink
   from `/usr/local/bin/nvim`.
+- `tree-sitter` publishes only glibc-linked Linux binaries (no musl build),
+  and releases from v0.26.1 onward require `GLIBC_2.39` (Ubuntu 24.04+),
+  which fails to load at all on older bases like Ubuntu 22.04/Debian 12
+  (`version 'GLIBC_2.39' not found`). Its `install.sh` detects the
+  container's glibc version via `getconf GNU_LIBC_VERSION` and falls back
+  to the last release known to work with older glibc (`v0.25.10`) when
+  needed, instead of always grabbing latest.
 - `zsh` doesn't come from a GitHub release at all — it's `apt-get install`ed
   and paired with `../zsh/.zshrc_container`, a config trimmed down to only
   what's guaranteed to work with the other 9 tools here (no eza, bat,
