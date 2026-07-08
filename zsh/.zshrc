@@ -162,15 +162,16 @@ function yda() {
 
 function project_up() {
   nmcli c up 'sonia4-linux' || return 1
-  sshfs tfricke@beta:/home/tfricke /mnt/beta || return 1
+  sshfs tfricke@beta:/home/tfricke /mnt/beta/beta || return 1
   docker context use beta
-  cd ~/beta
+  cd ~/beta/beta
 }
 
 function project_down() {
   cd ~
   docker context use default
-  fusermount -u /mnt/beta 2>/dev/null || umount /mnt/beta
+  fusermount -u /mnt/beta/beta 2>/dev/null || umount /mnt/beta/beta
+  ssh -O exit beta 2>/dev/null
   nmcli c down 'sonia4-linux'
 }
 
