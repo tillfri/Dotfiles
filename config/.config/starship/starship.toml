@@ -155,7 +155,9 @@ format = '[$symbol$environment ]($style)'
 ignore_base = false
 
 [container]
-format = '[$symbol \[$name\]]($style) '
+symbol = ""
+style = "bg:sapphire"
+format = '[ $symbol Container]($style) '
 
 [azure]
 disabled = true
