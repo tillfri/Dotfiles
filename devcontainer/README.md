@@ -25,6 +25,7 @@ devcontainer/
 ├── nvim/install.sh
 ├── rg/install.sh       # ripgrep
 ├── starship/install.sh
+├── tree-sitter/install.sh
 ├── yazi/install.sh
 └── zsh/install.sh
 ```
@@ -35,7 +36,7 @@ ripgrep, etc.), matching the tool names used in `../config/.config/`.
 `zsh` is a bit different from the rest: instead of pulling a GitHub release,
 it `apt-get install`s zsh and symlinks `../zsh/.zshrc_container` (a trimmed
 copy of the host `.zshrc` containing only what's guaranteed to work with the
-other 7 tools here — see that file's header for exactly what was left out
+other 8 tools here — see that file's header for exactly what was left out
 and why) to `$HOME/.zshrc`, then sets zsh as the default shell.
 
 ## Quick start
@@ -47,9 +48,9 @@ git clone https://github.com/tillfri/Dotfiles ~/dotfiles
 ~/dotfiles/devcontainer/install-all.sh
 ```
 
-That's it — `fd`, `rg`, `fzf`, `lazygit`, `starship`, `yazi`/`ya`, `nvim`, and
-`zsh` (set as your default shell, with `~/.zshrc` linked automatically) are
-now installed.
+That's it — `fd`, `rg`, `fzf`, `lazygit`, `starship`, `yazi`/`ya`,
+`tree-sitter`, `nvim`, and `zsh` (set as your default shell, with `~/.zshrc`
+linked automatically) are now installed.
 
 To install just one tool:
 
@@ -119,8 +120,12 @@ SHELL ["/bin/zsh", "-c"]
   ```
 - **Prerequisites**: scripts assume a Debian/Ubuntu base (true for `ubuntu`,
   `python`, `nvidia/cuda` images) and will `apt-get install` `curl`, `tar`,
-  `unzip`, and `ca-certificates` themselves if missing. They escalate via
-  `sudo` automatically when not already running as root.
+  `unzip`, `ca-certificates`, `nodejs`, `npm` (needed by several nvim
+  plugins/LSPs), `file` (needed by yazi for MIME-type detection), and
+  `xclip` (clipboard provider for nvim's `unnamedplus` and yazi's yank
+  support — only works if `DISPLAY` is forwarded into the container)
+  themselves if missing. They escalate via `sudo` automatically when not
+  already running as root.
 - **GitHub API rate limits**: resolving the latest release for most tools
   hits the unauthenticated GitHub API (60 requests/hour per IP). If you hit
   that limit (e.g. rebuilding containers repeatedly in CI), set
@@ -137,7 +142,7 @@ SHELL ["/bin/zsh", "-c"]
   from `/usr/local/bin/nvim`.
 - `zsh` doesn't come from a GitHub release at all — it's `apt-get install`ed
   and paired with `../zsh/.zshrc_container`, a config trimmed down to only
-  what's guaranteed to work with the other 7 tools here (no eza, bat,
+  what's guaranteed to work with the other 8 tools here (no eza, bat,
   zoxide, direnv, opencode, Hyprland, kitty, etc.). It also sets zsh as the
   default shell via `chsh` where possible.
 

@@ -46,7 +46,12 @@ as_root() {
 
 ensure_prereqs() {
     local missing=()
-    for cmd in curl tar unzip nodejs npm; do
+    # file:  yazi shells out to `file(1)` for MIME-type detection; without
+    #        it yazi warns it can't detect a file's type at all.
+    # xclip: clipboard provider for nvim's `unnamedplus` and yazi's yank
+    #        support (requires a forwarded DISPLAY to actually work; the
+    #        binary just needs to be present to be picked up).
+    for cmd in curl tar unzip nodejs npm file xclip; do
         command -v "$cmd" >/dev/null 2>&1 || missing+=("$cmd")
     done
     # curl doesn't pull in ca-certificates as a dependency on minimal/slim
