@@ -19,6 +19,7 @@ to update.
 devcontainer/
 ├── lib.sh            # shared helpers, sourced by every install.sh below
 ├── install-all.sh     # runs every */install.sh
+├── delta/install.sh
 ├── fd/install.sh
 ├── fzf/install.sh
 ├── lazygit/install.sh
@@ -36,7 +37,7 @@ ripgrep, etc.), matching the tool names used in `../config/.config/`.
 `zsh` is a bit different from the rest: instead of pulling a GitHub release,
 it `apt-get install`s zsh and symlinks `../zsh/.zshrc_container` (a trimmed
 copy of the host `.zshrc` containing only what's guaranteed to work with the
-other 8 tools here — see that file's header for exactly what was left out
+other 9 tools here — see that file's header for exactly what was left out
 and why) to `$HOME/.zshrc`, then sets zsh as the default shell.
 
 ## Quick start
@@ -49,8 +50,8 @@ git clone https://github.com/tillfri/Dotfiles ~/dotfiles
 ```
 
 That's it — `fd`, `rg`, `fzf`, `lazygit`, `starship`, `yazi`/`ya`,
-`tree-sitter`, `nvim`, and `zsh` (set as your default shell, with `~/.zshrc`
-linked automatically) are now installed.
+`tree-sitter`, `delta`, `nvim`, and `zsh` (set as your default shell, with
+`~/.zshrc` linked automatically) are now installed.
 
 To install just one tool:
 
@@ -142,7 +143,7 @@ SHELL ["/bin/zsh", "-c"]
   from `/usr/local/bin/nvim`.
 - `zsh` doesn't come from a GitHub release at all — it's `apt-get install`ed
   and paired with `../zsh/.zshrc_container`, a config trimmed down to only
-  what's guaranteed to work with the other 8 tools here (no eza, bat,
+  what's guaranteed to work with the other 9 tools here (no eza, bat,
   zoxide, direnv, opencode, Hyprland, kitty, etc.). It also sets zsh as the
   default shell via `chsh` where possible.
 
