@@ -255,6 +255,7 @@ alias decompress="tar -xzf"
 export EDITOR=nvim
 export PATH="$HOME/scripts:$HOME/.local/bin:$PATH"
 export _ZO_EXCLUDE_DIRS="/mnt/stuff/*"
+export TODO_NOTE="/mnt/stuff/obsidian_vault/TODO.md"
 
 # Shell integrations
 eval "$(fzf --zsh)"

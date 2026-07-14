@@ -1,4 +1,4 @@
 #!/bin/bash
 
-tuxedo /mnt/stuff/obsidian_vault/todo.txt
-# nvim /mnt/stuff/obsidian_vault/TODO.md
+# tuxedo /mnt/stuff/obsidian_vault/todo.txt
+nvim "$TODO_NOTE"
