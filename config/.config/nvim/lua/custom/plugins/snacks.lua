@@ -254,4 +254,29 @@ return {
       },
     },
   },
+  config = function(_, opts)
+    require('snacks').setup(opts)
+
+    local function toggle_term()
+      Snacks.terminal.toggle(vim.o.shell, {
+        win = {
+          position = 'float',
+          width = 0.8,
+          height = 0.7,
+          border = 'rounded',
+        },
+      })
+    end
+
+    vim.keymap.set('n', '<leader>tt', toggle_term, { desc = 'Toggle terminal' })
+
+    vim.keymap.set('t', 'tt', function()
+      vim.cmd 'stopinsert'
+      toggle_term()
+    end, { desc = 'Toggle terminal' })
+
+    vim.keymap.set('t', 'jj', [[<C-\><C-n>]], {
+      desc = 'Terminal normal mode',
+    })
+  end,
 }
