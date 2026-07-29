@@ -275,8 +275,8 @@ return {
       toggle_term()
     end, { desc = 'Toggle terminal' })
 
-    vim.keymap.set('t', 'jj', [[<C-\><C-n>]], {
-      desc = 'Terminal normal mode',
-    })
+    -- vim.keymap.set('t', 'jj', [[<C-\><C-n>]], {
+    --   desc = 'Terminal normal mode',
+    -- })
   end,
 }
