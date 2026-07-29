@@ -1,6 +1,7 @@
 return {
   'MeanderingProgrammer/render-markdown.nvim',
   opts = {
+    completions = { lsp = { enabled = true } },
     link = {
       enabled = true,
       render_modes = false,
