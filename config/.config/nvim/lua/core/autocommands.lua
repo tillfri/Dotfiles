@@ -83,23 +83,4 @@ vim.api.nvim_create_autocmd('LspAttach', {
   end,
 })
 
-local format_group = vim.api.nvim_create_augroup('LspFormatting', {})
-
-function M.setup_format_on_save(bufnr)
-  vim.api.nvim_clear_autocmds { group = format_group, buffer = bufnr }
-  -- Format supported buffers before writing to disk.
-  vim.api.nvim_create_autocmd('BufWritePre', {
-    group = format_group,
-    buffer = bufnr,
-    callback = function()
-      local ft = vim.bo[bufnr].filetype
-      local excluded = { c = true, cpp = true }
-      if excluded[ft] then
-        return
-      end
-      vim.lsp.buf.format { async = false }
-    end,
-  })
-end
-
 return M

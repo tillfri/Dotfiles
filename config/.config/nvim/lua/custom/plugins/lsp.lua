@@ -2,7 +2,7 @@ return {
   'neovim/nvim-lspconfig',
   dependencies = {
     { 'williamboman/mason.nvim', config = true }, -- NOTE: Must be loaded before dependants
-    'williamboman/mason-lspconfig.nvim',
+    'mason-org/mason-lspconfig.nvim',
     'WhoIsSethDaniel/mason-tool-installer.nvim',
 
     {
@@ -139,6 +139,12 @@ return {
     require('mason').setup()
 
     local ensure_installed = vim.tbl_keys(servers or {})
+
+    vim.list_extend(ensure_installed, {
+      'stylua',
+      'prettier',
+      'shfmt',
+    })
 
     require('mason-tool-installer').setup { ensure_installed = ensure_installed }
 
