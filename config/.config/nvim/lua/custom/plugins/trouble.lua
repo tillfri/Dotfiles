@@ -40,16 +40,6 @@ return {
   cmd = 'Trouble',
   keys = {
     {
-      '<leader>XX',
-      '<cmd>Trouble diagnostics toggle<cr>',
-      desc = 'Diagnostics (Trouble)',
-    },
-    {
-      '<leader>xx',
-      '<cmd>Trouble diagnostics toggle filter.buf=0<cr>',
-      desc = 'Buffer Diagnostics (Trouble)',
-    },
-    {
       '<leader>cs',
       '<cmd>Trouble symbols toggle focus=true win.size=0.4<cr>',
       desc = 'Symbols (Trouble)',
@@ -58,16 +48,6 @@ return {
       '<leader>cl',
       '<cmd>Trouble lsp_no_type_defs toggle focus=true win.position=right win.size=0.3<cr>',
       desc = 'LSP Definitions / references (Trouble)',
-    },
-    {
-      '<leader>xl',
-      '<cmd>Trouble loclist toggle<cr>',
-      desc = 'Location List (Trouble)',
-    },
-    {
-      '<leader>xq',
-      '<cmd>Trouble qflist toggle<cr>',
-      desc = 'Quickfix List (Trouble)',
     },
   },
 }
