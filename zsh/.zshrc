@@ -175,10 +175,19 @@ function project_down() {
   nmcli c down 'sonia4-linux'
 }
 
+function project_toggle() {
+if [[ "$(docker context show 2>/dev/null)" == "beta" ]]; then
+  project_down
+else
+  project_up
+fi
+}
+
 function project() {
   case "$1" in
       up)   project_up ;;
       down) project_down ;;
+      toggle) project_toggle ;;
       *)    echo "Usage: project {up|down}" ;;
   esac
 }
