@@ -52,7 +52,6 @@ bindkey '^r' history-incremental-search-backward
 bindkey '^s' history-incremental-search-forward
 
 # Aliases kept to commands commonly available on bare installs.
-alias c='clear'
 alias du='du -h'
 alias df='df -h'
 alias gs='git status'
@@ -66,6 +65,10 @@ alias lg='lazygit'
 export EDITOR=nvim
 export PATH="$HOME/.local/bin:$PATH"
 export STARSHIP_CONFIG=~/.config/starship/starship.toml
+export TODO_NOTE='/home/tfricke/masternotes/notes.md'
+
+
+eval "$(zoxide init --cmd cd zsh)"
 
 # Prompt via starship if available.
 if command -v starship >/dev/null 2>&1; then
