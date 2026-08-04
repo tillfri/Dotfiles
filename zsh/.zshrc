@@ -162,26 +162,25 @@ function yda() {
 
 function project_up() {
   nmcli c up 'sonia4-linux' || return 1
-  sshfs tfricke@beta:/home/tfricke /mnt/beta/beta || return 1
-  docker context use beta
-  cd ~/beta/beta
+  export PROJECT_ACTIVE=beta
+  kitty +kitten ssh beta
 }
 
 function project_down() {
+  unset PROJECT_ACTIVE
   cd ~
-  docker context use default
-  fusermount -u /mnt/beta/beta 2>/dev/null || umount /mnt/beta/beta
-  ssh -O exit beta 2>/dev/null
   nmcli c down 'sonia4-linux'
 }
 
 function project_toggle() {
-if [[ "$(docker context show 2>/dev/null)" == "beta" ]]; then
-  project_down
-else
-  project_up
-fi
+  if [[ "$PROJECT_ACTIVE" == "beta" ]]; then
+    project_down
+  else
+    project_up
+  fi
 }
+
+
 
 function project() {
   case "$1" in
