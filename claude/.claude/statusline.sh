@@ -57,7 +57,7 @@ if [ -n "$cwd" ]; then
 fi
 
 # ── Context bar: RGB gradient, full blocks only ──
-BAR_WIDTH=10
+BAR_WIDTH=8
 
 if [ -n "$used" ]; then
     used_int=$(printf '%.0f' "$used")
@@ -94,7 +94,7 @@ if [ -n "$used" ]; then
         ctx_color="$YELLOW"
     else ctx_color="$GREEN"; fi
 else
-    bar="\033[38;2;60;60;60m░░░░░░░░░░░░░░░░░░░░${RESET}"
+    bar="\033[38;2;60;60;60m░░░░░░░░${RESET}"
     ctx_color="$GREEN"
 fi
 
