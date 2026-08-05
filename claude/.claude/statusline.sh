@@ -50,8 +50,14 @@ if [ -n "$cwd" ]; then
     repo=$(basename "$(git -C "$cwd" --no-optional-locks rev-parse --show-toplevel 2>/dev/null)" 2>/dev/null)
 fi
 
+# ── Last 2 path components of pwd ──
+path_short=""
+if [ -n "$cwd" ]; then
+    path_short="$(basename "$(dirname "$cwd")")/$(basename "$cwd")"
+fi
+
 # ── Context bar: RGB gradient, full blocks only ──
-BAR_WIDTH=20
+BAR_WIDTH=10
 
 if [ -n "$used" ]; then
     used_int=$(printf '%.0f' "$used")
@@ -118,9 +124,13 @@ velocity_plain="+${lines_add} -${lines_del}"
 # ── Left side ──
 left=""
 left_plain=""
+if [ -n "$path_short" ]; then
+    left="${DIM}${path_short}${RESET}"
+    left_plain="$path_short"
+fi
 if [ -n "$repo" ]; then
-    left="${BOLD}${YELLOW}${repo}${RESET}"
-    left_plain="$repo"
+    left="${left:+$left }${BOLD}${YELLOW}${repo}${RESET}"
+    left_plain="${left_plain:+$left_plain }$repo"
 fi
 if [ -n "$branch" ]; then
     left="${left:+$left }${BOLD}${CYAN}(${branch})${RESET}"
