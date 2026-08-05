@@ -37,7 +37,8 @@ if [ -n "$pane" ] && command -v jq >/dev/null 2>&1; then
 fi
 
 if [ "$forward" -eq 1 ]; then
-    exec herdr pane send-keys "$pane" "$key"
+    # exec herdr pane send-keys "$pane" "$key"
+    exec herdr pane focus --direction "$dir" --current
 else
     exec herdr pane focus --direction "$dir" --current
 fi
