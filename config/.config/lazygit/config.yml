@@ -22,10 +22,8 @@ gui:
       - "#f38ba9"
   switchTabsWithPanelJumpKeys: true
   nerdFontsVersion: "3"
-
 git:
-  pagers:
+  diffRenderers:
     - colorArg: always
-      pager: delta --dark --paging=never --wrap-max-lines=2 --syntax-theme "Catppuccin Mocha"
-
+      command: delta --dark --paging=never --wrap-max-lines=2 --syntax-theme "Catppuccin Mocha"
 promptToReturnFromSubprocess: false
