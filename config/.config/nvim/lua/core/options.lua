@@ -35,6 +35,9 @@ vim.schedule(function()
   vim.opt.clipboard = 'unnamedplus'
 end)
 
+-- Machine-local overrides (gitignored, not shared across machines).
+pcall(require, 'core.local')
+
 -- Enable break indent
 vim.opt.breakindent = true
 
