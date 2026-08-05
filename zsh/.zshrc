@@ -254,6 +254,7 @@ alias ports='ss -ltnpH \
   done'
 alias oc='opencode'
 alias sql='lazysql'
+alias cc='claude'
 
 # Compression
 compress() { tar -czf "${1%/}.tar.gz" "${1%/}"; }
