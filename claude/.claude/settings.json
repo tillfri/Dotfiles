@@ -2,6 +2,12 @@
   "permissions": {
     "defaultMode": "acceptEdits"
   },
-  "theme": "auto",
-  "effortLevel": "high"
+  "statusLine": {
+    "type": "command",
+    "command": "~/.claude/statusline.sh",
+    "padding": 0,
+    "refreshInterval": 2
+  },
+  "effortLevel": "high",
+  "theme": "auto"
 }
