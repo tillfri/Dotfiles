@@ -60,6 +60,7 @@ alias ls='ls -lh --color=auto'
 alias sudo='hroot'
 alias lg='lazygit'
 alias oc='opencode'
+alias cc='claude'
 
 function y() {
 	local tmp="$(mktemp -t "yazi-cwd.XXXXXX")" cwd
