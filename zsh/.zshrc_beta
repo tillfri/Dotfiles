@@ -58,8 +58,16 @@ alias gs='git status'
 alias n='nvim'
 alias ls='ls -lh --color=auto'
 alias sudo='hroot'
-alias y='yazi'
 alias lg='lazygit'
+alias oc='opencode'
+
+function y() {
+	local tmp="$(mktemp -t "yazi-cwd.XXXXXX")" cwd
+	command yazi "$@" --cwd-file="$tmp"
+	IFS= read -r -d '' cwd < "$tmp"
+	[ -n "$cwd" ] && [ "$cwd" != "$PWD" ] && [[ "$cwd" != *://* ]] && builtin cd -- "$cwd"
+	rm -f -- "$tmp"
+}
 
 # Environment defaults
 export EDITOR=nvim
@@ -74,3 +82,6 @@ eval "$(zoxide init --cmd cd zsh)"
 if command -v starship >/dev/null 2>&1; then
   eval "$(starship init zsh)"
 fi
+
+# opencode
+export PATH=/home/tfricke/.opencode/bin:$PATH
