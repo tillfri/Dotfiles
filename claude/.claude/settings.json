@@ -1,6 +1,5 @@
 {
   "permissions": {
-    "defaultMode": "auto",
     "allow": [
       "Bash(cat:*)",
       "Bash(ls:*)",
@@ -17,7 +16,8 @@
       "Bash(tree:*)",
       "Bash(du:*)",
       "Bash(df:*)"
-    ]
+    ],
+    "defaultMode": "auto"
   },
   "statusLine": {
     "type": "command",
