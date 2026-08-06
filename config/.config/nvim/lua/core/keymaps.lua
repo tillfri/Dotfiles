@@ -193,3 +193,13 @@ end, { desc = 'Copy file path' })
 vim.keymap.set('v', '<leader>cp', function()
   copy_ref { visual = true }
 end, { desc = 'Copy file path with line range' })
+
+-- Space +ot open $TODO_NOTE in a new buffer
+vim.keymap.set('n', '<leader>ot', function()
+  local todo_note = os.getenv 'TODO_NOTE'
+  if not todo_note or todo_note == '' then
+    vim.notify('$TODO_NOTE is not set', vim.log.levels.WARN)
+    return
+  end
+  vim.cmd('edit ' .. vim.fn.fnameescape(todo_note))
+end, { desc = 'Open $TODO_NOTE' })
