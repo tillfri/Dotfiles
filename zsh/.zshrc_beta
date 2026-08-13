@@ -74,7 +74,7 @@ function y() {
 export EDITOR=nvim
 export PATH="$HOME/.local/bin:$PATH"
 export STARSHIP_CONFIG=~/.config/starship/starship.toml
-export TODO_NOTE='/home/tfricke/masternotes/notes.md'
+export TODO_NOTE='/home/tfricke/masterarbeit/notes.md'
 
 
 eval "$(zoxide init --cmd cd zsh)"
