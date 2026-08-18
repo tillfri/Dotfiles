@@ -3,9 +3,10 @@ return {
   dependencies = {
     'moll/vim-bbye',
     'nvim-tree/nvim-web-devicons',
-    'catppuccin/nvim', -- Ensure catppuccin is loaded first
+    'folke/tokyonight.nvim', -- Ensure theme is loaded first
   },
   config = function()
+    local colors = require('tokyonight.colors').setup()
     require('bufferline').setup {
       options = {
         mode = 'buffers', -- set to "tabs" to only show tabpages instead
@@ -53,6 +54,9 @@ return {
         buffer_selected = {
           bold = true,
           italic = false,
+        },
+        fill = {
+          bg = colors.bg,
         },
         error = {
           fg = {

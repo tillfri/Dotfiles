@@ -31,20 +31,32 @@ return {
   --     -- })
   --   end,
   -- },
+  -- {
+  --   'catppuccin/nvim',
+  --   name = 'catppuccin',
+  --   priority = 1000,
+  --   config = function()
+  --     require('catppuccin').setup {
+  --       transparent_background = true,
+  --       flavour = 'mocha',
+  --     }
+  --     vim.cmd.colorscheme 'catppuccin'
+  --     vim.api.nvim_set_hl(0, 'DiffText', { bg = '#413d1b', fg = '#f9e2af', bold = true })
+  --     vim.cmd [[
+  --         highlight CursorLineNr guifg=#e79c75 gui=bold
+  --       ]]
+  --   end,
+  -- },
   {
-    'catppuccin/nvim',
-    name = 'catppuccin',
+    'folke/tokyonight.nvim',
+    lazy = false,
     priority = 1000,
     config = function()
-      require('catppuccin').setup {
-        transparent_background = true,
-        flavour = 'mocha',
+      require('tokyonight').setup {
+        transparent = false,
+        style = 'moon',
       }
-      vim.cmd.colorscheme 'catppuccin'
-      vim.api.nvim_set_hl(0, 'DiffText', { bg = '#413d1b', fg = '#f9e2af', bold = true })
-      vim.cmd [[
-          highlight CursorLineNr guifg=#e79c75 gui=bold
-        ]]
+      vim.cmd.colorscheme 'tokyonight'
     end,
   },
 }

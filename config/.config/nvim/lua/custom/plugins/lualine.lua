@@ -3,7 +3,7 @@ return {
   config = function()
     require('lualine').setup {
       options = {
-        theme = 'dracula',
+        theme = 'tokyonight',
         ignore_focus = {
           'dapui_scopes',
           'dapui_breakpoints',
