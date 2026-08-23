@@ -163,12 +163,16 @@ function yda() {
 function project_up() {
   nmcli c up 'sonia4-linux' || return 1
   export PROJECT_ACTIVE=beta
+  sshfs tfricke@beta:/home/tfricke /mnt/beta
   kitty +kitten ssh beta
 }
 
 function project_down() {
   unset PROJECT_ACTIVE
   cd ~
+  if mountpoint -q /mnt/beta; then
+    fusermount3 -u /mnt/beta || umount /mnt/beta
+  fi
   nmcli c down 'sonia4-linux'
 }
 
