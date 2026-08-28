@@ -24,7 +24,7 @@
         "ctrl+x ctrl+k": "chat:killAgents",
         "shift+tab": "chat:cycleMode",
         "meta+p": "chat:modelPicker",
-        "ctrl+m": "chat:modelPicker",
+        "ctrl+k": "chat:modelPicker",
         "meta+o": "chat:fastMode",
         "ctrl+t": "chat:thinkingToggle",
         "meta+w": "chat:workflowKeywordToggle",

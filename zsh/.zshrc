@@ -163,7 +163,7 @@ function yda() {
 function project_up() {
   nmcli c up 'sonia4-linux' || return 1
   export PROJECT_ACTIVE=beta
-  sshfs tfricke@beta:/home/tfricke /mnt/beta
+  sshfs tfricke@beta:/home/tfricke /mnt/beta &
   kitty +kitten ssh beta
 }
 
