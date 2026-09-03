@@ -26,5 +26,6 @@
     "refreshInterval": 2
   },
   "effortLevel": "high",
-  "theme": "auto"
+  "theme": "auto",
+  "remoteControlAtStartup": false
 }
