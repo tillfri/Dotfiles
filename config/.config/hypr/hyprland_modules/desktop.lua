@@ -3,7 +3,8 @@
 
 -- Monitors
 hl.monitor({ output = "DP-2", mode = "3840x2160@160", position = "0x0", scale = 1.5 })
-hl.monitor({ output = "HDMI-A-1", mode = "1920x1080@60", position = "2560x0", scale = 1 })
+hl.monitor({ output = "DP-1", mode = "1920x1080@60", position = "2560x0", scale = 1 })
+hl.monitor({ output = "HDMI-A-1", mode = "3840x1080@120", position = "-3840x0", scale = 1 })
 
 -- Environment variables
 hl.env("XDG_MENU_PREFIX", "arch-")
@@ -33,7 +34,8 @@ hl.config({
 
 -- Workspace settings
 hl.workspace_rule({ workspace = "2", monitor = "DP-2" })
-hl.workspace_rule({ workspace = "1", monitor = "HDMI-A-1" })
+hl.workspace_rule({ workspace = "1", monitor = "DP-1" })
+hl.workspace_rule({ workspace = "6", monitor = "HDMI-A-1" })
 hl.workspace_rule({ workspace = "s[true]", gaps_out = 100, gaps_in = 0 })
 
 -- Binds
