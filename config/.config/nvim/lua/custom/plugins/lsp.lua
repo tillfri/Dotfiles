@@ -5,6 +5,9 @@ return {
     'mason-org/mason-lspconfig.nvim',
     'WhoIsSethDaniel/mason-tool-installer.nvim',
 
+    -- JSON/YAML schema catalog from https://www.schemastore.org
+    { 'b0o/SchemaStore.nvim', version = false },
+
     {
       'j-hui/fidget.nvim',
       opts = {
@@ -103,8 +106,26 @@ return {
       dockerls = {},
       sqlls = {},
       terraformls = {},
-      jsonls = {},
-      yamlls = {},
+      jsonls = {
+        settings = {
+          json = {
+            schemas = require('schemastore').json.schemas(),
+            validate = { enable = true },
+          },
+        },
+      },
+      yamlls = {
+        settings = {
+          yaml = {
+            -- disable the built-in schema store so SchemaStore.nvim is authoritative
+            schemaStore = {
+              enable = false,
+              url = '',
+            },
+            schemas = require('schemastore').yaml.schemas(),
+          },
+        },
+      },
       omnisharp = {},
       debugpy = {},
       lua_ls = {
