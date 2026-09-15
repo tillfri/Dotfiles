@@ -53,6 +53,14 @@ run = 'piper -- CLICOLOR_FORCE=1 glow -w=$w -s=dark "$1"'
 url = "*.csv"
 run = """piper -- column -t -s, "$1" | awk 'NR==1{print "\\033[1;4m" $0 "\\033[0m"; next} {print}'"""
 
+[[plugin.prepend_previewers]]
+url = "*.docx"
+run = 'piper -- doxx --export ansi --color -w $w "$1"'
+
+[[plugin.prepend_previewers]]
+url = "*.xlsx"
+run = 'piper -- xleak "$1"'
+
 [opener]
 sqlite = [
     { run = 'sqlite3 %s', desc= "sqlite3", block = true }
@@ -60,9 +68,17 @@ sqlite = [
 csvlens = [
     { run = 'csvlens %s', desc= "csvlens", block = true }
 ]
+doxx = [
+    { run = 'doxx %s', desc = "doxx", block = true }
+]
+xleak = [
+    { run = 'xleak -i %s', desc = "xleak", block = true }
+]
 
 [open]
 prepend_rules = [
 	{url = "*.db", use = "sqlite"},
 	{url = "*.csv", use = ["csvlens", "edit"]},
+	{url = "*.docx", use = "doxx"},
+	{url = "*.xlsx", use = "xleak"},
 ]
