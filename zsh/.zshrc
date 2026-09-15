@@ -199,16 +199,16 @@ function project() {
 ### BINDS ###
 # bindkey '^k' history-search-backward
 # bindkey '^j' history-search-forward
-bindkey '^a' backward-word
-bindkey '^d' forward-word
+bindkey '^h' backward-word
+bindkey '^l' forward-word
 bindkey '^w' kill-word
 bindkey '^@' autosuggest-accept
 bindkey '^y' copy_last_cmd_output
 bindkey '^r' history-incremental-search-backward
 bindkey '^z' zoxide_fzf
 bindkey '^f' my-fzf-file-widget
-bindkey '^h' beginning-of-line
-bindkey '^l' end-of-line
+bindkey '^a' beginning-of-line
+bindkey '^d' end-of-line
 
 # History
 HISTSIZE=5000
