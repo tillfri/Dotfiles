@@ -233,7 +233,7 @@ alias ls='eza --long --color=always --icons=always --no-user --sort=modified'
 alias c='clear'
 alias edithypr='nvim ~/.config/hypr/hyprland.conf'
 function ssh() {
-  if [[ "$TERM" == xterm-kitty ]]; then
+  if [[ "$TERM" == xterm-kitty && "$*" != *university-vpn* ]]; then
     kitty +kitten ssh "$@"
   else
     command ssh "$@"
