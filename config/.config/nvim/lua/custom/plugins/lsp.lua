@@ -41,18 +41,20 @@ return {
     --  - settings (table): Override the default settings passed when initializing the server.
     --        For example, to see the options for `lua_ls`, you could go to: https://luals.github.io/wiki/settings/
     local function get_python_path()
-      local cwd = vim.fn.getcwd()
+      local home = vim.uv.os_homedir()
+      local dir = vim.fn.getcwd()
 
-      -- paths to check
-      local paths = {
-        cwd .. '/.venv/bin/python3', -- current directory
-        cwd .. '/../.venv/bin/python3', -- parent directory
-      }
-
-      for _, p in ipairs(paths) do
-        if vim.fn.executable(p) == 1 then
-          return p
+      while dir do
+        local python = dir .. '/.venv/bin/python3'
+        if vim.fn.executable(python) == 1 then
+          return python
         end
+
+        if dir == home or dir == '/' then
+          break
+        end
+
+        dir = vim.fn.fnamemodify(dir, ':h')
       end
 
       return vim.NIL
