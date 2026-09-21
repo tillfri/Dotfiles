@@ -50,8 +50,12 @@ vim.api.nvim_create_autocmd('LspAttach', {
 
     local ok, snacks = pcall(require, 'snacks')
     if ok and snacks.picker then
-      -- map('gd', function() snacks.picker.lsp_definitions() end, '[G]oto [D]efinition')
-      -- map('grr', function() snacks.picker.lsp_references() end, '[G]oto [R]eferences')
+      map('gd', function()
+        snacks.picker.lsp_definitions()
+      end, '[G]oto [D]efinition')
+      map('grr', function()
+        snacks.picker.lsp_references()
+      end, '[G]oto [R]eferences')
       -- map('gri', function() snacks.picker.lsp_implementations() end, '[G]oto [I]mplementation')
       -- TODO: this doesnt work yet
       map('<leader>ds', function()
