@@ -74,11 +74,14 @@ doxx = [
 xleak = [
     { run = 'xleak -i %s', desc = "xleak", block = true }
 ]
+excel = [
+    { run = 'open -a "Microsoft Excel" %s', desc = "Microsoft Excel", orphan = true }
+]
 
 [open]
 prepend_rules = [
 	{url = "*.db", use = "sqlite"},
 	{url = "*.csv", use = ["csvlens", "edit"]},
 	{url = "*.docx", use = "doxx"},
-	{url = "*.xlsx", use = "xleak"},
+	{url = "*.xlsx", use = ["xleak", "excel"]},
 ]
