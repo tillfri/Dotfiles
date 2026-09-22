@@ -17,13 +17,18 @@ static const float BORDER_WIDTH = 0.04;
 // Peak additive brightness multiplier at the window border edge.
 static const float BORDER_GLOW = 0.55;
 // Fraction of the original color retained outside the active window (1.0 = unchanged, 0.0 = blend target).
-static const float INACTIVE_DIM = 0.3;
+static const float INACTIVE_DIM = 0.6;
 // Blend target in linear RGB; black preserves the original dimming behavior.
 static const float3 INACTIVE_DIM_COLOR = float3(0.0);
 // Keep the tab bar outside the effect when requested by a pipeline.
 static const bool DIM_CENTRAL_AREA_ONLY = false;
 // Include the active window's padding in its unchanged/highlighted area.
 static const bool INCLUDE_WINDOW_PADDING = true;
+// Extra margin (device pixels) added on every edge on top of the padding, so
+// window_border_width's active_border_color ring is not treated as "outside"
+// the active window and dimmed. There is no border-width uniform exposed to
+// custom shaders, so this is a generous fixed guess rather than an exact value.
+static const float EXTRA_BORDER_PX = 2.0;
 
 public float4
 fragment_main(float4 color, KittyTextures t, KittyCustomShaderData d) {
@@ -37,6 +42,11 @@ fragment_main(float4 color, KittyTextures t, KittyCustomShaderData d) {
     if (INCLUDE_WINDOW_PADDING) {
         g.xy -= d.active_window_padding.xy;
         g.zw += d.active_window_padding.xy + d.active_window_padding.zw;
+    }
+    if (EXTRA_BORDER_PX > 0.0) {
+        float2 marginUV = float2(EXTRA_BORDER_PX) / float2(d.viewport_size_pixels);
+        g.xy -= marginUV;
+        g.zw += marginUV * 2.0;
     }
 
     float2 uv = t.pos;
