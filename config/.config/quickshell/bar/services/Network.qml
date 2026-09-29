@@ -13,6 +13,11 @@ Singleton {
     property string gateway
     readonly property bool connected: iface !== ""
     property string details
+    property string localIp
+    // Saved NetworkManager VPNs: [{ name, uuid, state }], state is "", "activating", "activated" or "deactivating".
+    property var vpns: []
+    // Number of open popups that want VPN state kept fresh.
+    property int vpnWatchers: 0
 
     function hexToIp(hex: string): string {
         const bytes = [];
@@ -31,10 +36,30 @@ Singleton {
     }
 
     function refreshDetails(): void {
-        if (connected)
+        if (connected) {
             detailsProc.running = true;
-        else
+        } else {
             details = "Disconnected";
+            localIp = "";
+        }
+    }
+
+    function refreshVpns(): void {
+        vpnProc.running = true;
+    }
+
+    function toggleVpn(uuid: string, active: bool): void {
+        if (vpnToggle.running)
+            return;
+        vpnToggle.pending = {
+            uuid,
+            state: active ? "deactivating" : "activating"
+        };
+        vpnToggle.command = ["nmcli", "connection", active ? "down" : "up", "uuid", uuid];
+        vpnToggle.running = true;
+        vpns = vpns.map(v => v.uuid === uuid ? Object.assign({}, v, {
+                state: vpnToggle.pending.state
+            }) : v);
     }
 
     Timer {
@@ -42,6 +67,15 @@ Singleton {
         repeat: true
         interval: Theme.stateInterval
         onTriggered: route.reload()
+    }
+
+    Component.onCompleted: refreshVpns()
+
+    Timer {
+        running: root.vpnWatchers > 0
+        repeat: true
+        interval: 1000
+        onTriggered: root.refreshVpns()
     }
 
     FileView {
@@ -82,9 +116,11 @@ Singleton {
                 }
 
                 lines.push(`Interface: <b>${root.iface}</b>`);
+                root.localIp = "";
                 try {
                     const info = JSON.parse(addrJson)[0]?.addr_info?.[0];
                     if (info) {
+                        root.localIp = `${info.local}/${info.prefixlen}`;
                         lines.push(`IP: <b>${info.local}/${info.prefixlen}</b>`);
                         lines.push(`Gateway: <b>${root.gateway}</b>`);
                         lines.push(`Netmask: <b>${root.cidrToMask(info.prefixlen)}</b>`);
@@ -92,6 +128,42 @@ Singleton {
                 } catch (e) {}
                 root.details = lines.join("<br>");
             }
+        }
+    }
+
+    Process {
+        id: vpnProc
+
+        command: ["nmcli", "-t", "-f", "TYPE,UUID,STATE,NAME", "connection", "show"]
+        stdout: StdioCollector {
+            onStreamFinished: {
+                const vpns = [];
+                for (const line of text.split("\n")) {
+                    // NAME is last so escaped ':' in it survive the split
+                    const [type, uuid, state, ...name] = line.split(":");
+                    if (type === "vpn" || type === "wireguard")
+                        vpns.push({
+                            name: name.join(":").replace(/\\/g, ""),
+                            uuid,
+                            // Keep the optimistic state until NM reports the change.
+                            state: !state && vpnToggle.pending?.uuid === uuid ? vpnToggle.pending.state : state
+                        });
+                }
+                root.vpns = vpns;
+            }
+        }
+    }
+
+    // `nmcli connection up` blocks until the VPN is up (nm-applet asks for secrets if needed).
+    Process {
+        id: vpnToggle
+
+        property var pending: null
+
+        onExited: {
+            pending = null;
+            root.refreshVpns();
+            root.refreshDetails();
         }
     }
 }

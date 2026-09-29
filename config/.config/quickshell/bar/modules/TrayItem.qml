@@ -3,11 +3,15 @@ import Quickshell
 import Quickshell.Services.SystemTray
 import Quickshell.Widgets
 import qs.components
+import qs.config
+import qs.services as S
 
 MouseArea {
     id: root
 
     required property SystemTrayItem modelData
+    // nm-applet gets the network card instead of the plain tooltip.
+    readonly property bool isNetwork: modelData.id === "nm-applet"
 
     // From caelestia utils/Icons.qml getTrayIcon(): resolve "name?path=dir" icons.
     readonly property string iconSource: {
@@ -26,12 +30,13 @@ MouseArea {
         modelData.display(QsWindow.window, p.x, p.y);
     }
 
-    implicitWidth: 16
-    implicitHeight: 16
+    implicitWidth: Theme.trayIconSize
+    implicitHeight: Theme.trayIconSize
     hoverEnabled: true
     acceptedButtons: Qt.LeftButton | Qt.RightButton | Qt.MiddleButton
 
     onClicked: e => {
+        netPopup.item?.close();
         if (e.button === Qt.RightButton || (e.button === Qt.LeftButton && modelData.onlyMenu)) {
             if (modelData.hasMenu)
                 openMenu();
@@ -43,7 +48,7 @@ MouseArea {
     }
     onWheel: e => modelData.scroll(e.angleDelta.y / 120, false)
     onContainsMouseChanged: {
-        if (containsMouse)
+        if (containsMouse && !isNetwork)
             tipTimer.restart();
         else {
             tipTimer.stop();
@@ -68,5 +73,26 @@ MouseArea {
 
         target: root
         text: root.modelData.tooltipTitle || root.modelData.title
+    }
+
+    LazyLoader {
+        id: netPopup
+
+        active: root.isNetwork
+
+        HoverPopup {
+            target: root
+            onOpenChanged: {
+                S.Network.vpnWatchers += open ? 1 : -1;
+                if (open) {
+                    S.Network.refreshDetails();
+                    S.Network.refreshVpns();
+                }
+            }
+            Component.onDestruction: if (open)
+                S.Network.vpnWatchers--
+
+            NetworkPopup {}
+        }
     }
 }

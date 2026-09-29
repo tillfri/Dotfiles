@@ -23,13 +23,28 @@ BarModule {
         return levels[Math.min(levels.length - 1, Math.floor(percent / (100 / levels.length)))];
     }
 
-    tooltip: `${icon} at ${percent}%`
     onLeftClicked: Audio.toggleMute()
-    onRightClicked: Quickshell.execDetached(["pavucontrol"])
+    onRightClicked: {
+        pop.close();
+        Quickshell.execDetached(["pavucontrol"]);
+    }
     onScrolledUp: Audio.setVolume(Audio.volume + Audio.step)
     onScrolledDown: Audio.setVolume(Audio.volume - Audio.step)
 
     StyledText {
+        id: label
+
         text: Audio.muted ? "" : root.icon
+    }
+
+    HoverPopup {
+        id: pop
+
+        target: root
+
+        AudioPopup {
+            isSource: false
+            icon: label.text
+        }
     }
 }

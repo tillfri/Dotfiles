@@ -4,13 +4,30 @@ import qs.components
 import qs.services
 
 BarModule {
-    tooltip: ` at ${Math.round(Audio.sourceVolume * 100)}%`
+    id: root
+
     onLeftClicked: Audio.toggleSourceMute()
-    onRightClicked: Quickshell.execDetached(["pavucontrol"])
+    onRightClicked: {
+        pop.close();
+        Quickshell.execDetached(["pavucontrol"]);
+    }
     onScrolledUp: Audio.setSourceVolume(Audio.sourceVolume + Audio.step)
     onScrolledDown: Audio.setSourceVolume(Audio.sourceVolume - Audio.step)
 
     StyledText {
+        id: label
+
         text: Audio.sourceMuted ? "" : ""
+    }
+
+    HoverPopup {
+        id: pop
+
+        target: root
+
+        AudioPopup {
+            isSource: true
+            icon: label.text
+        }
     }
 }

@@ -2,10 +2,11 @@ import QtQuick
 import Quickshell
 import Quickshell.Services.SystemTray
 import qs.components
+import qs.config
 
 BarModule {
     visible: items.count > 0
-    spacing: 10
+    spacing: Theme.traySpacing
 
     Repeater {
         id: items

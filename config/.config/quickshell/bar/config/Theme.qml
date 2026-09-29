@@ -47,6 +47,26 @@ Singleton {
     readonly property int animDuration: 200
     readonly property list<real> animCurve: [0.55, -0.68, 0.48, 1.682, 1, 1]
 
+    // waybar's icon-size is 16, but GTK rendered the tray icons at ~22px
+    readonly property int trayIconSize: 22
+    readonly property int traySpacing: 10
+
+    // Hover popups and the dashboard: tooltip look, but only the background is translucent.
+    readonly property color popupBg: Qt.rgba(30 / 255, 30 / 255, 46 / 255, 0.9)
+    readonly property int popupRadius: 10
+    readonly property int popupPadding: 12
+    readonly property int popupSpacing: 8
+    readonly property int popupOpenDelay: 150
+    readonly property int popupCloseDelay: 250
+    readonly property int popupAnimDuration: 180
+    readonly property int popupFontSize: 15
+    readonly property color accent: "#59C2FF"
+    readonly property color accent2: "#D2A6FF"
+    readonly property color dim: "#7f849c"
+    readonly property color surface: Qt.rgba(1, 1, 1, 0.06)
+    readonly property color surfaceHover: Qt.rgba(1, 1, 1, 0.12)
+    readonly property int dashRadius: 15
+
     readonly property int stateInterval: 5000
     readonly property int tempCritical: 80
     readonly property list<string> tempSensors: ["k10temp", "coretemp"]
