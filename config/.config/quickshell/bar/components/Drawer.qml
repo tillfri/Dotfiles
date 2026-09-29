@@ -37,7 +37,7 @@ Item {
         if (hovered) {
             hoveredName = name;
             hoveredItem = item;
-        } else if (hoveredName === name) {
+        } else if (hoveredName === name && hoveredItem === item) {
             hoveredName = "";
         }
         update();

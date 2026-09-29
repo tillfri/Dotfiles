@@ -61,6 +61,7 @@ Singleton {
     // Longer so passing over the workspaces on the way to a click doesn't flash the dashboard.
     readonly property int dashOpenDelay: 350
     readonly property int popupGap: 6
+    readonly property int trayMenuWidth: 240
 
     // caelestia's M3 expressive motion (plugin/src/Caelestia/Config/tokens.hpp):
     // spatial = position/size with a slight overshoot, effects = opacity.

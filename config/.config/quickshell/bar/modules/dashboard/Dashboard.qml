@@ -11,6 +11,7 @@ RowLayout {
 
     function reset(): void {
         calendar.reset();
+        media.reset();
     }
 
     spacing: Theme.popupSpacing
@@ -24,6 +25,8 @@ RowLayout {
         Layout.fillHeight: true
     }
     MediaCard {
+        id: media
+
         Layout.fillHeight: true
         active: root.active
     }

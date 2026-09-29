@@ -2,15 +2,14 @@ import QtQuick
 import Quickshell
 import Quickshell.Services.SystemTray
 import Quickshell.Widgets
-import qs.components
 import qs.config
 
 MouseArea {
     id: root
 
     required property SystemTrayItem modelData
-    // nm-applet gets the network card instead of the plain tooltip.
-    readonly property bool isNetwork: modelData.id === "nm-applet"
+    // nm-applet gets the network card; everything else its title and menu.
+    readonly property string popout: modelData.id === "nm-applet" ? "network" : "tray"
 
     // From caelestia utils/Icons.qml getTrayIcon(): resolve "name?path=dir" icons.
     readonly property string iconSource: {
@@ -35,8 +34,7 @@ MouseArea {
     acceptedButtons: Qt.LeftButton | Qt.RightButton | Qt.MiddleButton
 
     onClicked: e => {
-        if (isNetwork)
-            QsWindow.window?.popouts?.close();
+        QsWindow.window?.popouts?.close();
         if (e.button === Qt.RightButton || (e.button === Qt.LeftButton && modelData.onlyMenu)) {
             if (modelData.hasMenu)
                 openMenu();
@@ -47,33 +45,10 @@ MouseArea {
         }
     }
     onWheel: e => modelData.scroll(e.angleDelta.y / 120, false)
-    onContainsMouseChanged: {
-        if (isNetwork)
-            QsWindow.window?.popouts?.setHover("network", root, containsMouse);
-        if (containsMouse && !isNetwork)
-            tipTimer.restart();
-        else {
-            tipTimer.stop();
-            tip.shown = false;
-        }
-    }
+    onContainsMouseChanged: QsWindow.window?.popouts?.setHover(popout, root, containsMouse)
 
     IconImage {
         anchors.fill: parent
         source: root.iconSource
-    }
-
-    Timer {
-        id: tipTimer
-
-        interval: 400
-        onTriggered: tip.shown = true
-    }
-
-    Tooltip {
-        id: tip
-
-        target: root
-        text: root.modelData.tooltipTitle || root.modelData.title
     }
 }

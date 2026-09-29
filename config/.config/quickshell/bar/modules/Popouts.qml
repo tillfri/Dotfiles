@@ -54,14 +54,20 @@ PanelWindow {
     Drawer {
         id: popout
 
-        readonly property Item pane: [volumePane, micPane, networkPane].find(p => p.name === current) ?? null
+        readonly property Item pane: [volumePane, micPane, networkPane, trayPane].find(p => p.name === current) ?? null
         readonly property bool networkShown: open && current === "network"
+        // Last hovered tray icon, kept while the card morphs away so its menu doesn't vanish.
+        property Item trayTarget
 
         y: root.barHeight
         contentWidth: pane?.implicitWidth ?? 0
         contentHeight: pane?.implicitHeight ?? 0
 
         // Keep VPN state fresh while the network pane is visible.
+        onCurrentItemChanged: {
+            if (current === "tray")
+                trayTarget = currentItem;
+        }
         onNetworkShownChanged: {
             S.Network.vpnWatchers += networkShown ? 1 : -1;
             if (networkShown) {
@@ -100,6 +106,18 @@ PanelWindow {
             name: "network"
 
             NetworkPopup {}
+        }
+
+        Pane {
+            id: trayPane
+
+            name: "tray"
+
+            TrayMenu {
+                target: popout.trayTarget
+                shown: popout.open && trayPane.shown
+                onActivated: popout.close()
+            }
         }
     }
 
