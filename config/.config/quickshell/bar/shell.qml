@@ -4,6 +4,8 @@ import QtQuick
 import Quickshell
 import qs.config
 import qs.modules
+import qs.modules.notifications
+import qs.modules.osd
 
 ShellRoot {
     Variants {
@@ -27,4 +29,8 @@ ShellRoot {
             }
         }
     }
+
+    Osd {}
+    Popups {}
+    NotifCenter {}
 }

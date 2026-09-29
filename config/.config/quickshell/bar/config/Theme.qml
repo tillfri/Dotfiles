@@ -77,6 +77,42 @@ Singleton {
     readonly property color surfaceHover: Qt.rgba(1, 1, 1, 0.12)
     readonly property int dashRadius: 15
 
+    // M3 standard curve, for value changes that shouldn't overshoot.
+    readonly property list<real> curveStandard: [0.2, 0, 0, 1, 1, 1]
+
+    // OSD: caelestia's vertical sliders at the right edge, shown by the media-key IPC calls.
+    readonly property int osdHideDelay: 1500
+    readonly property int osdSliderWidth: 30
+    readonly property int osdSliderHeight: 150
+    readonly property real brightnessMin: 0.05
+
+    // Notifications, ported from ~/.config/swaync (config.json + nova-dark theme).
+    readonly property color notifBg: Qt.rgba(0x41 / 255, 0x41 / 255, 0x41 / 255, 0.55)
+    readonly property color notifBorder: "#f65f48"
+    readonly property color notifCenterBorder: "#ffffff"
+    readonly property color notifCritical: "#ffffff"
+    readonly property color notifButton: "#2a2a3a"
+    readonly property color notifButtonHover: "#4a4a5a"
+    readonly property color notifRow: Qt.rgba(0x2a / 255, 0x2a / 255, 0x3a / 255, 0.4)
+    readonly property int notifRadius: 24
+    readonly property int notifRowRadius: 16
+    readonly property int notifWidth: 400
+    readonly property int notifCenterWidth: 380
+    readonly property int notifCenterHeight: 860
+    readonly property int notifIconSize: 48
+    readonly property int notifMargin: 16
+    readonly property int notifFontSize: 18
+    readonly property int notifBodySize: 14
+    // By NotificationUrgency (Low, Normal, Critical); an app's own timeout wins.
+    readonly property list<int> notifTimeout: [6000, 8000, 9000]
+    // Kept in the center without a popup (swaync's notification-visibility "muted").
+    readonly property var notifMuted: [
+        {
+            app: "Spotify",
+            urgency: 0
+        }
+    ]
+
     readonly property int stateInterval: 5000
     readonly property int tempCritical: 80
     readonly property list<string> tempSensors: ["k10temp", "coretemp"]

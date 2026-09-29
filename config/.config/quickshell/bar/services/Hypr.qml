@@ -13,6 +13,9 @@ Singleton {
     readonly property bool usingLua: Hyprland.usingLua
     readonly property HyprlandWorkspace focusedWorkspace: Hyprland.focusedWorkspace
     readonly property int activeWsId: focusedWorkspace?.id ?? 1
+    readonly property HyprlandMonitor focusedMonitor: Hyprland.focusedMonitor
+    // Where the OSD and notifications show up, like swayosd's/swaync's --monitor of the focused one.
+    readonly property ShellScreen focusedScreen: Quickshell.screens.find(s => s.name === focusedMonitor?.name) ?? Quickshell.screens[0] ?? null
 
     function dispatch(request: string): void {
         Hyprland.dispatch(request);
