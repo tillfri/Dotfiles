@@ -1,0 +1,121 @@
+#!/bin/bash
+# Exercise the quickshell notification daemon (modules/notifications) and the center.
+#   notif-test            run every section
+#   notif-test urgency …  run only the named sections (see `notif-test -h`)
+
+QS="qs ipc -c bar call notifs"
+IMG=$(find ~/.config/hypr/wallpapers -maxdepth 1 -type f \( -name '*.png' -o -name '*.jpg' \) 2>/dev/null | head -1)
+PAUSE=${PAUSE:-3}
+
+step() { printf '\n\e[1;34m== %s\e[0m\n   expect: %s\n' "$1" "$2"; }
+wait_() { sleep "$PAUSE"; }
+
+urgency() {
+    step "urgency" "three popups; critical has the white border and stays longest (6s / 8s / 9s)"
+    notify-send -a notif-test -u low "Low urgency" "Should disappear after ~6s"
+    notify-send -a notif-test -u normal "Normal urgency" "Should disappear after ~8s"
+    notify-send -a notif-test -u critical "Critical urgency" "Should disappear after ~9s"
+    wait_
+}
+
+content() {
+    step "content" "app icon, image, markup (bold/italic/link), long body wraps or elides"
+    notify-send -a notif-test -i dialog-information "Icon only" "Themed app icon on the left"
+    [ -n "$IMG" ] && notify-send -a notif-test -i dialog-information -h "string:image-path:$IMG" "With image" "Image hint: $(basename "$IMG")"
+    notify-send -a notif-test "Markup" '<b>bold</b>, <i>italic</i>, <u>underline</u> and <a href="https://quickshell.org">a link</a>'
+    notify-send -a notif-test "A rather long summary line that should not blow up the card width at all" \
+        "$(printf 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. %.0s' {1..6})"
+    notify-send -a notif-test "" "Empty summary, body only"
+    wait_
+}
+
+actions() {
+    step "actions" "buttons 'Open' / 'Later'; clicking one prints it here (card waits 20s)"
+    (
+        choice=$(notify-send -a notif-test -t 20000 -A open=Open -A later=Later -w "Actions" "Click a button")
+        printf '   -> action: %s\n' "${choice:-<none / dismissed>}"
+    ) &
+    wait_
+}
+
+replace() {
+    step "replace" "one card updating in place 1/3 -> 3/3, not three cards"
+    id=$(notify-send -a notif-test -p "Replace by id" "1/3")
+    for i in 2 3; do
+        sleep 1
+        notify-send -a notif-test -r "$id" "Replace by id" "$i/3"
+    done
+    step "sync tag" "volume-style: one card, 20% -> 80%, older ones replaced (x-canonical-private-synchronous)"
+    for v in 20 40 60 80; do
+        notify-send -a notif-test -h string:x-canonical-private-synchronous:notif-test -h "int:value:$v" "Volume" "$v%"
+        sleep 0.4
+    done
+    wait_
+}
+
+timeouts() {
+    step "timeouts" "app timeout wins: the 2s card goes before the default (8s) one"
+    notify-send -a notif-test "Default timeout" "Gone after ~8s"
+    notify-send -a notif-test -t 2000 "Custom timeout" "Gone after 2s"
+    wait_
+}
+
+muted() {
+    step "muted" "NO popup (Spotify + low is muted), but it shows up in the center"
+    notify-send -a Spotify -u low "Muted: Spotify" "Only visible in the notification center"
+    wait_
+}
+
+burst() {
+    step "burst" "6 popups stacking; hover one to pause its timer"
+    for i in {1..6}; do
+        notify-send -a notif-test "Burst $i/6" "Stacking test"
+    done
+    wait_
+}
+
+dnd() {
+    step "dnd" "DND on: normal one gets no popup, critical still pops; then DND off"
+    $QS toggleDnd
+    sleep 0.5
+    notify-send -a notif-test "DND: normal" "No popup, only in the center"
+    notify-send -a notif-test -u critical "DND: critical" "Pops up despite DND"
+    wait_
+    $QS toggleDnd
+}
+
+center() {
+    step "center" "center opens listing everything above, stays open ${PAUSE}s"
+    $QS open
+    wait_
+    step "center popups" "while open: no popup, the new entry appears at the top of the center"
+    notify-send -a notif-test "While center open" "Should land in the center, not as a popup"
+    wait_
+    $QS close
+    step "clear" "clear all: cards animate out, center empty afterwards"
+    $QS clear
+    sleep 1
+    $QS open
+    wait_
+    $QS close
+}
+
+ALL=(urgency content actions replace timeouts muted burst dnd center)
+
+if [[ "$1" == -h || "$1" == --help ]]; then
+    echo "usage: notif-test [section ...]   (PAUSE=secs between sections, default 3)"
+    echo "sections: ${ALL[*]}"
+    exit 0
+fi
+
+sections=("$@")
+[ ${#sections[@]} -eq 0 ] && sections=("${ALL[@]}")
+
+for s in "${sections[@]}"; do
+    if ! declare -F "$s" >/dev/null; then
+        echo "unknown section: $s (try -h)" >&2
+        exit 1
+    fi
+    "$s"
+done
+wait
