@@ -49,17 +49,12 @@ hl.window_rule({ match = { class = "^(steam)$" }, float = true })
 hl.layer_rule({ match = { namespace = "notifications" }, blur = true, animation = "slide", ignore_alpha = 0.1 })
 hl.layer_rule({ match = { namespace = "logout_dialog" }, blur = true, animation = "fade" })
 hl.layer_rule({ match = { namespace = "wofi" }, animation = "slide down", blur = true })
+-- Quickshell notifications and OSD animate themselves; hyprland only blurs them.
 hl.layer_rule({
-	match = { namespace = "swaync-notification-window" },
+	match = { namespace = "^(quickshell-notifications|quickshell-notifcenter|quickshell-osd)$" },
 	blur = true,
-	animation = "slide right",
 	ignore_alpha = 0.5,
-})
-hl.layer_rule({
-	match = { namespace = "swaync-control-center" },
-	blur = true,
-	animation = "slide right",
-	ignore_alpha = 0.5,
+	no_anim = true,
 })
 
 -- Discord screen-sharing

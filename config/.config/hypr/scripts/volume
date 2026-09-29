@@ -41,8 +41,9 @@ notify_user() {
     notify-send -h string:x-canonical-private-synchronous:volume -u low -i "$(get_icon)" "Volume : $(get_volume) %"
 }
 
-notify_user_swayosd() {
-    swayosd-client --monitor "$(hyprctl monitors -j | jq -r '.[] | select(.focused == true).name')" --custom-message "Volume : $(get_volume) %" --custom-icon "$(get_icon_naming)"
+# Show the new output's name in the Quickshell OSD (quickshell/bar/modules/osd)
+notify_user_osd() {
+    qs -c bar ipc call osd output
 }
 
 # change default sink (default output)
@@ -50,10 +51,10 @@ change_default_sink() {
     current=$(pactl get-default-sink)
     if [[ "$current" == "alsa_output.pci-0000_2a_00.4.analog-stereo" ]]; then
         pactl set-default-sink "alsa_output.usb-HP__Inc_HyperX_Cloud_III_S_Wireless_C1V53204W4-00.analog-stereo"
-        swayosd-client --monitor "$(hyprctl monitors -j | jq -r '.[] | select(.focused == true).name')" --custom-message "Switched to HyperX" --custom-icon "multimedia-volume-control"
+        notify_user_osd
     else
         pactl set-default-sink "alsa_output.pci-0000_2a_00.4.analog-stereo"
-        swayosd-client --monitor "$(hyprctl monitors -j | jq -r '.[] | select(.focused == true).name')" --custom-message "Switched to Speakers" --custom-icon "multimedia-volume-control"
+        notify_user_osd
     fi
 }
 
@@ -66,31 +67,31 @@ get_active_sink() {
 inc_volume() {
     currentSink=$(get_active_sink)
     # pamixer --sink "$currentSink" -i 2 && notify_user
-    pamixer -i 2 && notify_user_swayosd
+    pamixer -i 2
 }
 
 # Decrease Volume
 dec_volume() {
     currentSink=$(get_active_sink)
     # pamixer --sink "$currentSink" -d 2 && notify_user
-    pamixer -d 2 && notify_user_swayosd
+    pamixer -d 2
 }
 
 # Toggle Mute
 toggle_mute() {
     if [ "$(pamixer --get-mute)" == "false" ]; then
-        pamixer -m && swayosd-client --monitor "$(hyprctl monitors -j | jq -r '.[] | select(.focused == true).name')" --custom-message "Muted audio" --custom-icon "audio-volume-muted"
+        pamixer -m
     elif [ "$(pamixer --get-mute)" == "true" ]; then
-        pamixer -u && swayosd-client --monitor "$(hyprctl monitors -j | jq -r '.[] | select(.focused == true).name')" --custom-message "Resume audio" --custom-icon "$(get_icon_naming)"
+        pamixer -u
     fi
 }
 
 # Toggle Mic
 toggle_mic() {
     if [ "$(pamixer --default-source --get-mute)" == "false" ]; then
-        pamixer --default-source -m && swayosd-client --monitor "$(hyprctl monitors -j | jq -r '.[] | select(.focused == true).name')" --custom-message "Microphone muted" --custom-icon "audio-input-microphone"
+        pamixer --default-source -m
     elif [ "$(pamixer --default-source --get-mute)" == "true" ]; then
-        pamixer -u --default-source u && swayosd-client --monitor "$(hyprctl monitors -j | jq -r '.[] | select(.focused == true).name')" --custom-message "Microphone on" --custom-icon "audio-input-microphone"
+        pamixer -u --default-source u
     fi
 }
 

@@ -8,15 +8,16 @@
 -- "Media" example binds on the wiki.
 
 local script = os.getenv("HOME") .. "/.config/hypr/scripts"
-local focused_monitor = "$(hyprctl monitors -j | jq -r '.[] | select(.focused == true).name')"
+-- The Quickshell OSD (quickshell/bar/modules/osd) changes the value and shows it on the focused monitor.
+local osd = "qs -c bar ipc call osd "
 
-hl.bind("XF86AudioRaiseVolume", hl.dsp.exec_cmd('swayosd-client --output-volume raise --monitor "' .. focused_monitor .. '"'))
-hl.bind("XF86AudioLowerVolume", hl.dsp.exec_cmd('swayosd-client --output-volume lower --monitor "' .. focused_monitor .. '"'))
-hl.bind("XF86AudioMicMute", hl.dsp.exec_cmd(script .. "/volume --toggle-mic"))
-hl.bind("XF86AudioMute", hl.dsp.exec_cmd(script .. "/volume --toggle"))
+hl.bind("XF86AudioRaiseVolume", hl.dsp.exec_cmd(osd .. "volumeUp"))
+hl.bind("XF86AudioLowerVolume", hl.dsp.exec_cmd(osd .. "volumeDown"))
+hl.bind("XF86AudioMicMute", hl.dsp.exec_cmd(osd .. "toggleMic"))
+hl.bind("XF86AudioMute", hl.dsp.exec_cmd(osd .. "toggleMute"))
 
 hl.bind("XF86KbdBrightnessDown", hl.dsp.exec_cmd(script .. "/kb-brightness --dec"))
 hl.bind("XF86KbdBrightnessUp", hl.dsp.exec_cmd(script .. "/kb-brightness --inc"))
 
-hl.bind("XF86MonBrightnessDown", hl.dsp.exec_cmd('swayosd-client --brightness lower --monitor "' .. focused_monitor .. '"'))
-hl.bind("XF86MonBrightnessUp", hl.dsp.exec_cmd('swayosd-client --brightness raise --monitor "' .. focused_monitor .. '"'))
+hl.bind("XF86MonBrightnessDown", hl.dsp.exec_cmd(osd .. "brightnessDown"))
+hl.bind("XF86MonBrightnessUp", hl.dsp.exec_cmd(osd .. "brightnessUp"))

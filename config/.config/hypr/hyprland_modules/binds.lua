@@ -21,7 +21,7 @@ hl.bind("SUPER + F", hl.dsp.window.fullscreen({ mode = "maximized" })) -- switch
 hl.bind("SUPER + SHIFT + F", hl.dsp.window.fullscreen({ mode = "fullscreen" })) -- switch to fullscreen
 hl.bind("SUPER + B", hl.dsp.exec_cmd("blueman-manager"))
 hl.bind("SUPER + O", hl.dsp.exec_cmd("obsidian"))
-hl.bind("SUPER + N", hl.dsp.exec_cmd("swaync-client -t"))
+hl.bind("SUPER + N", hl.dsp.exec_cmd("qs -c bar ipc call notifs toggle"))
 -- hl.bind("SUPER + code:48", hl.dsp.exec_cmd("~/.config/hypr/scripts/change_background.sh"))
 -- hl.bind("SUPER + code:34", hl.dsp.exec_cmd("~/.config/hypr/scripts/turn_on_screen"))
 

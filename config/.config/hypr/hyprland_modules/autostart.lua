@@ -20,10 +20,9 @@ hl.on("hyprland.start", function()
 	hl.exec_cmd("--no-startup-id /usr/bin/gnome-keyring-daemon --start --components=secrets")
 	hl.exec_cmd("hyprpaper")
 	hl.exec_cmd("xwaylandvideobridge")
-	hl.exec_cmd("waybar")
+	-- Bar, OSD and notifications (~/.config/quickshell/bar)
+	hl.exec_cmd("qs -c bar")
 	hl.exec_cmd("hypridle")
-	-- Notification Daemon
-	-- hl.exec_cmd("swaync")
 	-- Bluetooth
 	hl.exec_cmd("blueman-applet")
 	-- NetworkManager
@@ -37,6 +36,4 @@ hl.on("hyprland.start", function()
 	-- Phone
 	hl.exec_cmd("/usr/bin/kdeconnectd")
 	hl.exec_cmd("/usr/bin/kdeconnect-indicator")
-	-- OSD for Volume/Brightness
-	hl.exec_cmd("swayosd-server")
 end)
