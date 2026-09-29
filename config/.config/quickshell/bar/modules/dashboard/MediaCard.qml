@@ -9,6 +9,8 @@ import qs.services
 Card {
     id: root
 
+    // Only poll the position while the dashboard is actually open.
+    property bool active
     readonly property MprisPlayer player: Players.active
     readonly property int contentWidth: 200
 
@@ -16,7 +18,7 @@ Card {
 
     // MPRIS doesn't signal position changes while playing; poll it like caelestia does.
     Timer {
-        running: root.visible && (root.player?.isPlaying ?? false)
+        running: root.active && (root.player?.isPlaying ?? false)
         interval: 1000
         repeat: true
         triggeredOnStart: true

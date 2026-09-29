@@ -1,6 +1,7 @@
 import QtQuick
 import Quickshell
 import qs.config
+import qs.modules.dashboard
 import qs.services
 
 // waybar hyprland/workspaces: persistent 1-5 plus any other normal workspace, on all outputs.
@@ -34,5 +35,14 @@ Rectangle {
                 height: root.height
             }
         }
+    }
+
+    HoverHandler {
+        id: hover
+    }
+
+    Dashboard {
+        target: root
+        targetHovered: hover.hovered
     }
 }

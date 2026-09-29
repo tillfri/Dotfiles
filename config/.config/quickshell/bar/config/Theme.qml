@@ -58,6 +58,8 @@ Singleton {
     readonly property int popupSpacing: 8
     readonly property int popupOpenDelay: 150
     readonly property int popupCloseDelay: 250
+    // Longer so passing over the workspaces on the way to a click doesn't flash the dashboard.
+    readonly property int dashOpenDelay: 350
     readonly property int popupAnimDuration: 180
     readonly property int popupFontSize: 15
     readonly property color accent: "#59C2FF"

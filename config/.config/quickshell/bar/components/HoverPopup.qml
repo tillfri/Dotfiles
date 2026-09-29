@@ -6,10 +6,14 @@ import qs.config
 PopupWindow {
     id: root
 
-    required property MouseArea target
+    required property Item target
+    // Defaults to the target's own hover state when it is a MouseArea.
+    property bool targetHovered: (target as MouseArea)?.containsMouse ?? false
+    property int openDelay: Theme.popupOpenDelay
+    property alias radius: card.radius
     default property alias content: inner.data
     property bool open
-    readonly property bool hovered: target.containsMouse || cardHover.hovered
+    readonly property bool hovered: targetHovered || cardHover.hovered
 
     function close(): void {
         openTimer.stop();
@@ -45,7 +49,7 @@ PopupWindow {
     Timer {
         id: openTimer
 
-        interval: Theme.popupOpenDelay
+        interval: root.openDelay
         onTriggered: root.open = true
     }
 
