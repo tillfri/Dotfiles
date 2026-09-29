@@ -60,7 +60,14 @@ Singleton {
     readonly property int popupCloseDelay: 250
     // Longer so passing over the workspaces on the way to a click doesn't flash the dashboard.
     readonly property int dashOpenDelay: 350
-    readonly property int popupAnimDuration: 180
+    readonly property int popupGap: 6
+
+    // caelestia's M3 expressive motion (plugin/src/Caelestia/Config/tokens.hpp):
+    // spatial = position/size with a slight overshoot, effects = opacity.
+    readonly property list<real> curveSpatial: [0.38, 1.21, 0.22, 1, 1, 1]
+    readonly property int durationSpatial: 500
+    readonly property list<real> curveEffects: [0.34, 0.8, 0.34, 1, 1, 1]
+    readonly property int durationEffects: 200
     readonly property int popupFontSize: 15
     readonly property color accent: "#59C2FF"
     readonly property color accent2: "#D2A6FF"

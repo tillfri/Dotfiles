@@ -4,7 +4,6 @@ import Quickshell.Services.SystemTray
 import Quickshell.Widgets
 import qs.components
 import qs.config
-import qs.services as S
 
 MouseArea {
     id: root
@@ -36,7 +35,8 @@ MouseArea {
     acceptedButtons: Qt.LeftButton | Qt.RightButton | Qt.MiddleButton
 
     onClicked: e => {
-        netPopup.item?.close();
+        if (isNetwork)
+            QsWindow.window?.popouts?.close();
         if (e.button === Qt.RightButton || (e.button === Qt.LeftButton && modelData.onlyMenu)) {
             if (modelData.hasMenu)
                 openMenu();
@@ -48,6 +48,8 @@ MouseArea {
     }
     onWheel: e => modelData.scroll(e.angleDelta.y / 120, false)
     onContainsMouseChanged: {
+        if (isNetwork)
+            QsWindow.window?.popouts?.setHover("network", root, containsMouse);
         if (containsMouse && !isNetwork)
             tipTimer.restart();
         else {
@@ -73,26 +75,5 @@ MouseArea {
 
         target: root
         text: root.modelData.tooltipTitle || root.modelData.title
-    }
-
-    LazyLoader {
-        id: netPopup
-
-        active: root.isNetwork
-
-        HoverPopup {
-            target: root
-            onOpenChanged: {
-                S.Network.vpnWatchers += open ? 1 : -1;
-                if (open) {
-                    S.Network.refreshDetails();
-                    S.Network.refreshVpns();
-                }
-            }
-            Component.onDestruction: if (open)
-                S.Network.vpnWatchers--
-
-            NetworkPopup {}
-        }
     }
 }

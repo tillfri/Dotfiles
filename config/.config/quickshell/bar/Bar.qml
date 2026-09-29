@@ -9,6 +9,8 @@ PanelWindow {
 
     required property ShellScreen modelData
     readonly property var conf: Theme.screens[modelData.name]
+    // This screen's overlay; bar items reach it via QsWindow.window.popouts.
+    required property Popouts popouts
 
     screen: modelData
     anchors {

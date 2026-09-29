@@ -1,7 +1,6 @@
 import QtQuick
 import Quickshell
 import qs.config
-import qs.modules.dashboard
 import qs.services
 
 // waybar hyprland/workspaces: persistent 1-5 plus any other normal workspace, on all outputs.
@@ -37,12 +36,8 @@ Rectangle {
         }
     }
 
+    // Hovering the workspaces opens the dashboard below them.
     HoverHandler {
-        id: hover
-    }
-
-    Dashboard {
-        target: root
-        targetHovered: hover.hovered
+        onHoveredChanged: root.QsWindow.window?.popouts?.setHover("dashboard", root, hovered)
     }
 }

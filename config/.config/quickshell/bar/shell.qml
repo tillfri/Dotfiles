@@ -3,11 +3,28 @@
 import QtQuick
 import Quickshell
 import qs.config
+import qs.modules
 
 ShellRoot {
     Variants {
         model: Quickshell.screens.filter(s => Theme.screens[s.name] !== undefined)
 
-        Bar {}
+        Scope {
+            id: scope
+
+            required property ShellScreen modelData
+
+            Bar {
+                modelData: scope.modelData
+                popouts: popouts
+            }
+
+            Popouts {
+                id: popouts
+
+                modelData: scope.modelData
+                barHeight: Theme.screens[scope.modelData.name].height
+            }
+        }
     }
 }

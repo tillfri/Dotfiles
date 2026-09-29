@@ -4,30 +4,16 @@ import qs.components
 import qs.services
 
 BarModule {
-    id: root
-
+    popout: "mic"
     onLeftClicked: Audio.toggleSourceMute()
     onRightClicked: {
-        pop.close();
+        popouts?.close();
         Quickshell.execDetached(["pavucontrol"]);
     }
     onScrolledUp: Audio.setSourceVolume(Audio.sourceVolume + Audio.step)
     onScrolledDown: Audio.setSourceVolume(Audio.sourceVolume - Audio.step)
 
     StyledText {
-        id: label
-
-        text: Audio.sourceMuted ? "" : ""
-    }
-
-    HoverPopup {
-        id: pop
-
-        target: root
-
-        AudioPopup {
-            isSource: true
-            icon: label.text
-        }
+        text: Audio.sourceIcon
     }
 }

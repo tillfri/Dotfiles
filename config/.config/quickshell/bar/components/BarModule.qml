@@ -1,13 +1,17 @@
 import QtQuick
+import Quickshell
 import qs.config
 
-// One waybar-style module: horizontal padding, hover tooltip, click/right-click/scroll handlers.
+// One waybar-style module: horizontal padding, hover tooltip or popout, click/right-click/scroll handlers.
 MouseArea {
     id: root
 
     default property alias content: row.data
     property alias spacing: row.spacing
     property string tooltip
+    // Pane this item opens in the Popouts overlay on hover ("" = none).
+    property string popout
+    readonly property var popouts: QsWindow.window?.popouts ?? null
 
     signal leftClicked
     signal rightClicked
@@ -42,6 +46,8 @@ MouseArea {
     }
 
     onContainsMouseChanged: {
+        if (popout)
+            popouts?.setHover(popout, root, containsMouse);
         if (containsMouse)
             tipTimer.restart();
         else {

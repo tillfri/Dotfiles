@@ -1,33 +1,30 @@
 import QtQuick
 import QtQuick.Layouts
-import qs.components
 import qs.config
 
-// Dropdown under the workspaces on hover: date/time, calendar, media.
-HoverPopup {
+// Dashboard content (shown in the Popouts overlay under the workspaces): date/time, calendar, media.
+RowLayout {
     id: root
 
-    openDelay: Theme.dashOpenDelay
-    radius: Theme.dashRadius
-    onOpenChanged: {
-        if (open)
-            calendar.reset();
+    // True while the dashboard is open; the media card only polls then.
+    property bool active
+
+    function reset(): void {
+        calendar.reset();
     }
 
-    RowLayout {
-        spacing: Theme.popupSpacing
+    spacing: Theme.popupSpacing
 
-        DateTimeCard {
-            Layout.fillHeight: true
-        }
-        CalendarCard {
-            id: calendar
+    DateTimeCard {
+        Layout.fillHeight: true
+    }
+    CalendarCard {
+        id: calendar
 
-            Layout.fillHeight: true
-        }
-        MediaCard {
-            Layout.fillHeight: true
-            active: root.open
-        }
+        Layout.fillHeight: true
+    }
+    MediaCard {
+        Layout.fillHeight: true
+        active: root.active
     }
 }
