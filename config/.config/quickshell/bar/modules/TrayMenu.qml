@@ -6,8 +6,10 @@ import Quickshell.Widgets
 import qs.components
 import qs.config
 
-// Hover card for a tray icon: its title and its context menu. Submenus open in place (the header
-// turns into a back button); entries stagger in each time the card opens or the menu changes.
+// Hover card for a tray icon: its title and its context menu. Hovering a submenu row expands its
+// entries inline below it, like the cascading platform menu; submenus nested in those open in place
+// (the header turns into a back button). Entries stagger in each time the card opens or the menu
+// changes.
 Column {
     id: root
 
@@ -17,6 +19,8 @@ Column {
     property bool shown
     // Submenu entries descended into; the last one is shown.
     property var path: []
+    // The submenu row of the shown menu whose entries are expanded inline.
+    property QsMenuEntry expanded
     readonly property QsMenuHandle menu: path.length ? path[path.length - 1] : target?.modelData.menu ?? null
     readonly property bool hasEntries: opener.children.values.length > 0
     readonly property string title: target?.modelData.tooltipTitle || target?.modelData.title || target?.modelData.id || ""
@@ -36,6 +40,7 @@ Column {
     spacing: 2
 
     onTargetChanged: path = []
+    onPathChanged: expanded = null
     onShownChanged: {
         if (shown) {
             path = [];
@@ -47,6 +52,17 @@ Column {
         id: opener
 
         menu: root.menu
+    }
+
+    // Hover intent: a row only expands (or collapses its sibling) once the pointer rests on it, so
+    // passing over rows on the way down doesn't flicker submenus open.
+    Timer {
+        id: expandTimer
+
+        property QsMenuEntry entry
+
+        interval: 150
+        onTriggered: root.expanded = entry?.hasChildren ? entry : null
     }
 
     // App icon and title; in a submenu, a back button named after it.
@@ -110,22 +126,85 @@ Column {
         Entry {}
     }
 
-    // One menu row: check/radio mark, icon, label, submenu chevron.
+    // A row of the shown menu; a submenu row carries its expanded entries below it.
     component Entry: Revealing {
         id: entry
 
         required property QsMenuEntry modelData
         required property int index
-        readonly property bool checkable: modelData.buttonType !== QsMenuButtonType.None
-        readonly property bool checked: modelData.checkState === Qt.Checked
+        readonly property bool expanded: root.expanded !== null && root.expanded === modelData
 
         order: index + 1
         width: root.width
-        implicitHeight: modelData.isSeparator ? 9 : 32
+        implicitHeight: row.height + (expanded ? subEntries.implicitHeight : 0)
+
+        EntryRow {
+            id: row
+
+            width: parent.width
+            modelData: entry.modelData
+            expanded: entry.expanded
+        }
+
+        Column {
+            id: subEntries
+
+            y: row.height
+            width: parent.width
+            visible: entry.expanded
+
+            QsMenuOpener {
+                id: subOpener
+
+                menu: entry.expanded ? entry.modelData : null
+            }
+
+            Repeater {
+                model: subOpener.children
+
+                SubEntry {}
+            }
+        }
+    }
+
+    // An entry of an expanded submenu, indented under it.
+    component SubEntry: Revealing {
+        id: subEntry
+
+        required property QsMenuEntry modelData
+        required property int index
+
+        order: index + 1
+        width: root.width
+        implicitHeight: subRow.height
+
+        EntryRow {
+            id: subRow
+
+            x: 16
+            width: parent.width - x
+            modelData: subEntry.modelData
+            nested: true
+        }
+    }
+
+    // One menu row: check/radio mark, icon, label, submenu chevron.
+    component EntryRow: Item {
+        id: entryRow
+
+        required property QsMenuEntry modelData
+        // In an expanded submenu: its own submenus open in place instead of expanding.
+        property bool nested
+        property bool expanded
+        readonly property bool checkable: (modelData?.buttonType ?? QsMenuButtonType.None) !== QsMenuButtonType.None
+        readonly property bool checked: modelData?.checkState === Qt.Checked
+        readonly property bool separator: modelData?.isSeparator ?? false
+
+        implicitHeight: separator ? 9 : 32
 
         Rectangle {
             anchors.centerIn: parent
-            visible: entry.modelData.isSeparator
+            visible: entryRow.separator
             width: parent.width
             height: 1
             color: Theme.surfaceHover
@@ -135,20 +214,20 @@ Column {
             id: leading
 
             anchors.verticalCenter: parent.verticalCenter
-            visible: !entry.modelData.isSeparator
+            visible: !entryRow.separator
             spacing: 10
 
             Label {
                 anchors.verticalCenter: parent.verticalCenter
-                visible: entry.checkable
-                color: entry.checked ? Theme.accent : Theme.dim
-                text: entry.modelData.buttonType === QsMenuButtonType.RadioButton ? (entry.checked ? "\u{f043e}" : "\u{f043d}") : (entry.checked ? "\u{f0132}" : "\u{f0131}")
+                visible: entryRow.checkable
+                color: entryRow.checked ? Theme.accent : Theme.dim
+                text: entryRow.modelData?.buttonType === QsMenuButtonType.RadioButton ? (entryRow.checked ? "\u{f043e}" : "\u{f043d}") : (entryRow.checked ? "\u{f0132}" : "\u{f0131}")
             }
             IconImage {
                 anchors.verticalCenter: parent.verticalCenter
-                visible: entry.modelData.icon !== ""
+                visible: (entryRow.modelData?.icon ?? "") !== ""
                 implicitSize: 18
-                source: entry.modelData.icon
+                source: entryRow.modelData?.icon ?? ""
             }
         }
 
@@ -157,30 +236,50 @@ Column {
             anchors.leftMargin: leading.width > 0 ? 10 : 0
             anchors.right: chevron.left
             anchors.verticalCenter: parent.verticalCenter
-            visible: !entry.modelData.isSeparator
+            visible: !entryRow.separator
             elide: Text.ElideRight
-            color: entry.modelData.enabled ? Theme.fg : Theme.dim
-            text: root.stripMnemonic(entry.modelData.text)
+            color: entryRow.modelData?.enabled ? Theme.fg : Theme.dim
+            text: root.stripMnemonic(entryRow.modelData?.text ?? "")
         }
 
+        // Points down while expanded inline.
         Label {
             id: chevron
 
             anchors.right: parent.right
             anchors.verticalCenter: parent.verticalCenter
-            visible: entry.modelData.hasChildren
+            visible: entryRow.modelData?.hasChildren ?? false
             width: visible ? implicitWidth : 0
-            color: Theme.dim
+            color: entryRow.expanded ? Theme.accent : Theme.dim
             text: "\u{f0142}"
+            rotation: entryRow.expanded ? 90 : 0
+
+            Behavior on rotation {
+                EffectsAnim {}
+            }
         }
 
         Highlight {
-            enabled: !entry.modelData.isSeparator && entry.modelData.enabled
+            enabled: !entryRow.separator && (entryRow.modelData?.enabled ?? false)
+            onContainsMouseChanged: {
+                if (entryRow.nested)
+                    return;
+                if (containsMouse) {
+                    expandTimer.entry = entryRow.modelData;
+                    expandTimer.restart();
+                } else if (expandTimer.entry === entryRow.modelData) {
+                    expandTimer.stop();
+                }
+            }
             onClicked: {
-                if (entry.modelData.hasChildren) {
-                    root.path = [...root.path, entry.modelData];
+                const e = entryRow.modelData;
+                if (e.hasChildren && !entryRow.nested) {
+                    expandTimer.stop();
+                    root.expanded = entryRow.expanded ? null : e;
+                } else if (e.hasChildren) {
+                    root.path = [...root.path, e];
                 } else {
-                    entry.modelData.triggered();
+                    e.triggered();
                     root.activated();
                 }
             }

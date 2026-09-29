@@ -23,9 +23,11 @@ MouseArea {
         return icon;
     }
 
+    // Not modelData.display(): in quickshell 0.3.1 it over-unrefs the menu handle when the menu is
+    // already loaded (the hover card holds it), which leaves the card's menu empty from then on.
     function openMenu(): void {
-        const p = mapToItem(null, 0, height);
-        modelData.display(QsWindow.window, p.x, p.y);
+        if (!menuAnchor.visible)
+            menuAnchor.open();
     }
 
     implicitWidth: Theme.trayIconSize
@@ -46,6 +48,15 @@ MouseArea {
     }
     onWheel: e => modelData.scroll(e.angleDelta.y / 120, false)
     onContainsMouseChanged: QsWindow.window?.popouts?.setHover(popout, root, containsMouse)
+
+    QsMenuAnchor {
+        id: menuAnchor
+
+        menu: root.modelData.menu
+        anchor.item: root
+        anchor.edges: Edges.Bottom
+        anchor.gravity: Edges.Bottom
+    }
 
     IconImage {
         anchors.fill: parent
