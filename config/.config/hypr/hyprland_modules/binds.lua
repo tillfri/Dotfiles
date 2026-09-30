@@ -22,6 +22,7 @@ hl.bind("SUPER + SHIFT + F", hl.dsp.window.fullscreen({ mode = "fullscreen" })) 
 hl.bind("SUPER + B", hl.dsp.exec_cmd("blueman-manager"))
 hl.bind("SUPER + O", hl.dsp.exec_cmd("obsidian"))
 hl.bind("SUPER + N", hl.dsp.exec_cmd("qs -c bar ipc call notifs toggle"))
+hl.bind("SUPER + I", hl.dsp.exec_cmd("qs -c bar ipc call dashboard toggle"))
 -- hl.bind("SUPER + code:48", hl.dsp.exec_cmd("~/.config/hypr/scripts/change_background.sh"))
 -- hl.bind("SUPER + code:34", hl.dsp.exec_cmd("~/.config/hypr/scripts/turn_on_screen"))
 

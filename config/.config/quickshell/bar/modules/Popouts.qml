@@ -1,5 +1,6 @@
 import QtQuick
 import Quickshell
+import Quickshell.Hyprland
 import Quickshell.Wayland
 import qs.components
 import qs.config
@@ -14,6 +15,8 @@ PanelWindow {
 
     required property ShellScreen modelData
     required property int barHeight
+    // This screen's dashboard was opened from the keyboard (SUPER+I): it stays open and takes the keys.
+    readonly property bool dashPinned: S.Dash.screen === modelData.name
 
     // Called by bar items: `name` selects the pane, `item` is what the card centres under.
     function setHover(name: string, item: Item, hovered: bool): void {
@@ -41,6 +44,9 @@ PanelWindow {
     color: "transparent"
     WlrLayershell.namespace: "quickshell-popouts"
     WlrLayershell.layer: WlrLayer.Top
+    // OnDemand, not Exclusive: the grab below hands over the keyboard, and hyprland would drop the
+    // grab again when this already mapped layer turned exclusive.
+    WlrLayershell.keyboardFocus: dashPinned ? WlrKeyboardFocus.OnDemand : WlrKeyboardFocus.None
 
     mask: Region {
         item: popout
@@ -48,6 +54,12 @@ PanelWindow {
         Region {
             item: dash
         }
+    }
+
+    HyprlandFocusGrab {
+        windows: [root]
+        active: root.dashPinned
+        onCleared: S.Dash.close()
     }
 
     // Volume, mic and network share one card that morphs between them.
@@ -127,6 +139,7 @@ PanelWindow {
         y: root.barHeight
         openDelay: Theme.dashOpenDelay
         radius: Theme.dashRadius
+        pinned: root.dashPinned
         onOpenChanged: {
             if (open)
                 dashboard.reset();

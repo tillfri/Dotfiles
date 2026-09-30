@@ -21,6 +21,26 @@ Card {
         selected = null;
     }
 
+    // Starting the shown player pauses the others, so only one plays.
+    function togglePlaying(): void {
+        if (!player?.canTogglePlaying)
+            return;
+        if (!player.isPlaying) {
+            for (const p of Players.players) {
+                if (p !== player && p.isPlaying && p.canPause)
+                    p.pause();
+            }
+        }
+        player.togglePlaying();
+    }
+
+    // Show the next (1) or previous (-1) source.
+    function cycle(step: int): void {
+        const n = Players.players.length;
+        if (n > 1)
+            selected = Players.players[(Players.players.indexOf(player) + step + n) % n];
+    }
+
     visible: player !== null
     onPlayerChanged: switchAnim.restart()
 
@@ -145,7 +165,7 @@ Card {
                     font.pixelSize: 22
                     text: root.player?.isPlaying ? "\u{f03e4}" : "\u{f040a}"
                     enabled: root.player?.canTogglePlaying ?? false
-                    onClicked: root.player.togglePlaying()
+                    onClicked: root.togglePlaying()
                 }
                 IconButton {
                     font.pixelSize: 22

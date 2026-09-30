@@ -16,6 +16,8 @@ Item {
     default property alias content: inner.data
 
     property bool open
+    // Held open whatever the pointer does (opened from the keyboard); unpinning closes it.
+    property bool pinned
     // What is shown (kept while closing so the content doesn't vanish mid-animation).
     property string current
     property Item currentItem
@@ -28,8 +30,9 @@ Item {
     property real offsetScale: open ? 0 : 1
     readonly property real fullHeight: card.implicitHeight + Theme.popupGap
     readonly property real targetCenter: {
+        // Pinned open without ever being hovered: centred, like the workspaces.
         if (!currentItem)
-            return 0;
+            return (parent?.width ?? 0) / 2;
         return currentItem.mapToItem(null, currentItem.width / 2, 0).x;
     }
 
@@ -57,6 +60,8 @@ Item {
     }
 
     function update(): void {
+        if (pinned)
+            return;
         if (hoveredName !== "") {
             closeTimer.stop();
             if (open)
@@ -79,6 +84,15 @@ Item {
     height: (card.height + Theme.popupGap) * (1 - offsetScale)
     // Stays visible at zero height so layouts inside keep their real size for the next open.
     clip: true
+    onPinnedChanged: {
+        if (pinned) {
+            openTimer.stop();
+            closeTimer.stop();
+            open = true;
+        } else {
+            close();
+        }
+    }
 
     Behavior on offsetScale {
         SpatialAnim {}

@@ -1,8 +1,11 @@
 import QtQuick
 import QtQuick.Layouts
 import qs.config
+import qs.services
 
 // Dashboard content (shown in the Popouts overlay under the workspaces): date/time, calendar, media.
+// Keys, when opened with SUPER+I: Space plays/pauses the shown player, Tab / Shift+Tab switch
+// the source, Esc closes.
 RowLayout {
     id: root
 
@@ -15,6 +18,21 @@ RowLayout {
     }
 
     spacing: Theme.popupSpacing
+    focus: true
+
+    Keys.onPressed: e => {
+        if (e.key === Qt.Key_Escape)
+            Dash.close();
+        else if (e.key === Qt.Key_Space)
+            media.togglePlaying();
+        else if (e.key === Qt.Key_Tab)
+            media.cycle(1);
+        else if (e.key === Qt.Key_Backtab)
+            media.cycle(-1);
+        else
+            return;
+        e.accepted = true;
+    }
 
     DateTimeCard {
         Layout.fillHeight: true
