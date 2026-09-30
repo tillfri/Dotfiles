@@ -52,6 +52,7 @@ kitty
 lazygit
 libnma-gtk4
 libpulse
+libqalculate
 libva
 libva-nvidia-driver-git
 linux
