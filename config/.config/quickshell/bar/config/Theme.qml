@@ -5,15 +5,15 @@ import Quickshell
 
 // Values ported from ~/.config/waybar/{style.css,desktop.jsonc,thinkpad.jsonc}
 Singleton {
-    // Screens that get a bar. Waybar's `height` was only a minimum; the 18px font made the
-    // desktop bar 43px tall, so use that. `exclusiveOffset` mirrors thinkpad's margin-bottom: -10.
+    // Screens that get a bar. Waybar's `height` was only a minimum; the 18px font made both
+    // bars 43px tall, so use that. `exclusiveOffset` mirrors thinkpad's margin-bottom: -10.
     readonly property var screens: ({
             "DP-2": {
                 height: 43,
                 exclusiveOffset: 0
             },
             "eDP-1": {
-                height: 36,
+                height: 43,
                 exclusiveOffset: -10
             }
         })
