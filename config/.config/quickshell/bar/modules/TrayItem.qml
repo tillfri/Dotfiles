@@ -4,6 +4,7 @@ import Quickshell.Services.SystemTray
 import Quickshell.Widgets
 import qs.components
 import qs.config
+import qs.services as S
 
 MouseArea {
     id: root
@@ -32,7 +33,7 @@ MouseArea {
             // nm-signal-{00,25,50,75,100}[-secure]; the lock variants are left out, as nearly every network is secured.
             const signal = name.match(/^nm-signal-(\d+)/);
             if (signal)
-                return ["\u{f092f}", "\u{f091f}", "\u{f0922}", "\u{f0925}", "\u{f0928}"][Math.min(4, Math.round(parseInt(signal[1]) / 25))];
+                return S.Network.signalGlyph(parseInt(signal[1]));
             if (name.includes("vpn"))
                 return "\u{f0582}";
             if (name.startsWith("nm-stage"))

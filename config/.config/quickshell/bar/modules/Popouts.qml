@@ -75,20 +75,21 @@ PanelWindow {
         contentWidth: pane?.implicitWidth ?? 0
         contentHeight: pane?.implicitHeight ?? 0
 
-        // Keep VPN state fresh while the network pane is visible.
+        // Keep the network card's data fresh while it is visible.
         onCurrentItemChanged: {
             if (current === "tray")
                 trayTarget = currentItem;
         }
         onNetworkShownChanged: {
-            S.Network.vpnWatchers += networkShown ? 1 : -1;
+            S.Network.watchers += networkShown ? 1 : -1;
             if (networkShown) {
                 S.Network.refreshDetails();
                 S.Network.refreshVpns();
+                S.Network.refreshNetworks(false);
             }
         }
         Component.onDestruction: if (networkShown)
-            S.Network.vpnWatchers--
+            S.Network.watchers--
 
         Pane {
             id: volumePane
@@ -117,7 +118,9 @@ PanelWindow {
 
             name: "network"
 
-            NetworkPopup {}
+            NetworkPopup {
+                shown: popout.networkShown
+            }
         }
 
         Pane {

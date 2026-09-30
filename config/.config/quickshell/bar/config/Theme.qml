@@ -62,6 +62,9 @@ Singleton {
     readonly property int dashOpenDelay: 350
     readonly property int popupGap: 6
     readonly property int trayMenuWidth: 240
+    readonly property int networkCardWidth: 340
+    // Available networks shown before the list scrolls.
+    readonly property int networkMaxRows: 8
 
     // caelestia's M3 expressive motion (plugin/src/Caelestia/Config/tokens.hpp):
     // spatial = position/size with a slight overshoot, effects = opacity.
