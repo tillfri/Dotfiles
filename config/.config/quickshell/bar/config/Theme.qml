@@ -93,7 +93,7 @@ Singleton {
     readonly property color notifBg: Qt.rgba(0x41 / 255, 0x41 / 255, 0x41 / 255, 0.55)
     readonly property color notifBorder: "#f65f48"
     readonly property color notifCenterBorder: "#ffffff"
-    readonly property color notifCritical: "#ffffff"
+    readonly property color notifCardBorder: "#ffffff"
     readonly property color notifButton: "#2a2a3a"
     readonly property color notifButtonHover: "#4a4a5a"
     readonly property color notifRow: Qt.rgba(0x2a / 255, 0x2a / 255, 0x3a / 255, 0.4)

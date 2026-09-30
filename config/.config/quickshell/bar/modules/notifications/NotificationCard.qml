@@ -70,7 +70,7 @@ Item {
         color: root.center ? Theme.notifRow : Theme.notifBg
         radius: root.center ? Theme.notifRowRadius : Theme.notifRadius
         border.width: root.critical ? 2 : root.center ? 0 : 1
-        border.color: root.critical ? Theme.notifCritical : Theme.notifBorder
+        border.color: Theme.notifCardBorder
 
         Behavior on x {
             enabled: !area.pressed
