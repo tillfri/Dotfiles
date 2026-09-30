@@ -2,6 +2,7 @@ import QtQuick
 import Quickshell
 import Quickshell.Services.SystemTray
 import Quickshell.Widgets
+import qs.components
 import qs.config
 
 MouseArea {
@@ -23,6 +24,33 @@ MouseArea {
         return icon;
     }
 
+    // nm-applet and blueman get a Nerd Font glyph like the other modules, picked from the state
+    // their icon name encodes; "" (an unknown state or another app) keeps the themed icon.
+    readonly property string glyph: {
+        const name = modelData.icon.split("?")[0].split("/").pop();
+        if (modelData.id === "nm-applet") {
+            // nm-signal-{00,25,50,75,100}[-secure]; the lock variants are left out, as nearly every network is secured.
+            const signal = name.match(/^nm-signal-(\d+)/);
+            if (signal)
+                return ["\u{f092f}", "\u{f091f}", "\u{f0922}", "\u{f0925}", "\u{f0928}"][Math.min(4, Math.round(parseInt(signal[1]) / 25))];
+            if (name.includes("vpn"))
+                return "\u{f0582}";
+            if (name.startsWith("nm-stage"))
+                return "\u{f092f}";
+            if (name === "nm-device-wired")
+                return "\u{f0200}";
+            if (name === "nm-no-connection")
+                return "\u{f05aa}";
+        } else if (modelData.id === "blueman") {
+            return ({
+                    "blueman-tray": "\u{f00af}",
+                    "blueman-active": "\u{f00b1}",
+                    "blueman-disabled": "\u{f00b2}"
+                })[name] ?? "";
+        }
+        return "";
+    }
+
     // Not modelData.display(): in quickshell 0.3.1 it over-unrefs the menu handle when the menu is
     // already loaded (the hover card holds it), which leaves the card's menu empty from then on.
     function openMenu(): void {
@@ -30,7 +58,7 @@ MouseArea {
             menuAnchor.open();
     }
 
-    implicitWidth: Theme.trayIconSize
+    implicitWidth: glyph ? glyphText.implicitWidth : Theme.trayIconSize
     implicitHeight: Theme.trayIconSize
     hoverEnabled: true
     acceptedButtons: Qt.LeftButton | Qt.RightButton | Qt.MiddleButton
@@ -60,6 +88,15 @@ MouseArea {
 
     IconImage {
         anchors.fill: parent
-        source: root.iconSource
+        visible: !root.glyph
+        source: visible ? root.iconSource : ""
+    }
+
+    StyledText {
+        id: glyphText
+
+        anchors.centerIn: parent
+        visible: root.glyph !== ""
+        text: root.glyph
     }
 }

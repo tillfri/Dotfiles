@@ -37,10 +37,13 @@ BarModule {
         }
     }
 
+    // Only as tall as the text: on the thinkpad the bar's bottom overlaps windows (exclusiveOffset).
     Rectangle {
         parent: root
         z: -1
-        anchors.fill: parent
+        anchors.verticalCenter: parent.verticalCenter
+        width: parent.width
+        height: root.implicitHeight
         visible: root.critical
         color: root.mix("#f53c3c", "#ffffff", root.phase)
     }

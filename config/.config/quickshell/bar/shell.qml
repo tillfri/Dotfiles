@@ -1,4 +1,6 @@
 //@ pragma UseQApplication
+//@ pragma IconTheme Papirus-Dark
+// IconTheme: independent of QT_QPA_PLATFORMTHEME, as qt6ct on the thinkpad sets none (falls back to hicolor).
 
 import QtQuick
 import Quickshell
