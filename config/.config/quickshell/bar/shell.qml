@@ -9,6 +9,7 @@ import qs.modules
 import qs.modules.launcher
 import qs.modules.notifications
 import qs.modules.osd
+import qs.modules.session
 
 ShellRoot {
     Variants {
@@ -37,4 +38,5 @@ ShellRoot {
     Popups {}
     NotifCenter {}
     Spotlight {}
+    SessionMenu {}
 }

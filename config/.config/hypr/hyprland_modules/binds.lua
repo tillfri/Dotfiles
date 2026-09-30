@@ -7,7 +7,7 @@ require("hyprland_modules/media-binds")
 
 hl.bind("SUPER + T", hl.dsp.exec_cmd("kitty")) -- open the terminal
 hl.bind("SUPER + Q", hl.dsp.window.close()) -- close the active window
-hl.bind("SUPER + ESCAPE", hl.dsp.exec_cmd("sh -c '(sleep 0.5s; wlogout --protocol layer-shell)'"))
+hl.bind("SUPER + ESCAPE", hl.dsp.exec_cmd("qs -c bar ipc call session toggle")) -- session menu
 -- hl.bind("SUPER + ESCAPE", hl.dsp.exec_cmd("hyprlock"))
 hl.bind("SUPER + M", hl.dsp.exec_cmd("~/.config/hypr/scripts/volume --toggle-sink"))
 hl.bind("SUPER + E", hl.dsp.exec_cmd("kitty yazi")) -- Show the graphical file browser

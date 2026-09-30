@@ -129,6 +129,25 @@ Singleton {
     // Runs Terminal=true desktop entries (wofi's term=kitty).
     readonly property list<string> launcherTerminal: ["kitty"]
 
+    // Session menu (replaces wlogout), ported from ~/.config/wlogout/style.css.
+    readonly property color sessionBg: Qt.rgba(10 / 255, 10 / 255, 10 / 255, 0.3)
+    readonly property color sessionButton: Qt.rgba(12 / 255, 12 / 255, 12 / 255, 0.3)
+    readonly property color sessionBorder: "#ffffff"
+    // The selected tile: a wsGradientActive ring, its inside dimmed by this so the labels stay readable.
+    readonly property color sessionHighlightDim: Qt.rgba(12 / 255, 12 / 255, 12 / 255, 0.45)
+    // The ring and its fill, so the wallpaper shows through the selected tile.
+    readonly property real sessionHighlightOpacity: 0.7
+    readonly property color sessionGlow: Qt.rgba(89 / 255, 194 / 255, 255 / 255, 0.35)
+    readonly property int sessionRadius: 20
+    // Two tiles' margin: 10px.
+    readonly property int sessionSpacing: 20
+    // wlogout's default -T/-B/-L/-R margin, around the grid.
+    readonly property int sessionMargin: 230
+    readonly property int sessionColumns: 3
+    // background-size: 25%
+    readonly property real sessionIconScale: 0.25
+    readonly property int sessionFontSize: 20
+
     readonly property int stateInterval: 5000
     readonly property int tempCritical: 80
     readonly property list<string> tempSensors: ["k10temp", "coretemp"]
