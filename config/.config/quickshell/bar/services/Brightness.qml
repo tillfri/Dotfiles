@@ -17,7 +17,9 @@ Singleton {
 
     // `arg` is brightnessctl's value: "5%+", "5%-" or "40%".
     function run(arg: string): void {
-        const cmd = ["brightnessctl", "-m", "-c", "backlight", "-n", `${Math.round(Theme.brightnessMin * 100)}%`, "set", arg];
+        // --min-value=N, not `-n N`: its argument is optional, so a separate "N" is taken as the
+        // operation (brightnessctl then only prints info and exits 0).
+        const cmd = ["brightnessctl", "-m", "-c", "backlight", `--min-value=${Math.round(Theme.brightnessMin * 100)}%`, "set", arg];
         if (proc.running)
             proc.pending = cmd;
         else

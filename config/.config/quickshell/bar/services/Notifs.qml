@@ -180,10 +180,10 @@ Singleton {
             }
         }
 
-        // swaync's timeout / timeout-low / timeout-critical; the app's own timeout (seconds) wins.
+        // swaync's timeout / timeout-low / timeout-critical; the app's own timeout (ms, as sent over D-Bus) wins.
         readonly property Timer expireTimer: Timer {
             running: entry.popup && !entry.paused
-            interval: (entry.notification?.expireTimeout ?? 0) > 0 ? entry.notification.expireTimeout * 1000 : Theme.notifTimeout[entry.urgency] ?? 8000
+            interval: (entry.notification?.expireTimeout ?? 0) > 0 ? entry.notification.expireTimeout : Theme.notifTimeout[entry.urgency] ?? 8000
             onTriggered: entry.popup = false
         }
 
