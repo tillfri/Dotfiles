@@ -48,10 +48,9 @@ hl.window_rule({ match = { class = "^(steam)$" }, float = true })
 -- Layer rules
 hl.layer_rule({ match = { namespace = "notifications" }, blur = true, animation = "slide", ignore_alpha = 0.1 })
 hl.layer_rule({ match = { namespace = "logout_dialog" }, blur = true, animation = "fade" })
-hl.layer_rule({ match = { namespace = "wofi" }, animation = "slide down", blur = true })
--- Quickshell notifications and OSD animate themselves; hyprland only blurs them.
+-- Quickshell notifications, OSD and launcher animate themselves; hyprland only blurs them.
 hl.layer_rule({
-	match = { namespace = "^(quickshell-notifications|quickshell-notifcenter|quickshell-osd)$" },
+	match = { namespace = "^(quickshell-notifications|quickshell-notifcenter|quickshell-osd|quickshell-launcher)$" },
 	blur = true,
 	ignore_alpha = 0.5,
 	no_anim = true,

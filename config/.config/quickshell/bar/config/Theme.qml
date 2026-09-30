@@ -113,6 +113,19 @@ Singleton {
         }
     ]
 
+    // Launcher: spotlight card for apps, clipboard history and script menus (replaces wofi).
+    readonly property int launcherWidth: 680
+    readonly property int launcherSearchHeight: 56
+    readonly property int launcherRowHeight: 52
+    readonly property int launcherMaxRows: 8
+    readonly property int launcherIconSize: 32
+    readonly property int launcherFontSize: 16
+    readonly property int launcherSubSize: 12
+    // Share of the screen height left above the card.
+    readonly property real launcherTop: 0.28
+    // Runs Terminal=true desktop entries (wofi's term=kitty).
+    readonly property list<string> launcherTerminal: ["kitty"]
+
     readonly property int stateInterval: 5000
     readonly property int tempCritical: 80
     readonly property list<string> tempSensors: ["k10temp", "coretemp"]

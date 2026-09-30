@@ -4,6 +4,7 @@ import QtQuick
 import Quickshell
 import qs.config
 import qs.modules
+import qs.modules.launcher
 import qs.modules.notifications
 import qs.modules.osd
 
@@ -33,4 +34,5 @@ ShellRoot {
     Osd {}
     Popups {}
     NotifCenter {}
+    Spotlight {}
 }

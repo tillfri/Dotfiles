@@ -34,5 +34,5 @@ hl.config({ decoration = { shadow = { enabled = false } } })
 hl.workspace_rule({ workspace = "s[true]", gaps_out = 50, gaps_in = 0 })
 
 -- Binds
-hl.bind("SUPER + SPACE", hl.dsp.exec_cmd("pkill wofi || wofi")) -- Show the graphical app launcher
+hl.bind("SUPER + SPACE", hl.dsp.exec_cmd("qs -c bar ipc call launcher toggle")) -- Show the graphical app launcher
 hl.bind("SUPER + SHIFT + SPACE", hl.dsp.exec_cmd("~/.config/hypr/scripts/capture-menu")) -- Capture menu (screenshot, screenrecord, color picker)

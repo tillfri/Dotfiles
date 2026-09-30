@@ -21,16 +21,16 @@ if pgrep -x wf-recorder &>/dev/null; then
   exit 0
 fi
 
-# Toggle wofi off if already open
-if pgrep -f "wofi.*--dmenu" >/dev/null; then
-  pkill -f "wofi.*--dmenu"
+# Toggle the menu off if already open
+if [[ $(qs -c bar ipc call launcher current 2>/dev/null) == menu ]]; then
+  qs -c bar ipc call launcher close
   exit 0
 fi
 
 menu() {
   local prompt="$1"
   local options="$2"
-  echo -e "$options" | wofi --dmenu --prompt "$prompt" --width 750 --height 400 --hide-scroll --no-actions 2>/dev/null
+  echo -e "$options" | ~/.config/hypr/scripts/qs-dmenu "$prompt"
 }
 
 start_screenrecord() {
@@ -66,7 +66,7 @@ get_device_id() {
   # Multiple devices: show names only, map selection back to ID
   local names line_num selected
   names=$(echo "$devices" | awk '{$1=""; sub(/^ /, ""); print "󰦄  " $0}')
-  selected=$(echo -e "$names" | wofi --dmenu --prompt "Device…" --width 750 --height 400 --hide-scroll --no-actions 2>/dev/null)
+  selected=$(echo -e "$names" | ~/.config/hypr/scripts/qs-dmenu "Device…")
   [[ -z $selected ]] && return 1
 
   line_num=$(echo -e "$names" | grep -nxF "$selected" | cut -d: -f1)

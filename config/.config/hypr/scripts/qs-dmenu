@@ -1,0 +1,19 @@
+#!/bin/bash
+
+# dmenu on the quickshell launcher (replaces `wofi --dmenu`): options on stdin, one per line,
+# the chosen one on stdout. Exits 1 when the menu was dismissed.
+# Usage: printf 'a\nb\n' | qs-dmenu "Prompt…"
+
+prompt="${1:-}"
+
+# The launcher writes the choice (or an empty line on dismiss) into this FIFO.
+reply=$(mktemp -u "${XDG_RUNTIME_DIR:-/tmp}/qs-dmenu.XXXXXX")
+mkfifo -m 600 "$reply" || exit 1
+trap 'rm -f "$reply"' EXIT
+
+qs -c bar ipc call launcher menu "$prompt" "$(cat)" "$reply" >/dev/null || exit 1
+
+# The timeout only matters if quickshell dies with the menu open.
+choice=$(timeout 300 cat "$reply")
+[[ -n $choice ]] || exit 1
+printf '%s\n' "$choice"

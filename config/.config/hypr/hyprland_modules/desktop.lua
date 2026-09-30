@@ -40,5 +40,5 @@ hl.workspace_rule({ workspace = "s[true]", gaps_out = 100, gaps_in = 0 })
 
 -- Binds
 hl.bind("SUPER + SHIFT + T", hl.dsp.exec_cmd("ghostty")) -- open the terminal
-hl.bind("SUPER + RETURN", hl.dsp.exec_cmd("pkill wofi || wofi")) -- Show the graphical app launcher
+hl.bind("SUPER + RETURN", hl.dsp.exec_cmd("qs -c bar ipc call launcher toggle")) -- Show the graphical app launcher
 hl.bind("SUPER + SHIFT + RETURN", hl.dsp.exec_cmd("~/.config/hypr/scripts/capture-menu")) -- Capture menu (screenshot, screenrecord, color picker)

@@ -15,7 +15,7 @@ hl.bind("SUPER + V", hl.dsp.window.float()) -- Allow a window to float
 -- hl.bind("SUPER + P", hl.dsp.exec_cmd("~/.config/hypr/scripts/toggle_internal_monitor"), { locked = true })
 hl.bind("SUPER + D", hl.dsp.layout("togglesplit")) -- dwindle
 hl.bind("SUPER + ALT + S", hl.dsp.exec_cmd('grim -g "$(slurp)" - | swappy -f -')) -- take a screenshot
-hl.bind("SUPER + X", hl.dsp.exec_cmd("cliphist list | wofi -d | cliphist decode | wl-copy")) -- open clipboard manager
+hl.bind("SUPER + X", hl.dsp.exec_cmd("qs -c bar ipc call launcher toggleMode clipboard")) -- open clipboard manager
 hl.bind("SUPER + Y", hl.dsp.exec_cmd("firefox"))
 hl.bind("SUPER + F", hl.dsp.window.fullscreen({ mode = "maximized" })) -- switch to fullscreen with bar
 hl.bind("SUPER + SHIFT + F", hl.dsp.window.fullscreen({ mode = "fullscreen" })) -- switch to fullscreen
