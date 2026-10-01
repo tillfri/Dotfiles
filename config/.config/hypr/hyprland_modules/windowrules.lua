@@ -50,11 +50,16 @@ hl.layer_rule({ match = { namespace = "notifications" }, blur = true, animation 
 hl.layer_rule({ match = { namespace = "logout_dialog" }, blur = true, animation = "fade" })
 -- Quickshell notifications, OSD and launcher animate themselves; hyprland only blurs them.
 hl.layer_rule({
-	match = { namespace = "^(quickshell-notifications|quickshell-notifcenter|quickshell-osd|quickshell-launcher)$" },
+	match = {
+		namespace = "^(quickshell-notifications|quickshell-notifcenter|quickshell-osd|quickshell-launcher)$",
+	},
 	blur = true,
 	ignore_alpha = 0.5,
 	no_anim = true,
 })
+-- The session menu's backdrop is only 30% opaque, so it needs a lower threshold for the whole
+-- screen behind the tiles to blur, not just the tiles.
+hl.layer_rule({ match = { namespace = "quickshell-session" }, blur = true, ignore_alpha = 0.01, no_anim = true })
 
 -- Discord screen-sharing
 hl.window_rule({
