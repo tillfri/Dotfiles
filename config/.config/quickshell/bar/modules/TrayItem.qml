@@ -4,7 +4,6 @@ import Quickshell.Services.SystemTray
 import Quickshell.Widgets
 import qs.components
 import qs.config
-import qs.services as S
 
 MouseArea {
     id: root
@@ -25,24 +24,11 @@ MouseArea {
         return icon;
     }
 
-    // nm-applet and blueman get a Nerd Font glyph like the other modules, picked from the state
-    // their icon name encodes; "" (an unknown state or another app) keeps the themed icon.
+    // blueman gets a Nerd Font glyph like the other modules, picked from the state its icon name
+    // encodes; "" (an unknown state or another app) keeps the themed icon.
     readonly property string glyph: {
         const name = modelData.icon.split("?")[0].split("/").pop();
-        if (modelData.id === "nm-applet") {
-            // nm-signal-{00,25,50,75,100}[-secure]; the lock variants are left out, as nearly every network is secured.
-            const signal = name.match(/^nm-signal-(\d+)/);
-            if (signal)
-                return S.Network.signalGlyph(parseInt(signal[1]));
-            if (name.includes("vpn"))
-                return "\u{f0582}";
-            if (name.startsWith("nm-stage"))
-                return "\u{f092f}";
-            if (name === "nm-device-wired")
-                return "\u{f0200}";
-            if (name === "nm-no-connection")
-                return "\u{f05aa}";
-        } else if (modelData.id === "blueman") {
+        if (modelData.id === "blueman") {
             return ({
                     "blueman-tray": "\u{f00af}",
                     "blueman-active": "\u{f00b1}",

@@ -35,7 +35,7 @@ Singleton {
     // Number of open popups that want the network card's data kept fresh.
     property int watchers: 0
 
-    // Nerd Font wifi strength glyph for a signal of 0..100 (also used for nm-applet's tray icon).
+    // Nerd Font wifi strength glyph for a signal of 0..100.
     function signalGlyph(signal: int): string {
         return ["\u{f092f}", "\u{f091f}", "\u{f0922}", "\u{f0925}", "\u{f0928}"][Math.max(0, Math.min(4, Math.round(signal / 25)))];
     }
