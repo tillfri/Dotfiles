@@ -1,6 +1,8 @@
 return {
   'MeanderingProgrammer/render-markdown.nvim',
+  ft = { 'markdown', 'ipynb' },
   opts = {
+    file_types = { 'markdown', 'ipynb' },
     completions = { lsp = { enabled = true } },
     link = {
       enabled = true,

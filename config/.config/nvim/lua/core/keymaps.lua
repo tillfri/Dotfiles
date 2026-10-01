@@ -25,8 +25,9 @@ vim.keymap.set('n', 'H', '^', opts)
 vim.keymap.set('n', 'L', 'g_', opts)
 
 -- Jump to next/previous occurence in quickfix list
-vim.keymap.set('n', '<leader>j', '<cmd>cnext<CR>', opts)
-vim.keymap.set('n', '<leader>k', '<cmd>cprev<CR>', opts)
+-- TODO: rebind these; <leader>k clashes with ipynb.nvim's <leader>k* notebook keymaps
+-- vim.keymap.set('n', '<leader>j', '<cmd>cnext<CR>', opts)
+-- vim.keymap.set('n', '<leader>k', '<cmd>cprev<CR>', opts)
 
 -- Jump up half a page when pressing CTRL+a
 vim.api.nvim_set_keymap('n', '<C-a>', '<C-u>zz', opts)
