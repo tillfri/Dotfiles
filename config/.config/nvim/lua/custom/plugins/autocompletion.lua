@@ -105,6 +105,14 @@ return { -- Autocompletion
     },
     sources = {
       default = { 'lsp', 'snippets', 'buffer', 'path' },
+      per_filetype = { org = { 'orgmode', 'snippets', 'path' } },
+      providers = {
+        orgmode = {
+          name = 'Orgmode',
+          module = 'orgmode.org.autocompletion.blink',
+          fallbacks = { 'buffer' },
+        },
+      },
     },
     fuzzy = { implementation = 'rust' },
   },
