@@ -3,6 +3,7 @@ import Quickshell
 import Quickshell.Wayland
 import qs.config
 import qs.modules
+import qs.services as S
 
 PanelWindow {
     id: root
@@ -48,6 +49,12 @@ PanelWindow {
 
     Workspaces {
         anchors.centerIn: parent
+    }
+
+    // Keeps the screen from idling while a focus work block runs (timer in the dashboard).
+    IdleInhibitor {
+        window: root
+        enabled: S.Focus.working
     }
 
     Row {

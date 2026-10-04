@@ -158,7 +158,8 @@ Singleton {
     // Polkit password card (replaces polkit-gnome), in the session menu's overlay.
     readonly property int polkitWidth: 460
 
-    // Focus timer (pomodoro), in minutes; the work length can be changed by scrolling on the module.
+    // Focus timer (pomodoro), in minutes; the work length can be changed by scrolling on the timer
+    // in the dashboard.
     readonly property int focusWork: 25
     readonly property int focusShort: 5
     readonly property int focusLong: 15

@@ -6,7 +6,7 @@ import Quickshell.Io
 import qs.config
 import qs.services
 
-// Pomodoro timer behind the bar's focus module (modules/Focus.qml), toggled by SUPER+C over IPC:
+// Pomodoro timer shown in the dashboard (modules/dashboard/FocusTimer.qml), toggled by SUPER+C over IPC:
 // work blocks with DND on, a short break after each and a long one after every Theme.focusCycles.
 // Phases run against a wall-clock end time, so a suspend doesn't stretch them, and the state is
 // persistent, so a config reload doesn't reset them. Finished work blocks are appended to logPath.
@@ -20,7 +20,7 @@ Singleton {
     property alias workMinutes: props.workMinutes
     readonly property bool active: phase !== "idle"
     readonly property bool paused: props.pausedLeft >= 0
-    // A work block is running (not paused): the bar module keeps the screen awake then.
+    // A work block is running (not paused): the bar keeps the screen awake then.
     readonly property bool working: phase === "work" && !paused
     property real now: Date.now()
     // Milliseconds left in the phase.
@@ -81,7 +81,7 @@ Singleton {
         }
     }
 
-    // Scroll on the module while stopped.
+    // Scroll on the dashboard timer while stopped.
     function adjust(delta: int): void {
         if (!active)
             workMinutes = Math.max(5, Math.min(120, workMinutes + delta));

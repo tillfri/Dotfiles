@@ -3,7 +3,8 @@ import QtQuick.Layouts
 import qs.config
 import qs.services
 
-// Dashboard content (shown in the Popouts overlay under the workspaces): date/time, calendar, media.
+// Dashboard content (shown in the Popouts overlay under the workspaces): date/time with the focus
+// timer, calendar, media.
 // Keys, when opened with SUPER+I: Space plays/pauses the shown player, Tab / Shift+Tab switch
 // the source, Esc closes.
 RowLayout {

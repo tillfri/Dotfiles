@@ -34,6 +34,15 @@ Card {
             text: Time.format("d. MMMM")
             color: Theme.dim
         }
+
+        Item {
+            width: 1
+            height: Theme.popupSpacing * 2
+        }
+
+        FocusTimer {
+            anchors.horizontalCenter: parent.horizontalCenter
+        }
     }
 
     component Big: StyledText {
