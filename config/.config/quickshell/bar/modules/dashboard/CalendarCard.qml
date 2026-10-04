@@ -94,7 +94,8 @@ Card {
 
             month: root.month
             year: root.year
-            locale: Qt.locale()
+            // en_GB: English names, but weeks start on Monday (en_US starts on Sunday)
+            locale: Qt.locale("en_GB")
             padding: 0
             spacing: 0
 
