@@ -1,26 +1,33 @@
 #!/bin/bash
+set -eu
 
-yay -Syu
+# du can't read pacman's root-owned download-* dirs; ignore that
+size() { du -sh "$1" 2>/dev/null | cut -f1; }
+
+sudo pacman -Syu
+
 echo "Clearing pacman cache..."
-before_pacman_cache=$(du -sh /var/cache/pacman/pkg/ | awk '{print $1}')
-paccache -r
-after_pacman_cache=$(du -sh /var/cache/pacman/pkg/ | awk '{print $1}')
+before_pacman_cache=$(size /var/cache/pacman/pkg)
+paccache -r    # keep last 3 versions of installed packages
+paccache -ruk0 # drop all versions of uninstalled packages
+after_pacman_cache=$(size /var/cache/pacman/pkg)
 echo "Pacman cache before: $before_pacman_cache, after: $after_pacman_cache"
 
 # echo "Removing orphan packages..."
-# orphans=$(yay -Qdtq)
-# if [[ -n "$orphans" ]]; then
-# 	yay -Rns $orphans
-# else
-# 	echo "No orphan packages found."
-# fi
+# yay -Yc
 
-echo "Clearing ~/.cache..."
-before_home_cache=$(du -sh ~/.cache | awk '{print $1}')
-rm -rf ~/.cache/*
-after_home_cache=$(du -sh ~/.cache | awk '{print $1}')
+# Only build/package caches; ~/.cache also holds the cliphist db and caches of running apps
+echo "Clearing build caches in ~/.cache..."
+before_home_cache=$(size ~/.cache)
+rm -rf ~/.cache/{yay,go-build,pip,uv,pnpm,yt-dlp,thumbnails}
+after_home_cache=$(size ~/.cache)
 echo "Home cache before: $before_home_cache, after: $after_home_cache"
 
-echo "Clearing system logs..."
-journalctl --vacuum-time=7d
-echo "System logs cleared."
+echo "Vacuuming system logs..."
+sudo journalctl --vacuum-time=7d
+
+pacnew=$(find /etc -name '*.pacnew' 2>/dev/null || true)
+if [[ -n $pacnew ]]; then
+    echo "Pending .pacnew files (run pacdiff):"
+    echo "$pacnew"
+fi

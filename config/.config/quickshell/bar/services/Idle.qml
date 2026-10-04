@@ -8,12 +8,17 @@ import qs.config
 import qs.services
 
 // Idle and sleep handling, replacing hypridle (ported from ~/.config/hypr/hypridle.conf): dims the
-// backlight, then turns the screens off, and locks before the system sleeps. Idle inhibitors
-// (video players, the focus timer) hold the idle steps off.
+// backlight (or overlays the screens, modules/IdleDim.qml), then turns the screens off, and locks
+// before the system sleeps. Idle inhibitors (the bar's: playing media, the focus timer) hold the
+// idle steps off.
 Singleton {
     id: root
 
     property bool enabled: true
+    // Past the dim timeout; screens without a backlight show modules/IdleDim.qml.
+    property bool dimmed
+    // A player other than Theme.idleIgnorePlayers is playing; the bar inhibits idle meanwhile.
+    readonly property bool mediaPlaying: Players.players.some(p => p.isPlaying && !Theme.idleIgnorePlayers.some(n => `${p.desktopEntry} ${p.identity}`.toLowerCase().includes(n)))
     // Backlight before dimming; -1 when not dimmed.
     property real dimmedFrom: -1
     // Between logind's PrepareForSleep(true) and the lock screen covering every output.
@@ -53,6 +58,7 @@ Singleton {
                 Brightness.set(root.dimmedFrom);
                 root.dimmedFrom = -1;
             }
+            root.dimmed = isIdle;
         }
     }
 

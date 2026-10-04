@@ -51,10 +51,11 @@ PanelWindow {
         anchors.centerIn: parent
     }
 
-    // Keeps the screen from idling while a focus work block runs (timer in the dashboard).
+    // Keeps the screen from idling while a focus work block runs (timer in the dashboard) or media
+    // plays (a video in the browser).
     IdleInhibitor {
         window: root
-        enabled: S.Focus.working
+        enabled: S.Focus.working || S.Idle.mediaPlaying
     }
 
     Row {

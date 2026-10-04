@@ -152,8 +152,16 @@ Singleton {
     readonly property color lockTint: Qt.rgba(25 / 255, 20 / 255, 20 / 255, 1)
     readonly property color lockFg: Qt.rgba(200 / 255, 200 / 255, 200 / 255, 1)
     // Idle steps in seconds (replaces hypridle): dim the backlight, then turn the screens off.
-    readonly property int idleDim: 270
+    readonly property int idleDim: 300
     readonly property int idleDpms: 900
+    // Screens without a backlight (external monitors) dim with a black overlay instead: its
+    // opacity and fade-in (ms).
+    readonly property real idleDimOpacity: 0.7
+    readonly property int idleDimFade: 2000
+    // A playing MPRIS player holds the idle steps off (hypridle got that from the browser's
+    // org.freedesktop.ScreenSaver inhibit), except these music apps (matched in the player's
+    // desktop entry / identity, lowercase).
+    readonly property list<string> idleIgnorePlayers: ["spotify"]
 
     // Polkit password card (replaces polkit-gnome), in the session menu's overlay.
     readonly property int polkitWidth: 460

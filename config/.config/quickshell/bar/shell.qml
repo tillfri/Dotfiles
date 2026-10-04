@@ -47,4 +47,5 @@ ShellRoot {
     SessionMenu {}
     PolkitDialog {}
     LockScreen {}
+    IdleDim {}
 }
