@@ -57,9 +57,9 @@ hl.layer_rule({
 	ignore_alpha = 0.5,
 	no_anim = true,
 })
--- The session menu's backdrop is only 30% opaque, so it needs a lower threshold for the whole
+-- The session menu's (and polkit card's) backdrop is only 30% opaque, so it needs a lower threshold for the whole
 -- screen behind the tiles to blur, not just the tiles.
-hl.layer_rule({ match = { namespace = "quickshell-session" }, blur = true, ignore_alpha = 0.01, no_anim = true })
+hl.layer_rule({ match = { namespace = "^(quickshell-session|quickshell-polkit)$" }, blur = true, ignore_alpha = 0.01, no_anim = true })
 
 -- Discord screen-sharing
 hl.window_rule({

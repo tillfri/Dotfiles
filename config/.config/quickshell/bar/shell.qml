@@ -9,6 +9,7 @@ import qs.modules
 import qs.modules.launcher
 import qs.modules.notifications
 import qs.modules.osd
+import qs.modules.polkit
 import qs.modules.session
 
 ShellRoot {
@@ -39,4 +40,5 @@ ShellRoot {
     NotifCenter {}
     Spotlight {}
     SessionMenu {}
+    PolkitDialog {}
 }

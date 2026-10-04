@@ -12,7 +12,6 @@ hl.on("hyprland.start", function()
 	hl.exec_cmd("~/.config/hypr/xdg-portal-hyprland")
 	hl.exec_cmd("dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP")
 	hl.exec_cmd("systemctl --user import-environment WAYLAND_DISPLAY XDG_CURRENT_DESKTOP")
-	hl.exec_cmd("/usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1")
 	-- NOTE: "--no-startup-id" is carried over verbatim from the original
 	-- exec-once line; it is not a real flag for gnome-keyring-daemon and
 	-- looks like a leftover from an i3/openbox config. Kept as-is for
