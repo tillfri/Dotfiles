@@ -19,9 +19,8 @@ hl.on("hyprland.start", function()
 	hl.exec_cmd("--no-startup-id /usr/bin/gnome-keyring-daemon --start --components=secrets")
 	hl.exec_cmd("hyprpaper")
 	hl.exec_cmd("xwaylandvideobridge")
-	-- Bar, OSD and notifications (~/.config/quickshell/bar)
+	-- Bar, OSD, notifications, idle and lock screen (~/.config/quickshell/bar)
 	hl.exec_cmd("qs -c bar")
-	hl.exec_cmd("hypridle")
 	-- NetworkManager
 	hl.exec_cmd("nm-applet --indicator")
 	-- Copy-Paste

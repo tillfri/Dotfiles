@@ -45,7 +45,7 @@ Singleton {
             label: "lock",
             text: "Lock",
             key: Qt.Key_L,
-            run: () => Quickshell.execDetached(["hyprlock"])
+            run: () => Lock.lock()
         },
         {
             label: "hibernate",
@@ -77,7 +77,7 @@ Singleton {
         close();
     }
 
-    // Runs the picked action; hyprlock would otherwise catch the menu fading out.
+    // Runs the picked action; the lock screen would otherwise catch the menu fading out.
     function settle(): void {
         const action = pending;
         pending = null;

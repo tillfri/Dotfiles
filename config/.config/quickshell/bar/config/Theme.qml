@@ -148,6 +148,13 @@ Singleton {
     readonly property real sessionIconScale: 0.25
     readonly property int sessionFontSize: 20
 
+    // Lock screen (replaces hyprlock), ported from ~/.config/hypr/hyprlock.conf.
+    readonly property color lockTint: Qt.rgba(25 / 255, 20 / 255, 20 / 255, 1)
+    readonly property color lockFg: Qt.rgba(200 / 255, 200 / 255, 200 / 255, 1)
+    // Idle steps in seconds (replaces hypridle): dim the backlight, then turn the screens off.
+    readonly property int idleDim: 270
+    readonly property int idleDpms: 900
+
     // Polkit password card (replaces polkit-gnome), in the session menu's overlay.
     readonly property int polkitWidth: 460
 

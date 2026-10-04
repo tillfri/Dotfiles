@@ -7,12 +7,17 @@ import Quickshell
 import qs.config
 import qs.modules
 import qs.modules.launcher
+import qs.modules.lock
 import qs.modules.notifications
 import qs.modules.osd
 import qs.modules.polkit
 import qs.modules.session
+import qs.services
 
 ShellRoot {
+    // Nothing else uses the idle handling, and singletons only load when used.
+    Component.onCompleted: Idle.enabled
+
     Variants {
         model: Quickshell.screens.filter(s => Theme.screens[s.name] !== undefined)
 
@@ -41,4 +46,5 @@ ShellRoot {
     Spotlight {}
     SessionMenu {}
     PolkitDialog {}
+    LockScreen {}
 }

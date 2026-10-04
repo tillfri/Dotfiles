@@ -25,6 +25,9 @@ hl.config({
 	misc = {
 		disable_hyprland_logo = true,
 		disable_splash_rendering = true,
+		-- A restarted quickshell can take the lock back after crashing while locked
+		-- (quickshell/bar/modules/lock), instead of leaving the red fallback screen.
+		allow_session_lock_restore = true,
 		-- new_window_takes_over_fullscreen = 2,
 	},
 
