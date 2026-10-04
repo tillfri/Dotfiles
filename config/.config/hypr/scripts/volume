@@ -1,6 +1,6 @@
 #!/bin/bash
 
-iDIR="$HOME/.config/swaync/icons"
+iDIR="$HOME/.config/hypr/scripts/icons"
 
 # Get Volume
 get_volume() {

@@ -41,9 +41,7 @@ gst-plugin-pipewire
 gvfs
 gvfs-smb
 htop
-hypridle
 hyprland
-hyprlock
 hyprpaper
 hyprsunset
 imagemagick
@@ -78,7 +76,6 @@ pipewire
 pipewire-alsa
 pipewire-jack
 pipewire-pulse
-polkit-gnome
 poppler
 python-requests
 qmk

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-iDIR="$HOME/.config/mako/icons"
+iDIR="$HOME/.config/hypr/scripts/icons"
 
 # Get brightness
 get_backlight() {
