@@ -23,8 +23,6 @@ hl.on("hyprland.start", function()
 	-- Bar, OSD and notifications (~/.config/quickshell/bar)
 	hl.exec_cmd("qs -c bar")
 	hl.exec_cmd("hypridle")
-	-- Bluetooth
-	hl.exec_cmd("blueman-applet")
 	-- NetworkManager
 	hl.exec_cmd("nm-applet --indicator")
 	-- Copy-Paste

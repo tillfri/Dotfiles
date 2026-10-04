@@ -59,6 +59,15 @@ Item {
         open = true;
     }
 
+    // Opens `name` under `item` and holds it there (opened from the keyboard); "" lets go again.
+    function pin(name: string, item: Item): void {
+        if (name !== "") {
+            current = name;
+            currentItem = item;
+        }
+        pinned = name !== "";
+    }
+
     function update(): void {
         if (pinned)
             return;

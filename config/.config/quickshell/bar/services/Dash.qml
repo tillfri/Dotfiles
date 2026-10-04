@@ -19,6 +19,7 @@ Singleton {
         const name = Hypr.focusedScreen?.name ?? "";
         // A focused screen without a bar has no dashboard; use the first one that has.
         screen = Theme.screens[name] !== undefined ? name : Quickshell.screens.find(s => Theme.screens[s.name] !== undefined)?.name ?? "";
+        Bt.close();
     }
 
     function close(): void {

@@ -19,7 +19,7 @@ hl.bind("SUPER + X", hl.dsp.exec_cmd("qs -c bar ipc call launcher toggleMode cli
 hl.bind("SUPER + Y", hl.dsp.exec_cmd("firefox"))
 hl.bind("SUPER + F", hl.dsp.window.fullscreen({ mode = "maximized" })) -- switch to fullscreen with bar
 hl.bind("SUPER + SHIFT + F", hl.dsp.window.fullscreen({ mode = "fullscreen" })) -- switch to fullscreen
-hl.bind("SUPER + B", hl.dsp.exec_cmd("blueman-manager"))
+hl.bind("SUPER + B", hl.dsp.exec_cmd("qs -c bar ipc call bluetooth toggle")) -- bluetooth card
 hl.bind("SUPER + O", hl.dsp.exec_cmd("obsidian"))
 hl.bind("SUPER + N", hl.dsp.exec_cmd("qs -c bar ipc call notifs toggle"))
 hl.bind("SUPER + I", hl.dsp.exec_cmd("qs -c bar ipc call dashboard toggle"))

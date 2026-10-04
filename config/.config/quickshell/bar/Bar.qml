@@ -65,6 +65,9 @@ PanelWindow {
         Network {
             height: parent.height
         }
+        Bluetooth {
+            height: parent.height
+        }
         Tray {
             height: parent.height
         }

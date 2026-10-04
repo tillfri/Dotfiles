@@ -17,10 +17,17 @@ PanelWindow {
     required property int barHeight
     // This screen's dashboard was opened from the keyboard (SUPER+I): it stays open and takes the keys.
     readonly property bool dashPinned: S.Dash.screen === modelData.name
+    // Likewise the bluetooth card (SUPER+B).
+    readonly property bool btPinned: S.Bt.pinnedScreen === modelData.name
 
     // Called by bar items: `name` selects the pane, `item` is what the card centres under.
     function setHover(name: string, item: Item, hovered: bool): void {
         (name === "dashboard" ? dash : popout).setHover(name, item, hovered);
+    }
+
+    // Called by a bar item opened from the keyboard: holds its pane open under it ("" lets go).
+    function pin(name: string, item: Item): void {
+        popout.pin(name, item);
     }
 
     function close(): void {
@@ -46,7 +53,13 @@ PanelWindow {
     WlrLayershell.layer: WlrLayer.Top
     // OnDemand, not Exclusive: the grab below hands over the keyboard, and hyprland would drop the
     // grab again when this already mapped layer turned exclusive.
-    WlrLayershell.keyboardFocus: dashPinned ? WlrKeyboardFocus.OnDemand : WlrKeyboardFocus.None
+    WlrLayershell.keyboardFocus: dashPinned || btPinned ? WlrKeyboardFocus.OnDemand : WlrKeyboardFocus.None
+
+    // Whichever was pinned last takes the keys (Bt.open and Dash.open close the other).
+    onDashPinnedChanged: if (dashPinned)
+        dashboard.forceActiveFocus()
+    onBtPinnedChanged: if (btPinned)
+        btKeys.forceActiveFocus()
 
     mask: Region {
         item: popout
@@ -58,15 +71,24 @@ PanelWindow {
 
     HyprlandFocusGrab {
         windows: [root]
-        active: root.dashPinned
-        onCleared: S.Dash.close()
+        active: root.dashPinned || root.btPinned
+        onCleared: {
+            S.Dash.close();
+            S.Bt.close();
+        }
     }
 
-    // Volume, mic and network share one card that morphs between them.
+    Item {
+        id: btKeys
+
+        Keys.onEscapePressed: S.Bt.close()
+    }
+
+    // Volume, mic, network, bluetooth and tray share one card that morphs between them.
     Drawer {
         id: popout
 
-        readonly property Item pane: [volumePane, micPane, networkPane, trayPane].find(p => p.name === current) ?? null
+        readonly property Item pane: [volumePane, micPane, networkPane, bluetoothPane, trayPane].find(p => p.name === current) ?? null
         readonly property bool networkShown: open && current === "network"
         // Last hovered tray icon, kept while the card morphs away so its menu doesn't vanish.
         property Item trayTarget
@@ -120,6 +142,16 @@ PanelWindow {
 
             NetworkPopup {
                 shown: popout.networkShown
+            }
+        }
+
+        Pane {
+            id: bluetoothPane
+
+            name: "bluetooth"
+
+            BluetoothPopup {
+                shown: popout.open && bluetoothPane.shown
             }
         }
 
