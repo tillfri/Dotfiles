@@ -148,6 +148,13 @@ Singleton {
     readonly property real sessionIconScale: 0.25
     readonly property int sessionFontSize: 20
 
+    // Focus timer (pomodoro), in minutes; the work length can be changed by scrolling on the module.
+    readonly property int focusWork: 25
+    readonly property int focusShort: 5
+    readonly property int focusLong: 15
+    // Work blocks before the long break.
+    readonly property int focusCycles: 4
+
     readonly property int stateInterval: 5000
     readonly property int tempCritical: 80
     readonly property list<string> tempSensors: ["k10temp", "coretemp"]

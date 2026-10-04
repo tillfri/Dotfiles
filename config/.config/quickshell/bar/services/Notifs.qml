@@ -26,7 +26,8 @@ Singleton {
 
     function shouldPopup(n: Notification): bool {
         // lastGeneration: carried over from before a config reload, so it was already shown.
-        return !n.lastGeneration && !centerOpen && !muted(n) && (!dnd || n.urgency === NotificationUrgency.Critical);
+        // DND lets through criticals and the focus timer's phase changes (it turns DND on itself).
+        return !n.lastGeneration && !centerOpen && !muted(n) && (!dnd || n.urgency === NotificationUrgency.Critical || n.appName === "Focus");
     }
 
     // Animate the card out, then close the notification.

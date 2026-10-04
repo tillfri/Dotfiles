@@ -56,6 +56,9 @@ PanelWindow {
         height: parent.height
         spacing: Theme.moduleMargin * 2
 
+        Focus {
+            height: parent.height
+        }
         Updates {
             height: parent.height
         }
