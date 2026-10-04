@@ -56,7 +56,6 @@ libva-nvidia-driver-git
 linux
 linux-firmware
 linux-headers
-mako
 man-db
 neovim
 network-manager-applet
@@ -152,10 +151,7 @@ udiskie
 ueberzugpp
 unzip
 vim
-waybar
 wireplumber
-wlogout
-wofi
 xdg-desktop-portal-hyprland
 xfce4-settings
 xorg-xrandr
