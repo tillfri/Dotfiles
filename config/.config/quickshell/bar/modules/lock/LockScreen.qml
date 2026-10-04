@@ -16,6 +16,14 @@ WlSessionLock {
 
     locked: Lock.locked
     onSecureChanged: Lock.secure = secure
+    // The lock can also end without an unlock (the compositor finishing it); the service would then
+    // still count as locked, and every later lock() would do nothing.
+    onLockedChanged: {
+        if (!locked && Lock.locked) {
+            console.warn("Session lock ended without an unlock");
+            Lock.locked = false;
+        }
+    }
 
     WlSessionLockSurface {
         id: surface
