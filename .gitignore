@@ -12,3 +12,4 @@ config/.config/pulse
 /config/.config/hypr/hyprpaper_machine.conf
 /config/.config/QtProject.conf
 /config/.config/hypr/hyprland_modules/machine.lua
+/config/.config/nvim/lazy-lock.json
