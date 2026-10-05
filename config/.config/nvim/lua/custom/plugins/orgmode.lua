@@ -14,6 +14,9 @@ return {
       org_deadline_warning_days = 7,
       org_hide_leading_stars = true,
       org_startup_folded = 'content',
+      -- Agenda and capture open in a centered float (80% of the screen).
+      win_split_mode = { 'float', 0.8 },
+      win_border = 'rounded',
       org_capture_templates = {
         t = { description = 'Inbox task', template = '* TODO %?\n  %U' },
         n = { description = 'Inbox note', template = '* %?\n  %U' },
