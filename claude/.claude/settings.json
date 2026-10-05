@@ -27,5 +27,10 @@
   },
   "effortLevel": "high",
   "theme": "auto",
-  "remoteControlAtStartup": false
+  "remoteControlAtStartup": false,
+  "modelSettings": {
+    "claude-opus-5-5": {
+      "effortLevel": "high"
+    }
+  }
 }
