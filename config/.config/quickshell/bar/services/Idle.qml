@@ -2,6 +2,7 @@ pragma Singleton
 
 import QtQuick
 import Quickshell
+import Quickshell.Hyprland
 import Quickshell.Io
 import Quickshell.Wayland
 import qs.config
@@ -31,9 +32,11 @@ Singleton {
         return id ? `/org/freedesktop/login1/session/${escaped}` : "";
     }
 
+    // Without a monitor, dpms only reaches the focused one, so address every monitor.
     function dpms(on: bool): void {
         const action = on ? "enable" : "disable";
-        Hypr.dispatch(Hypr.usingLua ? `hl.dsp.dpms({ action = "${action}" })` : `dpms ${on ? "on" : "off"}`);
+        for (const m of Hyprland.monitors.values)
+            Hypr.dispatch(Hypr.usingLua ? `hl.dsp.dpms({ action = "${action}", monitor = "${m.name}" })` : `dpms ${on ? "on" : "off"} ${m.name}`);
     }
 
     // Lets the suspend go ahead once the lock screen is up.
