@@ -8,5 +8,14 @@ return {
     'nvim-tree/nvim-web-devicons',
     'folke/snacks.nvim',
   },
-  opts = {},
+  opts = {
+    kernel = {
+      python_path = vim.fn.expand '~/.venvs/monorepo-pytest/bin/python',
+    },
+  },
+  init = function()
+    vim.keymap.set({ 'n', 'x' }, '<leader>kl', function()
+      require('custom.ipynb_lens').open()
+    end, { desc = 'Notebook: view expression in csvlens' })
+  end,
 }

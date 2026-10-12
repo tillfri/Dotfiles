@@ -1,6 +1,6 @@
 -- Orgmode: tasks, agenda and capture for work, thesis and personal life.
 -- Files live in ~/org (inbox.org, work.org, thesis.org, personal.org).
---   <leader>oc  capture      <leader>oa  agenda      g?  help inside org buffers
+--   <leader>oc  capture      <leader>oa  agenda      <leader>od  today's agenda      g?  help inside org buffers
 return {
   'nvim-orgmode/orgmode',
   event = 'VeryLazy',
@@ -9,6 +9,7 @@ return {
     require('orgmode').setup {
       org_agenda_files = '~/org/**/*',
       org_default_notes_file = '~/org/inbox.org',
+      org_agenda_span = 'day', -- agenda opens on today; press vw in the agenda for the week
       org_todo_keywords = { 'TODO(t)', 'NEXT(n)', 'WAITING(w)', '|', 'DONE(d)', 'CANCELLED(c)' },
       org_log_done = 'time',
       org_deadline_warning_days = 7,
@@ -44,5 +45,9 @@ return {
         },
       },
     }
+
+    vim.keymap.set('n', '<leader>od', function()
+      require('orgmode.api.agenda').agenda { span = 'day' }
+    end, { desc = "Org agenda (today)" })
   end,
 }
