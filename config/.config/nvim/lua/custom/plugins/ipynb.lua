@@ -13,6 +13,10 @@ return {
       python_path = vim.fn.expand '~/.venvs/monorepo-pytest/bin/python',
     },
   },
+  config = function(_, opts)
+    require('ipynb').setup(opts)
+    require('custom.ipynb_visuals').setup()
+  end,
   init = function()
     vim.keymap.set({ 'n', 'x' }, '<leader>kl', function()
       require('custom.ipynb_lens').open()
