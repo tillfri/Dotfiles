@@ -156,6 +156,12 @@ model_label="${model}${effort:+ $effort}"
 right="${MAGENTA}${model_label}${RESET}"
 right_plain="$model_label"
 
+# ── Backend: tag sessions routed through the LiteLLM/Copilot gateway (ccg) ──
+if [ -n "$ANTHROPIC_BASE_URL" ]; then
+    right="${BOLD}${CYAN}[Copilot]${RESET} ${right}"
+    right_plain="[Copilot] ${right_plain}"
+fi
+
 if [ -n "$five_hr" ]; then
     v=$(printf '%.0f' "$five_hr")
     right="${right} ${DIM}5h:${RESET} $(pct_color "$v")${v}%${RESET}"
