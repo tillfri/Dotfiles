@@ -16,6 +16,21 @@ return {
   config = function(_, opts)
     require('ipynb').setup(opts)
     require('custom.ipynb_visuals').setup()
+
+    -- Autostart the kernel on open (the plugin's kernel.auto_connect option is
+    -- declared but never read). Same call as <leader>ks.
+    vim.api.nvim_create_autocmd('FileType', {
+      pattern = 'ipynb',
+      group = vim.api.nvim_create_augroup('IpynbAutostart', { clear = true }),
+      callback = function(args)
+        vim.schedule(function()
+          local state = require('ipynb.state').get_by_facade(args.buf)
+          if state and not (state.kernel and state.kernel.job_id) then
+            require('ipynb.kernel').connect(state, {})
+          end
+        end)
+      end,
+    })
   end,
   init = function()
     vim.keymap.set({ 'n', 'x' }, '<leader>kl', function()

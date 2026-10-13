@@ -24,6 +24,30 @@ return {
           },
           opts = { skip = true },
         },
+        -- ipynb.nvim: hide kernel chatter (still listed in :Noice history).
+        -- Kernel stderr (JVM/Spark logs, ZMQ warnings) only pops up on errors.
+        {
+          filter = {
+            event = 'notify',
+            any = {
+              { find = '^Using Python: ' },
+              { find = '^Kernel bridge ready' },
+              { find = '^Language updated from kernel' },
+              {
+                find = '^Kernel bridge stderr: ',
+                ['not'] = {
+                  any = {
+                    { find = 'ERROR' },
+                    { find = 'Error' },
+                    { find = 'Exception' },
+                    { find = 'Traceback' },
+                  },
+                },
+              },
+            },
+          },
+          opts = { skip = true },
+        },
         {
           view = 'notify',
           filter = {

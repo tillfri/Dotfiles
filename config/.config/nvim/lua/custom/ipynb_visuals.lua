@@ -31,11 +31,14 @@ end
 
 local function set_highlights()
   local bg = color('Normal', 'bg', '#222436')
+  local fg = color('Normal', 'fg', '#c8d3f5')
   local blue = color('Function', 'fg', '#82aaff')
   local orange = color('Constant', 'fg', '#ff966c')
 
   vim.api.nvim_set_hl(0, 'IpynbBorder', { fg = blend(blue, 0.55, bg) })
   vim.api.nvim_set_hl(0, 'IpynbBorderHover', { fg = orange, bold = true })
+  -- Output: readable, but dimmer than cell content (which uses full Normal fg).
+  vim.api.nvim_set_hl(0, 'IpynbOutput', { fg = blend(fg, 0.75, bg), italic = true })
   -- Code cells a bit lighter (bluish), markdown cells a bit darker than Normal;
   -- both stay distinct from CursorLine.
   vim.api.nvim_set_hl(0, 'IpynbCodeCell', { bg = blend(blue, 0.07, bg) })
