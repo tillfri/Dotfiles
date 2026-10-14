@@ -7,6 +7,7 @@
 --   ╭─[󰦖 12]─ python ─╮   running
 --   ╭─[󰄬 12]─ python ─╮   finished OK
 --   ╭─[󰅖 12]─ python ─╮   finished with an error
+--   ╭─[󰏫 12]─ python ─╮   finished, but the code was edited since
 --   ╭─[12]─ python ───╮   count from the file / an earlier kernel (dimmed)
 --
 -- The tint is drawn in our own namespace by wrapping ipynb.visuals.render_all,
@@ -14,7 +15,7 @@
 -- update. The indicator rewrites the plugin's top-border extmark by wrapping
 -- ipynb.visuals.render_cell. This relies on internals (visuals.render_all,
 -- visuals.render_cell and its 'notebook_visuals' namespace and border segment
--- layout, cells.get_cell_range, kernel.connect/restart, cell.execution_state),
+-- layout, cells.get_cell_range, kernel.connect/restart/execute, cell.execution_state),
 -- so re-check this file when bumping the plugin's pinned commit.
 
 local M = {}
@@ -23,12 +24,18 @@ local ns = vim.api.nvim_create_namespace 'ipynb_cell_tint'
 -- The plugin's namespace; nvim_create_namespace returns the existing id.
 local visual_ns = vim.api.nvim_create_namespace 'notebook_visuals'
 
----Run record per notebook state, then per cell id: { status, start }.
----status: 'queued' | 'running' | 'ok' | 'error'; start: count when sent.
+---Run record per notebook state, then per cell id: { status, source }.
+---status: 'queued' | 'running' | 'ok' | 'error'; source: the code that was sent.
 local runs = setmetatable({}, { __mode = 'k' })
 
-local icons = { queued = '󰔟', running = '󰦖', ok = '󰄬', error = '󰅖' }
-local icon_hl = { queued = 'IpynbQueued', running = 'IpynbExecuting', ok = 'IpynbRunOk', error = 'IpynbRunError' }
+local icons = { queued = '󰔟', running = '󰦖', ok = '󰄬', error = '󰅖', modified = '󰏫' }
+local icon_hl = {
+  queued = 'IpynbQueued',
+  running = 'IpynbExecuting',
+  ok = 'IpynbRunOk',
+  error = 'IpynbRunError',
+  modified = 'IpynbRunModified',
+}
 
 ---Mix two '#rrggbb' colors; alpha = weight of fg.
 local function blend(fg, alpha, bg)
@@ -65,6 +72,7 @@ local function set_highlights()
   vim.api.nvim_set_hl(0, 'IpynbMarkdownCell', { bg = blend('#000000', 0.18, bg) })
   vim.api.nvim_set_hl(0, 'IpynbRunOk', { link = 'DiagnosticOk' })
   vim.api.nvim_set_hl(0, 'IpynbRunError', { link = 'DiagnosticError' })
+  vim.api.nvim_set_hl(0, 'IpynbRunModified', { link = 'DiagnosticInfo' })
 end
 
 ---Tint every line of every cell, top border through bottom border.
@@ -116,7 +124,8 @@ end
 
 ---Advance each code cell's run record from the plugin's execution_state.
 ---The plugin marks a cell 'busy' as soon as it is sent, so it only counts as
----running once the kernel has assigned it a new execution count.
+---running once the kernel has assigned it an execution count (cleared on send
+---by the kernel.execute wrapper below).
 local function track_runs(state)
   runs[state] = runs[state] or {}
   local records = runs[state]
@@ -126,14 +135,14 @@ local function track_runs(state)
       local active = r and (r.status == 'queued' or r.status == 'running')
       if cell.execution_state == 'busy' then
         if not active then
-          r = { status = 'queued', start = count_of(cell) }
+          r = { status = 'queued', source = cell.source }
           records[cell.id] = r
         end
-        if r.status == 'queued' and count_of(cell) ~= r.start then
+        if r.status == 'queued' and count_of(cell) then
           r.status = 'running'
         end
       elseif active then
-        if r.status == 'running' or count_of(cell) ~= r.start then
+        if r.status == 'running' or count_of(cell) then
           r.status = has_error(cell) and 'error' or 'ok'
         else
           -- Went idle without ever starting: aborted by an interrupt.
@@ -148,6 +157,9 @@ end
 local function indicator(state, cell)
   local r = runs[state] and runs[state][cell.id]
   local status = r and r.status
+  if (status == 'ok' or status == 'error') and cell.source ~= r.source then
+    status = 'modified'
+  end
   local count = status ~= 'queued' and count_of(cell) or nil
   if not status and not count then
     return nil
@@ -246,6 +258,26 @@ function M.setup()
     draw_indicator(state, cell_idx, target_buf or state.facade_buf)
   end
 
+  -- Edits in a cell's float only re-render on line-count changes or when the
+  -- float closes; re-render the cell when leaving insert mode or after a
+  -- normal-mode change so the modified marker shows up right away. Scheduled
+  -- because the plugin's own handlers (which update cell.source) run after ours.
+  vim.api.nvim_create_autocmd({ 'InsertLeave', 'TextChanged' }, {
+    group = vim.api.nvim_create_augroup('IpynbRunModified', { clear = true }),
+    callback = function(args)
+      if not vim.b[args.buf].ipynb_is_edit_buffer then
+        return
+      end
+      vim.schedule(function()
+        local state = require('ipynb.state').get_from_edit_buf(args.buf)
+        local edit = state and state.edit_state
+        if edit and edit.buf == args.buf then
+          visuals.render_all(state, { edit.cell_idx })
+        end
+      end)
+    end,
+  })
+
   -- A new or restarted kernel invalidates all run results.
   local kernel = require 'ipynb.kernel'
   for _, name in ipairs { 'connect', 'restart' } do
@@ -254,6 +286,26 @@ function M.setup()
       runs[state] = nil
       return fn(state, ...)
     end
+  end
+
+  -- Clear the count when a cell is sent, like Jupyter's [*]: the new count may
+  -- equal the old one (e.g. re-running in a fresh kernel), so only a cleared
+  -- count tells us reliably when the kernel has started the cell. A cell that
+  -- gets aborted by an interrupt ends up without a count, as in Jupyter.
+  -- Cleared before the call, as execute() renders the cell as sent; restored
+  -- if nothing was sent (no kernel, not a code cell).
+  local execute = kernel.execute
+  kernel.execute = function(state, cell_idx)
+    local cell = state.cells[cell_idx]
+    local count = cell and cell.execution_count
+    if cell then
+      cell.execution_count = nil
+    end
+    local sent = execute(state, cell_idx)
+    if not sent and cell then
+      cell.execution_count = count
+    end
+    return sent
   end
 end
 
