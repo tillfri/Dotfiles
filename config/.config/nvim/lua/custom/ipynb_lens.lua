@@ -1,15 +1,18 @@
--- View a dataframe-like expression from the running ipynb.nvim kernel in csvlens.
+-- Look at an expression from the running ipynb.nvim kernel:
+--   M.open(): dataframe-like expression in csvlens
+--   M.full(): full, untruncated repr in a scrollable float
 --
 -- Connects as a second Jupyter client (same connection file as the plugin's
 -- bridge) and evaluates the expression via a silent execute_request with
 -- user_expressions: nothing is defined in the kernel, no history, no execution
--- count bump, and no output reaches the notebook. The CSV is piped into csvlens.
+-- count bump, and no output reaches the notebook.
 
 local M = {}
 
 M.python = vim.fn.expand '~/.venvs/monorepo-pytest/bin/python'
 M.viewer = { 'csvlens' }
 M.timeout = 30 -- seconds to wait for the kernel (it queues behind a running cell)
+M.max_chars = 5000000 -- cap for M.full(), so a huge object doesn't flood nvim
 
 -- argv: connection_file, expression, timeout, viewer...
 local fetch_and_view = [[
@@ -45,6 +48,81 @@ if res.get("status") != "ok":
 
 csv = ast.literal_eval(res["data"]["text/plain"])
 sys.exit(subprocess.run(viewer, input=csv.encode()).returncode)
+]]
+
+-- Runs inside the kernel (exec'd into a throwaway namespace, so the user's
+-- namespace stays untouched). Lifts pandas/numpy display limits only for the
+-- duration of the render, which also covers DataFrames nested in containers.
+local render_src = [[
+def render(v, max_chars):
+    import contextlib, pprint, sys
+    t = type(v)
+    info = [t.__qualname__ if t.__module__ == "builtins" else f"{t.__module__}.{t.__qualname__}"]
+    for attr in ("shape", "dtype"):
+        a = getattr(v, attr, None)
+        if a is not None and not callable(a):
+            info.append(f"{attr}={a}")
+    if len(info) == 1:
+        try:
+            info.append(f"len={len(v)}")
+        except Exception:
+            pass
+    pd, np = sys.modules.get("pandas"), sys.modules.get("numpy")
+    with contextlib.ExitStack() as stack:
+        if pd is not None:
+            stack.enter_context(pd.option_context(
+                "display.max_rows", None, "display.max_columns", None,
+                "display.max_colwidth", None, "display.max_seq_items", None,
+                "display.expand_frame_repr", False))
+        if np is not None:
+            stack.enter_context(np.printoptions(threshold=sys.maxsize, linewidth=200))
+        if isinstance(v, str):
+            body, ft = v, "text"
+        elif pd is not None and isinstance(v, (pd.DataFrame, pd.Series)):
+            body, ft = v.to_string(), "text"
+        else:
+            body, ft = pprint.pformat(v, width=120, compact=True, sort_dicts=False), "python"
+            # Default repr ("<Foo object at 0x...>") says nothing; show the attributes.
+            if body.startswith("<") and " object at 0x" in body and hasattr(v, "__dict__"):
+                body += "\n\n" + pprint.pformat(vars(v), width=120, sort_dicts=False)
+    return {"info": "  ".join(info), "body": body[:max_chars], "ft": ft,
+            "truncated": len(body) > max_chars}
+]]
+
+-- argv: connection_file, expression, timeout, max_chars. Prints the render() dict as JSON.
+local fetch_full = [[
+import ast, json, queue, sys
+from jupyter_client import BlockingKernelClient
+
+conn, expr, timeout, max_chars, src = sys.argv[1], sys.argv[2], float(sys.argv[3]), int(sys.argv[4]), sys.argv[5]
+
+kc = BlockingKernelClient(connection_file=conn)
+kc.load_connection_file()
+kc.start_channels(iopub=False, stdin=False, hb=False, control=False)
+try:
+    msg_id = kc.execute(
+        "",
+        silent=True,
+        store_history=False,
+        user_expressions={
+            "x": f"(lambda v, ns={{}}: (exec({src!r}, ns), ns['render'](v, {max_chars}))[1])(({expr}))"
+        },
+    )
+    while True:
+        try:
+            reply = kc.get_shell_msg(timeout=timeout)
+        except queue.Empty:
+            sys.exit(f"Kernel did not answer within {timeout:.0f}s (busy?)")
+        if reply["parent_header"].get("msg_id") == msg_id:
+            break
+finally:
+    kc.stop_channels()
+
+res = reply["content"].get("user_expressions", {}).get("x", {})
+if res.get("status") != "ok":
+    sys.exit(f"{res.get('ename', 'Error')}: {res.get('evalue', reply['content'])}")
+
+json.dump(ast.literal_eval(res["data"]["text/plain"]), sys.stdout)
 ]]
 
 local function notebook_state()
@@ -83,7 +161,8 @@ local function selected_expr()
   return vim.fn.expand '<cexpr>'
 end
 
-function M.open()
+-- Connection file and expression to evaluate, or nil (after notifying why).
+local function target()
   local state = notebook_state()
   if not state then
     return vim.notify('Not in an ipynb.nvim notebook', vim.log.levels.WARN)
@@ -95,6 +174,49 @@ function M.open()
   local expr = selected_expr()
   if expr == '' then
     return vim.notify('No expression under cursor', vim.log.levels.WARN)
+  end
+  return conn, expr
+end
+
+function M.full()
+  local conn, expr = target()
+  if not conn then
+    return
+  end
+
+  local cmd = { M.python, '-c', fetch_full, conn, expr, tostring(M.timeout), tostring(M.max_chars), render_src }
+  vim.system(cmd, { text = true }, function(res)
+    vim.schedule(function()
+      local ok, data = pcall(vim.json.decode, res.stdout or '')
+      if res.code ~= 0 or not ok then
+        local msg = vim.trim(res.stderr or '')
+        return vim.notify(msg ~= '' and msg or 'Failed to fetch value', vim.log.levels.ERROR, { title = 'ipynb full: ' .. expr })
+      end
+
+      local lines = vim.split(data.body, '\n', { plain = true })
+      if data.truncated then
+        table.insert(lines, ('... truncated at %d chars (see M.max_chars)'):format(M.max_chars))
+      end
+      Snacks.win {
+        text = lines,
+        ft = data.ft,
+        width = 0.9,
+        height = 0.9,
+        border = 'rounded',
+        title = ' ' .. expr .. ' ',
+        footer = ' ' .. data.info .. ' ',
+        bo = { modifiable = false },
+        wo = { wrap = false, cursorline = true },
+        keys = { q = 'close', ['<Esc>'] = 'close' },
+      }
+    end)
+  end)
+end
+
+function M.open()
+  local conn, expr = target()
+  if not conn then
+    return
   end
 
   local cmd = { M.python, '-c', fetch_and_view, conn, expr, tostring(M.timeout) }

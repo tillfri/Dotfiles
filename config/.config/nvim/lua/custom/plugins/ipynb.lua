@@ -12,6 +12,9 @@ return {
     kernel = {
       python_path = vim.fn.expand '~/.venvs/monorepo-pytest/bin/python',
     },
+    keymaps = {
+      kernel_interrupt = '<leader>kI', -- frees <leader>ki for the full-value view below
+    },
   },
   config = function(_, opts)
     require('ipynb').setup(opts)
@@ -36,5 +39,8 @@ return {
     vim.keymap.set({ 'n', 'x' }, '<leader>kl', function()
       require('custom.ipynb_lens').open()
     end, { desc = 'Notebook: view expression in csvlens' })
+    vim.keymap.set({ 'n', 'x' }, '<leader>ki', function()
+      require('custom.ipynb_lens').full()
+    end, { desc = 'Notebook: show full value of expression' })
   end,
 }

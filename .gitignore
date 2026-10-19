@@ -13,3 +13,6 @@ config/.config/pulse
 /config/.config/QtProject.conf
 /config/.config/hypr/hyprland_modules/machine.lua
 /config/.config/nvim/lazy-lock.json
+
+# LiteLLM Copilot OAuth tokens
+config/.config/litellm/github_copilot/
