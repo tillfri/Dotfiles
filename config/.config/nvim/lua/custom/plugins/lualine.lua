@@ -21,6 +21,19 @@ return {
             path = 4, -- 0 = just filename, 1 = relative path, 2 = absolute path
           },
         },
+        lualine_x = {
+          {
+            function()
+              return require('custom.ipynb_kernel').status()
+            end,
+            color = function()
+              return require('custom.ipynb_kernel').color()
+            end,
+          },
+          'encoding',
+          'fileformat',
+          'filetype',
+        },
       },
     }
   end,

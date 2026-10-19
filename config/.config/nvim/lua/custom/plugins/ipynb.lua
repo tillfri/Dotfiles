@@ -19,6 +19,7 @@ return {
   config = function(_, opts)
     require('ipynb').setup(opts)
     require('custom.ipynb_visuals').setup()
+    require('custom.ipynb_kernel').setup()
 
     -- Autostart the kernel on open (the plugin's kernel.auto_connect option is
     -- declared but never read). Same call as <leader>ks.

@@ -1,19 +1,22 @@
 -- Make ipynb.nvim cells easier to scan: brighter borders, a full-width
 -- background tint per cell (code and markdown cells get different tints), and
 -- an execution indicator on the left of the top border that also shows how
--- the cell's last run in this kernel session ended:
+-- the cell's last run in this kernel session ended and how long it took:
 --
---   ╭─[󰔟]─ python ───╮    queued (sent, kernel hasn't started it yet)
---   ╭─[󰦖 12]─ python ─╮   running
---   ╭─[󰄬 12]─ python ─╮   finished OK
---   ╭─[󰅖 12]─ python ─╮   finished with an error
---   ╭─[󰏫 12]─ python ─╮   finished, but the code was edited since
---   ╭─[12]─ python ───╮   count from the file / an earlier kernel (dimmed)
+--   ╭─[󰔟]─ python ───────────╮   queued (sent, kernel hasn't started it yet)
+--   ╭─[󰦖 12 · 1m05s]─ python ─╮   running, with elapsed time (ticks every second)
+--   ╭─[󰄬 12 · 2.4s]─ python ──╮   finished OK, with run time
+--   ╭─[󰅖 12 · 2.4s]─ python ──╮   finished with an error
+--   ╭─[󰏫 12 · 2.4s]─ python ──╮   finished, but the code was edited since
+--   ╭─[12]─ python ───────────╮   count from the file / an earlier kernel (dimmed)
+--
+-- Runs from this kernel session are also shown on the left of the bottom
+-- border (╰─[󰦖 12 · 1m05s]──────╯), so long cells show their state at both ends.
 --
 -- The tint is drawn in our own namespace by wrapping ipynb.visuals.render_all,
 -- which the plugin calls after every structural change and every kernel state
--- update. The indicator rewrites the plugin's top-border extmark by wrapping
--- ipynb.visuals.render_cell. This relies on internals (visuals.render_all,
+-- update. The indicator rewrites the plugin's top- and bottom-border extmarks by
+-- wrapping ipynb.visuals.render_cell. This relies on internals (visuals.render_all,
 -- visuals.render_cell and its 'notebook_visuals' namespace and border segment
 -- layout, cells.get_cell_range, kernel.connect/restart/execute, cell.execution_state),
 -- so re-check this file when bumping the plugin's pinned commit.
@@ -24,9 +27,14 @@ local ns = vim.api.nvim_create_namespace 'ipynb_cell_tint'
 -- The plugin's namespace; nvim_create_namespace returns the existing id.
 local visual_ns = vim.api.nvim_create_namespace 'notebook_visuals'
 
----Run record per notebook state, then per cell id: { status, source }.
----status: 'queued' | 'running' | 'ok' | 'error'; source: the code that was sent.
+---Run record per notebook state, then per cell id: { status, source, start, finish }.
+---status: 'queued' | 'running' | 'ok' | 'error'; source: the code that was sent;
+---start/finish: hrtime when the kernel started/finished it (start is nil when
+---the cell finished before we saw it running).
 local runs = setmetatable({}, { __mode = 'k' })
+
+---Repeating timer that redraws running cells so their elapsed time ticks.
+local ticker
 
 local icons = { queued = '󰔟', running = '󰦖', ok = '󰄬', error = '󰅖', modified = '󰏫' }
 local icon_hl = {
@@ -122,6 +130,34 @@ local function has_error(cell)
   return false
 end
 
+---Redraw the running cells of every notebook; stop once nothing is running.
+local function tick()
+  local running = false
+  for state, records in pairs(runs) do
+    local indices = {}
+    for i, cell in ipairs(state.cells or {}) do
+      local r = cell.id and records[cell.id]
+      if r and r.status == 'running' then
+        table.insert(indices, i)
+      end
+    end
+    if #indices > 0 and vim.api.nvim_buf_is_valid(state.facade_buf) then
+      running = true
+      require('ipynb.visuals').render_all(state, indices)
+    end
+  end
+  if not running then
+    ticker:stop()
+  end
+end
+
+local function start_ticker()
+  ticker = ticker or vim.uv.new_timer()
+  if not ticker:is_active() then
+    ticker:start(1000, 1000, vim.schedule_wrap(tick))
+  end
+end
+
 ---Advance each code cell's run record from the plugin's execution_state.
 ---The plugin marks a cell 'busy' as soon as it is sent, so it only counts as
 ---running once the kernel has assigned it an execution count (cleared on send
@@ -140,10 +176,13 @@ local function track_runs(state)
         end
         if r.status == 'queued' and count_of(cell) then
           r.status = 'running'
+          r.start = vim.uv.hrtime()
+          start_ticker()
         end
       elseif active then
         if r.status == 'running' or count_of(cell) then
           r.status = has_error(cell) and 'error' or 'ok'
+          r.finish = vim.uv.hrtime()
         else
           -- Went idle without ever starting: aborted by an interrupt.
           records[cell.id] = nil
@@ -153,7 +192,23 @@ local function track_runs(state)
   end
 end
 
----Indicator chunks for a code cell, or nil when there is nothing to show.
+---'2.4s', '42s', '3m05s', '1h02m'. Whole seconds while live, as it ticks per second.
+local function format_duration(ns, live)
+  local s = ns / 1e9
+  if s < 10 and not live then
+    return string.format('%.1fs', s)
+  end
+  s = math.floor(s)
+  if s < 60 then
+    return s .. 's'
+  elseif s < 3600 then
+    return string.format('%dm%02ds', math.floor(s / 60), s % 60)
+  end
+  return string.format('%dh%02dm', math.floor(s / 3600), math.floor(s % 3600 / 60))
+end
+
+---Indicator chunks for a code cell and its run status (nil when not run in
+---this kernel session), or nil when there is nothing to show.
 local function indicator(state, cell)
   local r = runs[state] and runs[state][cell.id]
   local status = r and r.status
@@ -174,30 +229,29 @@ local function indicator(state, cell)
   if count then
     table.insert(chunks, { (status and ' ' or '') .. count, text_hl })
   end
+  local start = r and r.start
+  if start and status ~= 'queued' then
+    local live = status == 'running'
+    local elapsed = (live and vim.uv.hrtime() or r.finish) - start
+    table.insert(chunks, { ' · ' .. format_duration(elapsed, live), text_hl })
+  end
   table.insert(chunks, { ']', text_hl })
-  return chunks
+  return chunks, status
 end
 
----Splice the indicator in after the top-left corner of the cell's border,
----shrinking the fill so the border keeps its width. With count and state
----hidden, the plugin's segments are: {'╭' .. label}, [hint...], {fill}, {'╮'}.
-local function draw_indicator(state, cell_idx, buf)
-  local cell = state.cells[cell_idx]
-  local chunks = indicator(state, cell)
-  local row = require('ipynb.cells').get_cell_range(state, cell_idx)
-  if not chunks or not row then
-    return
-  end
-
+---Splice the indicator in after the left corner of a border line, taking its
+---width out of the border's longest run of '─' so the line keeps its width.
+---With count and state hidden, the plugin's segments are:
+---  top:    {'╭' .. label}, [hint...], {fill}, {'╮'}
+---  bottom: {'╰' .. fill .. '╯'}, or with hints {'╰───'}, hints..., {fill}, [hint], {'────╯'}
+local function splice(buf, row, corner, chunks)
   local marks = vim.api.nvim_buf_get_extmarks(buf, visual_ns, { row, 0 }, { row, -1 }, { details = true })
   for _, mark in ipairs(marks) do
     local details = mark[4]
     local segs = details.virt_text
-    if details.virt_text_pos == 'overlay' and segs and #segs >= 3 then
-      local corner = '╭'
+    if details.virt_text_pos == 'overlay' and segs then
       local first, border_hl = segs[1][1], segs[1][2]
-      local fill = segs[#segs - 1][1]
-      if first:sub(1, #corner) ~= corner or fill:gsub('─', '') ~= '' then
+      if first:sub(1, #corner) ~= corner then
         return -- layout changed upstream; leave the plugin's border alone
       end
 
@@ -207,13 +261,25 @@ local function draw_indicator(state, cell_idx, buf)
         table.insert(new, chunk)
         added = added + vim.fn.strdisplaywidth(chunk[1])
       end
-      table.insert(new, { '─' .. first:sub(#corner + 1), border_hl })
-      for i = 2, #segs - 2 do
-        table.insert(new, segs[i])
+      local rest = { { '─' .. first:sub(#corner + 1), border_hl } }
+      for i = 2, #segs do
+        table.insert(rest, segs[i])
       end
-      local fill_width = math.max(0, vim.fn.strdisplaywidth(fill) - added)
-      table.insert(new, { string.rep('─', fill_width), border_hl })
-      table.insert(new, segs[#segs])
+
+      local fill, most = nil, 0
+      for _, seg in ipairs(rest) do
+        if seg[2] == border_hl then
+          local _, n = seg[1]:gsub('─', '')
+          if n > most then
+            fill, most = seg, n
+          end
+        end
+      end
+      if most < added then
+        return -- window too narrow; leave the plugin's border alone
+      end
+      fill[1] = (fill[1]:gsub('─', '', added))
+      vim.list_extend(new, rest)
 
       vim.api.nvim_buf_set_extmark(buf, visual_ns, row, 0, {
         id = mark[1],
@@ -223,6 +289,20 @@ local function draw_indicator(state, cell_idx, buf)
       })
       return
     end
+  end
+end
+
+---Draw the indicator on the top border, and on the bottom border too for runs
+---from this kernel session.
+local function draw_indicator(state, cell_idx, buf)
+  local chunks, status = indicator(state, state.cells[cell_idx])
+  local top, bottom = require('ipynb.cells').get_cell_range(state, cell_idx)
+  if not chunks or not top then
+    return
+  end
+  splice(buf, top, '╭', chunks)
+  if status and bottom then
+    splice(buf, bottom, '╰', chunks)
   end
 end
 
