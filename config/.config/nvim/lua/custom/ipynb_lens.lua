@@ -5,48 +5,74 @@
 -- Connects as a second Jupyter client (same connection file as the plugin's
 -- bridge) and evaluates the expression via a silent execute_request with
 -- user_expressions: nothing is defined in the kernel, no history, no execution
--- count bump, and no output reaches the notebook.
+-- count bump, and no output reaches the notebook. The request runs in a kernel
+-- subshell (ipykernel >= 7), i.e. on its own thread next to a busy cell, so a
+-- finished cell's variables can be inspected while later cells still run.
 
 local M = {}
 
 M.python = vim.fn.expand '~/.venvs/monorepo-pytest/bin/python'
 M.viewer = { 'csvlens' }
-M.timeout = 30 -- seconds to wait for the kernel (it queues behind a running cell)
+M.timeout = 30 -- seconds to wait for the kernel (without subshells it queues behind a running cell)
 M.max_chars = 5000000 -- cap for M.full(), so a huge object doesn't flood nvim
 
--- argv: connection_file, expression, timeout, viewer...
-local fetch_and_view = [[
-import ast, queue, subprocess, sys
+-- Shared prelude of both fetch scripts. evaluate() returns the literal value of
+-- `code`, or exits with the error. Kernels without subshell support don't answer
+-- create_subshell_request; the request then goes to the main shell as before.
+local client_src = [[
+import ast, queue, sys
 from jupyter_client import BlockingKernelClient
+
+def _reply(get, msg_id, timeout):
+    while True:
+        reply = get(timeout=timeout)
+        if reply["parent_header"].get("msg_id") == msg_id:
+            return reply["content"]
+
+def _control(kc, msg_type, content):
+    msg = kc.session.msg(msg_type, content)
+    kc.control_channel.send(msg)
+    try:
+        return _reply(kc.get_control_msg, msg["header"]["msg_id"], 2)
+    except queue.Empty:
+        return {}
+
+def evaluate(conn, code, timeout):
+    kc = BlockingKernelClient(connection_file=conn)
+    kc.load_connection_file()
+    kc.start_channels(iopub=False, stdin=False, hb=False)
+    subshell = _control(kc, "create_subshell_request", {}).get("subshell_id")
+    try:
+        msg = kc.session.msg("execute_request", {
+            "code": "", "silent": True, "store_history": False,
+            "user_expressions": {"x": code}, "allow_stdin": False, "stop_on_error": False,
+        })
+        if subshell:
+            msg["header"]["subshell_id"] = subshell
+        kc.shell_channel.send(msg)
+        try:
+            content = _reply(kc.get_shell_msg, msg["header"]["msg_id"], timeout)
+        except queue.Empty:
+            sys.exit(f"Kernel did not answer within {timeout:.0f}s (busy?)")
+    finally:
+        if subshell:
+            _control(kc, "delete_subshell_request", {"subshell_id": subshell})
+        kc.stop_channels()
+
+    res = content.get("user_expressions", {}).get("x", {})
+    if res.get("status") != "ok":
+        sys.exit(f"{res.get('ename', 'Error')}: {res.get('evalue', content)}")
+    return ast.literal_eval(res["data"]["text/plain"])
+]]
+
+-- argv: connection_file, expression, timeout, viewer...
+local fetch_and_view = client_src .. [[
+import subprocess
 
 conn, expr, timeout, viewer = sys.argv[1], sys.argv[2], float(sys.argv[3]), sys.argv[4:]
 
-kc = BlockingKernelClient(connection_file=conn)
-kc.load_connection_file()
-kc.start_channels(iopub=False, stdin=False, hb=False, control=False)
-try:
-    msg_id = kc.execute(
-        "",
-        silent=True,
-        store_history=False,
-        user_expressions={"x": f"__import__('pandas').DataFrame(({expr})).to_csv()"},
-    )
-    print(f"Fetching {expr} ...", file=sys.stderr, flush=True)
-    while True:
-        try:
-            reply = kc.get_shell_msg(timeout=timeout)
-        except queue.Empty:
-            sys.exit(f"Kernel did not answer within {timeout:.0f}s (busy?)")
-        if reply["parent_header"].get("msg_id") == msg_id:
-            break
-finally:
-    kc.stop_channels()
-
-res = reply["content"].get("user_expressions", {}).get("x", {})
-if res.get("status") != "ok":
-    sys.exit(f"{res.get('ename', 'Error')}: {res.get('evalue', reply['content'])}")
-
-csv = ast.literal_eval(res["data"]["text/plain"])
+print(f"Fetching {expr} ...", file=sys.stderr, flush=True)
+csv = evaluate(conn, f"__import__('pandas').DataFrame(({expr})).to_csv()", timeout)
 sys.exit(subprocess.run(viewer, input=csv.encode()).returncode)
 ]]
 
@@ -90,39 +116,13 @@ def render(v, max_chars):
 ]]
 
 -- argv: connection_file, expression, timeout, max_chars. Prints the render() dict as JSON.
-local fetch_full = [[
-import ast, json, queue, sys
-from jupyter_client import BlockingKernelClient
+local fetch_full = client_src .. [[
+import json
 
 conn, expr, timeout, max_chars, src = sys.argv[1], sys.argv[2], float(sys.argv[3]), int(sys.argv[4]), sys.argv[5]
 
-kc = BlockingKernelClient(connection_file=conn)
-kc.load_connection_file()
-kc.start_channels(iopub=False, stdin=False, hb=False, control=False)
-try:
-    msg_id = kc.execute(
-        "",
-        silent=True,
-        store_history=False,
-        user_expressions={
-            "x": f"(lambda v, ns={{}}: (exec({src!r}, ns), ns['render'](v, {max_chars}))[1])(({expr}))"
-        },
-    )
-    while True:
-        try:
-            reply = kc.get_shell_msg(timeout=timeout)
-        except queue.Empty:
-            sys.exit(f"Kernel did not answer within {timeout:.0f}s (busy?)")
-        if reply["parent_header"].get("msg_id") == msg_id:
-            break
-finally:
-    kc.stop_channels()
-
-res = reply["content"].get("user_expressions", {}).get("x", {})
-if res.get("status") != "ok":
-    sys.exit(f"{res.get('ename', 'Error')}: {res.get('evalue', reply['content'])}")
-
-json.dump(ast.literal_eval(res["data"]["text/plain"]), sys.stdout)
+code = f"(lambda v, ns={{}}: (exec({src!r}, ns), ns['render'](v, {max_chars}))[1])(({expr}))"
+json.dump(evaluate(conn, code, timeout), sys.stdout)
 ]]
 
 local function notebook_state()

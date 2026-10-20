@@ -19,6 +19,17 @@ return {
 
       dap_python.setup '~/.local/share/nvim/mason/packages/debugpy/venv/bin/python'
 
+      local jupyter_attach = {
+        type = 'python',
+        request = 'attach',
+        name = 'Attach to Jupyter kernel',
+        connect = { host = '127.0.0.1', port = 5678 },
+        justMyCode = false,
+      }
+      table.insert(dap.configurations.python, jupyter_attach)
+      -- ipynb.nvim's notebook buffer has filetype 'ipynb' (cell edit buffers are 'python')
+      dap.configurations.ipynb = { jupyter_attach }
+
       vim.fn.sign_define('DapBreakpoint', {
         text = '',
         texthl = 'DiagnosticSignError',
