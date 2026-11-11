@@ -14,7 +14,7 @@ hl.bind("SUPER + E", hl.dsp.exec_cmd("kitty yazi")) -- Show the graphical file b
 hl.bind("SUPER + V", hl.dsp.window.float()) -- Allow a window to float
 -- hl.bind("SUPER + P", hl.dsp.exec_cmd("~/.config/hypr/scripts/toggle_internal_monitor"), { locked = true })
 hl.bind("SUPER + D", hl.dsp.layout("togglesplit")) -- dwindle
-hl.bind("SUPER + ALT + S", hl.dsp.exec_cmd('grim -g "$(slurp)" - | swappy -f -')) -- take a screenshot
+hl.bind("SUPER + SHIFT + S", hl.dsp.exec_cmd('grim -g "$(slurp)" - | swappy -f -')) -- take a screenshot
 hl.bind("SUPER + X", hl.dsp.exec_cmd("qs -c bar ipc call launcher toggleMode clipboard")) -- open clipboard manager
 hl.bind("SUPER + Y", hl.dsp.exec_cmd("firefox"))
 hl.bind("SUPER + F", hl.dsp.window.fullscreen({ mode = "maximized" })) -- switch to fullscreen with bar
@@ -27,8 +27,8 @@ hl.bind("SUPER + C", hl.dsp.exec_cmd("qs -c bar ipc call focus toggle")) -- focu
 -- hl.bind("SUPER + code:48", hl.dsp.exec_cmd("~/.config/hypr/scripts/change_background.sh"))
 -- hl.bind("SUPER + code:34", hl.dsp.exec_cmd("~/.config/hypr/scripts/turn_on_screen"))
 
-hl.bind("SUPER + S", hl.dsp.workspace.toggle_special("scratchpad"))
-hl.bind("SUPER + SHIFT + S", hl.dsp.window.move({ workspace = "special:scratchpad", follow = false }))
+-- hl.bind("SUPER + S", hl.dsp.workspace.toggle_special("scratchpad"))
+-- hl.bind("SUPER + SHIFT + S", hl.dsp.window.move({ workspace = "special:scratchpad", follow = false }))
 -- hl.bind("SUPER + SHIFT + up", hl.dsp.exec_cmd("busctl --user -- call rs.wl-gammarelay / rs.wl.gammarelay UpdateTemperature n -500"))
 -- hl.bind("SUPER + SHIFT + down", hl.dsp.exec_cmd("busctl --user -- call rs.wl-gammarelay / rs.wl.gammarelay UpdateTemperature n +500"))
 
